@@ -1,0 +1,412 @@
+/* eslint-disable react-refresh/only-export-components */
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { useDojoState } from "dojo-hooks";
+import type { Tab, LeadStatus, Lead, Contact } from "@/lib/types";
+
+interface AppState {
+  tabs: Tab[];
+  activeTabId: string;
+  leads: Lead[];
+  contacts: Contact[];
+  isNewLeadDialogOpen: boolean;
+  isConvertLeadDialogOpen: boolean;
+  convertingLeadId: string | null;
+  isAfterConvertDialogOpen: boolean;
+  afterConvertLeadId: string | null;
+}
+
+interface AppContextType {
+  state: AppState;
+  activeTab: Tab | undefined;
+  addTab: (tab: Tab) => void;
+  removeTab: (tabId: string) => void;
+  setActiveTab: (tabId: string) => void;
+  updateTabField: (tabId: string, field: keyof Tab, value: unknown) => void;
+  getLead: (id: string) => Lead | undefined;
+  getContact: (id: string) => Contact | undefined;
+  addLead: (lead: Lead) => void;
+  updateLead: (id: string, updates: Partial<Lead>) => void;
+  deleteLead: (id: string) => void;
+  addContact: (contact: Contact) => void;
+  updateContact: (id: string, updates: Partial<Contact>) => void;
+  updateTabLeadStatus: (leadId: string, status: LeadStatus) => void;
+  convertLead: (leadId: string) => void;
+  openNewLeadDialog: () => void;
+  closeNewLeadDialog: () => void;
+  openConvertLeadDialog: (leadId: string) => void;
+  closeConvertLeadDialog: () => void;
+  openAfterConvertDialog: (leadId: string) => void;
+  closeAfterConvertDialog: () => void;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+const initialState: AppState = {
+  tabs: [{ id: "home-dashboard", type: "home-dashboard" }],
+  activeTabId: "home-dashboard",
+  leads: [],
+  contacts: [],
+  isNewLeadDialogOpen: false,
+  isConvertLeadDialogOpen: false,
+  convertingLeadId: null,
+  isAfterConvertDialogOpen: false,
+  afterConvertLeadId: null,
+};
+
+export function AppProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useDojoState(initialState);
+
+  const addTab = useCallback(
+    (tab: Tab) => {
+      setState((prev) => {
+        // Check if tab with same id already exists
+        const existingTab = prev.tabs.find((t) => t.id === tab.id);
+        if (existingTab) {
+          // Just switch to it
+          return { ...prev, activeTabId: tab.id };
+        }
+        // Add new tab
+        return {
+          ...prev,
+          tabs: [...prev.tabs, tab],
+          activeTabId: tab.id,
+        };
+      });
+    },
+    [setState]
+  );
+
+  const removeTab = useCallback(
+    (tabId: string) => {
+      setState((prev): AppState => {
+        // Don't allow removing home-dashboard
+        if (tabId === "home-dashboard") return prev;
+
+        const tabIndex = prev.tabs.findIndex((t) => t.id === tabId);
+        if (tabIndex === -1) return prev;
+
+        const newTabs = prev.tabs.filter((t) => t.id !== tabId);
+
+        // If we're closing the active tab, switch to another tab
+        let newActiveTabId = prev.activeTabId;
+        if (prev.activeTabId === tabId) {
+          // Switch to the tab before this one, or the one after, or home
+          if (tabIndex > 0) {
+            newActiveTabId = newTabs[tabIndex - 1].id;
+          } else if (newTabs.length > 0) {
+            newActiveTabId = newTabs[0].id;
+          } else {
+            newActiveTabId = "home-dashboard";
+          }
+        }
+
+        return {
+          ...prev,
+          tabs: newTabs,
+          activeTabId: newActiveTabId,
+        };
+      });
+    },
+    [setState]
+  );
+
+  const setActiveTab = useCallback(
+    (tabId: string) => {
+      setState((prev) => {
+        // Check if trying to open a converted lead tab
+        const tab = prev.tabs.find((t) => t.id === tabId);
+        if (tab?.type === "home-lead" && tab.dataId) {
+          const lead = prev.leads.find((l) => l.id === tab.dataId);
+          if (lead?.convertedToContactId) {
+            // Redirect to contact tab instead
+            const contactTabId = `contact-${lead.convertedToContactId}`;
+            const contactTab = prev.tabs.find((t) => t.id === contactTabId);
+
+            if (contactTab) {
+              return { ...prev, activeTabId: contactTabId };
+            } else {
+              // Create contact tab if it doesn't exist
+              return {
+                ...prev,
+                tabs: [
+                  ...prev.tabs,
+                  {
+                    id: contactTabId,
+                    type: "home-contact" as const,
+                    dataId: lead.convertedToContactId,
+                  },
+                ],
+                activeTabId: contactTabId,
+              };
+            }
+          }
+        }
+
+        return { ...prev, activeTabId: tabId };
+      });
+    },
+    [setState]
+  );
+
+  const updateTabField = useCallback(
+    (tabId: string, field: keyof Tab, value: unknown) => {
+      setState((prev) => ({
+        ...prev,
+        tabs: prev.tabs.map((tab) =>
+          tab.id === tabId ? { ...tab, [field]: value } : tab
+        ),
+      }));
+    },
+    [setState]
+  );
+
+  // Data getter functions
+  const getLead = useCallback(
+    (id: string) => {
+      return state.leads.find((lead) => lead.id === id);
+    },
+    [state.leads]
+  );
+
+  const getContact = useCallback(
+    (id: string) => {
+      return state.contacts.find((contact) => contact.id === id);
+    },
+    [state.contacts]
+  );
+
+  // Lead management functions
+  const addLead = useCallback(
+    (lead: Lead) => {
+      setState((prev) => ({
+        ...prev,
+        leads: [...prev.leads, lead],
+      }));
+    },
+    [setState]
+  );
+
+  const updateLead = useCallback(
+    (id: string, updates: Partial<Lead>) => {
+      setState((prev) => ({
+        ...prev,
+        leads: prev.leads.map((lead) =>
+          lead.id === id ? { ...lead, ...updates } : lead
+        ),
+      }));
+    },
+    [setState]
+  );
+
+  const deleteLead = useCallback(
+    (id: string) => {
+      setState((prev) => ({
+        ...prev,
+        leads: prev.leads.filter((lead) => lead.id !== id),
+      }));
+    },
+    [setState]
+  );
+
+  // Contact management functions
+  const addContact = useCallback(
+    (contact: Contact) => {
+      setState((prev) => ({
+        ...prev,
+        contacts: [...prev.contacts, contact],
+      }));
+    },
+    [setState]
+  );
+
+  const updateContact = useCallback(
+    (id: string, updates: Partial<Contact>) => {
+      setState((prev) => ({
+        ...prev,
+        contacts: prev.contacts.map((contact) =>
+          contact.id === id ? { ...contact, ...updates } : contact
+        ),
+      }));
+    },
+    [setState]
+  );
+
+  const updateTabLeadStatus = useCallback(
+    (leadId: string, status: LeadStatus) => {
+      setState((prev) => ({
+        ...prev,
+        leads: prev.leads.map((lead) =>
+          lead.id === leadId ? { ...lead, leadStatus: status } : lead
+        ),
+      }));
+    },
+    [setState]
+  );
+
+  const convertLead = useCallback(
+    (leadId: string) => {
+      setState((prev) => {
+        const lead = prev.leads.find((l) => l.id === leadId);
+        if (!lead) return prev;
+
+        // Create new contact from lead data
+        const contactId = `contact-${Date.now()}`;
+        const newContact: Contact = {
+          id: contactId,
+          name: lead.name,
+          company: lead.company,
+          salutation: lead.salutation,
+          firstName: lead.firstName,
+          lastName: lead.lastName,
+          title: lead.title,
+          website: lead.website,
+          description: lead.description,
+          contactOwner: lead.leadOwner,
+          phone: lead.phone,
+          email: lead.email,
+          country: lead.country,
+          street: lead.street,
+          city: lead.city,
+          state: lead.state,
+          zipCode: lead.zipCode,
+          numberOfEmployees: lead.numberOfEmployees,
+          annualRevenue: lead.annualRevenue,
+          leadSource: lead.leadSource,
+          industry: lead.industry,
+        };
+
+        // Update lead to mark as converted (keep in list for tab redirection)
+        // Don't automatically create contact tab - it will be created when user clicks the converted lead tab
+        return {
+          ...prev,
+          leads: prev.leads.map((l) =>
+            l.id === leadId
+              ? {
+                  ...l,
+                  leadStatus: "Converted" as LeadStatus,
+                  convertedToContactId: contactId,
+                }
+              : l
+          ),
+          contacts: [...prev.contacts, newContact],
+        };
+      });
+    },
+    [setState]
+  );
+
+  const openNewLeadDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewLeadDialogOpen: true }));
+  }, [setState]);
+
+  const closeNewLeadDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewLeadDialogOpen: false }));
+  }, [setState]);
+
+  const openConvertLeadDialog = useCallback(
+    (leadId: string) => {
+      setState((prev) => ({
+        ...prev,
+        isConvertLeadDialogOpen: true,
+        convertingLeadId: leadId,
+      }));
+    },
+    [setState]
+  );
+
+  const closeConvertLeadDialog = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isConvertLeadDialogOpen: false,
+      convertingLeadId: null,
+    }));
+  }, [setState]);
+
+  const openAfterConvertDialog = useCallback(
+    (leadId: string) => {
+      setState((prev) => ({
+        ...prev,
+        isAfterConvertDialogOpen: true,
+        afterConvertLeadId: leadId,
+      }));
+    },
+    [setState]
+  );
+
+  const closeAfterConvertDialog = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isAfterConvertDialogOpen: false,
+      afterConvertLeadId: null,
+    }));
+  }, [setState]);
+
+  const activeTab = useMemo(() => {
+    return state.tabs.find((tab) => tab.id === state.activeTabId);
+  }, [state.tabs, state.activeTabId]);
+
+  const value = useMemo(
+    () => ({
+      state,
+      activeTab,
+      addTab,
+      removeTab,
+      setActiveTab,
+      updateTabField,
+      getLead,
+      getContact,
+      addLead,
+      updateLead,
+      deleteLead,
+      addContact,
+      updateContact,
+      updateTabLeadStatus,
+      convertLead,
+      openNewLeadDialog,
+      closeNewLeadDialog,
+      openConvertLeadDialog,
+      closeConvertLeadDialog,
+      openAfterConvertDialog,
+      closeAfterConvertDialog,
+    }),
+    [
+      state,
+      activeTab,
+      addTab,
+      removeTab,
+      setActiveTab,
+      updateTabField,
+      getLead,
+      getContact,
+      addLead,
+      updateLead,
+      deleteLead,
+      addContact,
+      updateContact,
+      updateTabLeadStatus,
+      convertLead,
+      openNewLeadDialog,
+      closeNewLeadDialog,
+      openConvertLeadDialog,
+      closeConvertLeadDialog,
+      openAfterConvertDialog,
+      closeAfterConvertDialog,
+    ]
+  );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
+
+export function useAppContext() {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error("useAppContext must be used within an AppProvider");
+  }
+  return context;
+}

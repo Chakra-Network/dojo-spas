@@ -1,0 +1,175 @@
+name: Deploy SPAs to S3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**'
+      - '.github/workflows/deploy-spas.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy-all:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Cache dojo-hooks build
+        uses: actions/cache@v4
+        with:
+          path: dojo-hooks/dist
+          key: ${{ runner.os }}-dojo-hooks-${{ hashFiles('dojo-hooks/**') }}
+          restore-keys: |
+            ${{ runner.os }}-dojo-hooks-
+
+      - name: Discover and validate SPAs
+        id: discover
+        run: |
+          echo "Discovering SPAs in the repository..."
+          
+          # Find all directories that contain app/package.json (excluding dojo-hooks and .github)
+          spa_names=()
+          for spa_dir in */; do
+            if [ -d "$spa_dir" ] && [ "$spa_dir" != "dojo-hooks/" ] && [ "$spa_dir" != ".github/" ]; then
+              spa_name=$(basename "$spa_dir")
+              package_json_path="$spa_name/app/package.json"
+              
+              if [ -f "$package_json_path" ]; then
+                # Validate that package.json has a build script
+                if jq -e '.scripts.build' "$package_json_path" >/dev/null 2>&1; then
+                  spa_names+=("$spa_name")
+                  echo "Found valid SPA: $spa_name"
+                else
+                  echo "Skipping $spa_name: no build script in package.json"
+                fi
+              else
+                echo "Skipping $spa_name: no app/package.json found"
+              fi
+            fi
+          done
+          
+          # Check if we found any SPAs
+          if [ ${#spa_names[@]} -eq 0 ]; then
+            echo "No valid SPAs found in repository!"
+            echo "Expected structure: {spa-name}/app/package.json with build script"
+            exit 1
+          fi
+          
+          echo "Discovery Summary:"
+          echo "  Found ${#spa_names[@]} valid SPAs: ${spa_names[*]}"
+          echo "  Will build and deploy to both staging and production"
+          
+          # Export for later steps
+          echo "SPA_LIST=${spa_names[*]}" >> $GITHUB_ENV
+          echo "SPA_COUNT=${#spa_names[@]}" >> $GITHUB_ENV
+
+      - name: Build dojo-hooks
+        run: |
+          echo "Building dojo-hooks..."
+          cd dojo-hooks && pnpm install && pnpm build
+
+      - name: Build all SPAs
+        run: |
+          echo "Building all SPAs..."
+          
+          for spa in $SPA_LIST; do
+            echo ""
+            echo "Building $spa..."
+            cd $spa/app
+            pnpm install
+            pnpm build
+            
+            # Verify build output
+            if [ ! -f "dist/index.html" ]; then
+              echo "Build failed for $spa - no dist/index.html found"
+              exit 1
+            fi
+            
+            echo "Successfully built $spa"
+            cd ../..
+          done
+          
+          echo ""
+          echo "All SPAs built successfully!"
+
+      - name: Configure AWS credentials for staging
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::203918853720:role/GitHubActionsSPARole-staging
+          role-session-name: deploy-spas-staging
+          aws-region: us-east-1
+
+      # - name: Deploy to staging
+      #   run: |
+      #     echo "Deploying all SPAs to staging..."
+          
+      #     for spa in $SPA_LIST; do
+      #       echo "Deploying $spa to staging..."
+      #       aws s3 sync $spa/app/dist/ s3://dojo-spas-staging/$spa/ --delete
+      #       echo "$spa deployed to staging"
+      #     done
+          
+      #     echo ""
+      #     echo "All SPAs deployed to staging!"
+
+      - name: Configure AWS credentials for production
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::203918853720:role/GitHubActionsSPARole-production
+          role-session-name: deploy-spas-production
+          aws-region: us-east-1
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying all SPAs to production..."
+          
+          for spa in $SPA_LIST; do
+            echo "Deploying $spa to production..."
+            aws s3 sync $spa/app/dist/ s3://dojo-spas-production/$spa/ --delete
+            echo "$spa deployed to production"
+          done
+          
+          echo ""
+          echo "All SPAs deployed to production!"
+
+      - name: Report completion
+        run: |
+          echo ""
+          echo "Deployment Summary:"
+          echo "  SPAs processed: $SPA_COUNT ($SPA_LIST)"
+          echo "  Environments: staging, production"
+          echo ""
+          echo "SPA URLs:"
+          echo "  Staging: https://dojo-spas-staging.s3.amazonaws.com/{spa-name}/index.html"
+          echo "  Production: https://dojo-spas-production.s3.amazonaws.com/{spa-name}/index.html"
+          echo ""
+          echo "Deployment completed successfully!"
