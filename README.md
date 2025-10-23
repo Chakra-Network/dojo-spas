@@ -1,10 +1,15 @@
-# dojo-spas
+# Dojo Single-Page Applications (SPAs)
 
 [![Deploy SPAs](https://github.com/Chakra-Network/dojo-spas/actions/workflows/deploy-spas.yml/badge.svg)](https://github.com/Chakra-Network/dojo-spas/actions/workflows/deploy-spas.yml)
 
 Curated single-page applications built with React, Vite, and a shared state layer—powering experiences on [trydojo.ai](https://trydojo.ai/).
 
 - Read the platform docs: [docs.trydojo.ai](https://docs.trydojo.ai/)
+
+## Why Mock SPAs Matter
+- Reinforcement-learning loops need safe, deterministic sandboxes; real production apps mutate too quickly. Our mock SPAs mirror the UX of live tools like [Linear](https://dojo-spas-production.s3.us-east-1.amazonaws.com/linear/index.html) without exposing private data.
+- Authentication is predictable here—agents can safely interact with environments without fretting over CAPTCHAs, SSO glitches, or expiring secrets.
+- State-setting, verification, and retrieval stay under tight control: every view reads and writes through `dojo-hooks`, so RL agents can rely on consistent schemas instead of chasing ever-changing production APIs.
 
 ## Dojo Hooks
 - `@chakra-dev/dojo-hooks` exposes `useDojoState` and a global `dojo` helper for persisting and retrieving SPA state without wiring extra context.
