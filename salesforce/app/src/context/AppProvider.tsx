@@ -6,7 +6,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import { useDojoState } from "dojo-hooks";
+import { useDojoState } from "@chakra-dev/dojo-hooks";
 import type { Tab, LeadStatus, Lead, Contact } from "@/lib/types";
 
 interface AppState {

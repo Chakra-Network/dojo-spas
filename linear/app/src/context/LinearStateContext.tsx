@@ -18,7 +18,7 @@ import type {
   Project,
   Milestone,
 } from "@/lib/types";
-import { useDojoState } from "dojo-hooks";
+import { useDojoState } from "@chakra-dev/dojo-hooks";
 import {
   issues as initialIssues,
   users as initialUsers,

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import type { GameState } from "./types";
-import { useDojoState } from "dojo-hooks";
+import { useDojoState } from "@chakra-dev/dojo-hooks";
 
 const defaultState: GameState = {
   hasClicked: false,

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { GameState, Board, Player } from "./types";
-import { useDojoState } from "dojo-hooks";
+import { useDojoState } from "@chakra-dev/dojo-hooks";
 
 const defaultState: GameState = {
   board: Array(9).fill(null),

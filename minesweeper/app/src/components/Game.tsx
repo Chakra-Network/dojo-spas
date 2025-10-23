@@ -1,7 +1,7 @@
 "use client";
 
 import type { GameState, Cell, GameStatus } from "./types";
-import { useDojoState } from "dojo-hooks";
+import { useDojoState } from "@chakra-dev/dojo-hooks";
 
 const ROWS = 9;
 const COLS = 9;

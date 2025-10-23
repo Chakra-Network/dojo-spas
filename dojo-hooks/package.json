@@ -1,12 +1,24 @@
 {
-  "name": "dojo-hooks",
-  "version": "0.0.1",
-  "description": "Hooks for dojo app developers",
+  "name": "@chakra-dev/dojo-hooks",
+  "version": "1.0.2",
+  "description": "React hooks for dojo app state management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "keywords": ["react", "hooks", "state-management", "dojo"],
+  "homepage": "https://github.com/Chakra-Network/dojo-spas#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Chakra-Network/dojo-spas.git",
+    "directory": "dojo-hooks"
+  },
+  "bugs": {
+    "url": "https://github.com/Chakra-Network/dojo-spas/issues"
+  },
+  "license": "MIT",
+  "author": "Chakra Dev <hi@chakra-labs.com>",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "pnpm run build"
