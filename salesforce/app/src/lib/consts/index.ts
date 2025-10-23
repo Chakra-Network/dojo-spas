@@ -40,4 +40,4 @@ export const CARDS: BannerCardType[] = [
   },
 ];
 
-export const PATH_PREFIX = "./dojos/salesforce";
+export const PATH_PREFIX = "/dojos/salesforce";
