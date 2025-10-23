@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
-    "dojo-hooks": "file:../../dojo-hooks",
+    "@chakra-dev/dojo-hooks": "^1.0.0",
     "lucide-react": "^0.468.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

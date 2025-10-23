@@ -43,14 +43,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Cache dojo-hooks build
-        uses: actions/cache@v4
-        with:
-          path: dojo-hooks/dist
-          key: ${{ runner.os }}-dojo-hooks-${{ hashFiles('dojo-hooks/**') }}
-          restore-keys: |
-            ${{ runner.os }}-dojo-hooks-
-
       - name: Discover and validate SPAs
         id: discover
         run: |
@@ -91,11 +83,6 @@ jobs:
           # Export for later steps
           echo "SPA_LIST=${spa_names[*]}" >> $GITHUB_ENV
           echo "SPA_COUNT=${#spa_names[@]}" >> $GITHUB_ENV
-
-      - name: Build dojo-hooks
-        run: |
-          echo "Building dojo-hooks..."
-          cd dojo-hooks && pnpm install && pnpm build
 
       - name: Build all SPAs
         run: |
