@@ -11,6 +11,9 @@ Curated single-page applications built with React, Vite, and a shared state laye
 - Authentication is predictable here—agents can safely interact with environments without fretting over CAPTCHAs, SSO glitches, or expiring secrets.
 - State-setting, verification, and retrieval stay under tight control: every view reads and writes through `dojo-hooks`, so RL agents can rely on consistent schemas instead of chasing ever-changing production APIs.
 
+<img width="1346" height="749" alt="image" src="https://github.com/user-attachments/assets/7b54beb8-862e-435c-9a09-caa368dc6aac" />
+
+
 ## Dojo Hooks
 - `@chakra-dev/dojo-hooks` exposes `useDojoState` and a global `dojo` helper for persisting and retrieving SPA state without wiring extra context.
 - Each app consumes these hooks to keep widgets in sync and to share state across routes or nested components.
