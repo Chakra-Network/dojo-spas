@@ -115,18 +115,18 @@ jobs:
           role-session-name: deploy-spas-staging
           aws-region: us-east-1
 
-      # - name: Deploy to staging
-      #   run: |
-      #     echo "Deploying all SPAs to staging..."
+      - name: Deploy to staging
+        run: |
+          echo "Deploying all SPAs to staging..."
           
-      #     for spa in $SPA_LIST; do
-      #       echo "Deploying $spa to staging..."
-      #       aws s3 sync $spa/app/dist/ s3://dojo-spas-staging/$spa/ --delete
-      #       echo "$spa deployed to staging"
-      #     done
+          for spa in $SPA_LIST; do
+            echo "Deploying $spa to staging..."
+            aws s3 sync $spa/app/dist/ s3://dojo-spas-staging/$spa/ --delete
+            echo "$spa deployed to staging"
+          done
           
-      #     echo ""
-      #     echo "All SPAs deployed to staging!"
+          echo ""
+          echo "All SPAs deployed to staging!"
 
       - name: Configure AWS credentials for production
         uses: aws-actions/configure-aws-credentials@v4
