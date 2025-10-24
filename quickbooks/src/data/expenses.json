@@ -1,0 +1,60 @@
+[
+  {
+    "id": "EXP-001",
+    "category": "Software",
+    "description": "Adobe Creative Cloud Subscription",
+    "amount": 54.99,
+    "date": "2025-10-01T00:00:00Z"
+  },
+  {
+    "id": "EXP-002",
+    "category": "Office Supplies",
+    "description": "Office Furniture and Equipment",
+    "amount": 1200.00,
+    "date": "2025-10-05T00:00:00Z",
+    "receiptUrl": "receipt-exp-002.pdf"
+  },
+  {
+    "id": "EXP-003",
+    "category": "Marketing",
+    "description": "Google Ads Campaign",
+    "amount": 500.00,
+    "date": "2025-10-08T00:00:00Z"
+  },
+  {
+    "id": "EXP-004",
+    "category": "Software",
+    "description": "GitHub Enterprise License",
+    "amount": 210.00,
+    "date": "2025-10-10T00:00:00Z"
+  },
+  {
+    "id": "EXP-005",
+    "category": "Utilities",
+    "description": "Internet Service",
+    "amount": 89.99,
+    "date": "2025-10-12T00:00:00Z"
+  },
+  {
+    "id": "EXP-006",
+    "category": "Professional Services",
+    "description": "Legal Consultation",
+    "amount": 850.00,
+    "date": "2025-10-15T00:00:00Z",
+    "receiptUrl": "receipt-exp-006.pdf"
+  },
+  {
+    "id": "EXP-007",
+    "category": "Marketing",
+    "description": "Social Media Advertising",
+    "amount": 350.00,
+    "date": "2025-10-18T00:00:00Z"
+  },
+  {
+    "id": "EXP-008",
+    "category": "Office Supplies",
+    "description": "Printer Supplies",
+    "amount": 125.50,
+    "date": "2025-10-20T00:00:00Z"
+  }
+]
