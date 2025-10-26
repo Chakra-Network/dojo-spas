@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Lead } from "@/lib/types";
-import { SectionLayout } from "./LeadDialogItems";
+import { SectionLayout } from "../DialogItems";
 import { DetailInput, SubSectionTitle } from "@/components/common/InputItems";
 import { DetailFieldSimple } from "@/components/common/details-panel/DetailField";
 import {

@@ -61,3 +61,22 @@ export const INDUSTRY_OPTIONS = [
   "Electronics",
   "Energy",
 ];
+
+export const OPPORTUNITY_STAGE_OPTIONS = [
+  "--None--",
+  "Qualify",
+  "Meet & Present",
+  "Propose",
+  "Negotiate",
+  "Closed Won",
+  "Closed Lost",
+];
+
+export const FORECAST_CATEGORY_OPTIONS = [
+  "--None--",
+  "Omitted",
+  "Pipeline",
+  "Best Case",
+  "Commmit",
+  "Closed",
+];

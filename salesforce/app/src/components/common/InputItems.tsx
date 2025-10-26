@@ -41,10 +41,10 @@ export function DetailInput({
   options,
 }: {
   label?: string;
-  value: string;
+  value?: string | number;
   setValue: (value: string) => void;
   isRequired?: boolean;
-  type?: "text" | "textarea" | "select";
+  type?: "text" | "textarea" | "select" | "number";
   className?: string;
   options?: string[];
 }) {
@@ -63,7 +63,7 @@ export function DetailInput({
           onChange={(e) => setValue(e.target.value)}
         />
       ) : type === "select" ? (
-        <Select value={value} onValueChange={setValue}>
+        <Select value={value?.toString()} onValueChange={setValue}>
           <SelectTrigger className="w-full h-8 text-[13px] leading-[19.5px] font-normal border-gray-600 cursor-pointer">
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
@@ -77,7 +77,7 @@ export function DetailInput({
         </Select>
       ) : (
         <input
-          type="text"
+          type={type}
           className="w-full px-2 border border-gray-600 rounded-lg text-[13px] leading-[19.5px] font-normal h-8 items-center"
           value={value}
           onChange={(e) => setValue(e.target.value)}

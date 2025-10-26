@@ -76,6 +76,37 @@ export interface Contact {
   industry?: string;
 }
 
+export type OpportunityStage =
+  | "Qualify"
+  | "Meet & Present"
+  | "Propose"
+  | "Negotiate"
+  | "Closed Won"
+  | "Closed Lost";
+
+export type ForecastCategory =
+  | "Omitted"
+  | "Pipeline"
+  | "Best Case"
+  | "Commmit"
+  | "Closed";
+
+export interface Opportunity {
+  id: string;
+  // About section
+  opportunityName: string;
+  accountName: string;
+  closeDate: string;
+  amount?: string;
+  description?: string;
+  opportunityOwner: string;
+  // Status section
+  stage: OpportunityStage;
+  probability?: number;
+  forecastCategory: ForecastCategory;
+  nextStep?: string;
+}
+
 export interface Tab {
   id: string;
   type: "home-dashboard" | "home-lead" | "home-contact" | "home-listLeads";
