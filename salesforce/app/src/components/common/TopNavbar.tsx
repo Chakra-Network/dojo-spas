@@ -13,6 +13,7 @@ export default function TopNavbar() {
     getLead,
     getContact,
     getOpportunity,
+    getCase,
   } = useAppContext();
   return (
     <div className="fixed top-0 left-[76px] right-0 z-40">
@@ -100,6 +101,10 @@ export default function TopNavbar() {
                 const opportunityData = getOpportunity(tab.dataId);
                 tabName = opportunityData?.opportunityName || "New Opportunity";
                 tabSuffix = " | Opportunity";
+              } else if (tab.type === "home-case" && tab.dataId) {
+                const caseData = getCase(tab.dataId);
+                tabName = caseData?.id?.split("-")[1] || "New Case";
+                tabSuffix = " | Case";
               }
 
               return (

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Sidebar from "./components/common/Sidebar";
 import TopNavbar from "./components/common/TopNavbar";
 import Footer from "./components/common/Footer";
@@ -49,6 +50,11 @@ export default function App() {
 
   // Find the active tab
   const activeTab = state.tabs.find((tab) => tab.id === state.activeTabId);
+
+  // Scroll to top when active tab changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [state.activeTabId]);
 
   const handleSaveNewLead = (leadData: Lead) => {
     // Generate a unique ID for the lead

@@ -77,7 +77,7 @@ export default function CaseHeader() {
     <div className="flex flex-col gap-3">
       <CommonHeader
         title="Case"
-        name={caseData?.id || ""}
+        name={caseData?.id?.split("-")[1] || ""}
         icon={{ Icon: TbBriefcase2Filled, bg: "bg-pink-500" }}
         rightButtons={<RightButtons />}
       />
