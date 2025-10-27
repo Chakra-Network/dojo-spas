@@ -12,29 +12,20 @@ import {
 } from "@/lib/consts/dropdown-options";
 import type { Lead, Contact } from "@/lib/types";
 
-interface EditViewProps {
-  type: "lead" | "contact";
-}
+type EditViewProps =
+  | {
+      type: "lead";
+      data?: Lead;
+      updateData: (id: string, updates: Partial<Lead>) => void;
+    }
+  | {
+      type: "contact";
+      data?: Contact;
+      updateData: (id: string, updates: Partial<Contact>) => void;
+    };
 
-export default function EditView({ type }: EditViewProps) {
-  const {
-    activeTab,
-    getLead,
-    getContact,
-    updateLead,
-    updateContact,
-    updateTabField,
-  } = useAppContext();
-
-  // Get data based on type
-  const data =
-    type === "lead"
-      ? activeTab?.dataId
-        ? getLead(activeTab.dataId)
-        : undefined
-      : activeTab?.dataId
-      ? getContact(activeTab.dataId)
-      : undefined;
+export default function EditView({ type, data, updateData }: EditViewProps) {
+  const { activeTab, updateTabField } = useAppContext();
 
   // Local state for form data
   const [formData, setFormData] = useState<Lead | Contact>(
@@ -61,11 +52,7 @@ export default function EditView({ type }: EditViewProps) {
   const handleSave = () => {
     // Save form data to context and exit edit mode
     if (activeTab?.dataId) {
-      if (type === "lead") {
-        updateLead(activeTab.dataId, formData as Lead);
-      } else {
-        updateContact(activeTab.dataId, formData as Contact);
-      }
+      updateData(activeTab.dataId, formData);
       updateTabField(activeTab.id, "isEditDetails", false);
     }
   };
