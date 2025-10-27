@@ -81,3 +81,22 @@ export function PillButtonIconWithDropdown({
     </PillButtonItem>
   );
 }
+
+export function PillButtonStandalone({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <PillButtonItem
+      className={cn(
+        "h-8 px-4 border rounded-full gap-1 text-[13px]",
+        className
+      )}
+    >
+      {children}
+    </PillButtonItem>
+  );
+}
