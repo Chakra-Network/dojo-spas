@@ -6,17 +6,29 @@ import { GrMail } from "react-icons/gr";
 import { FaCalendarDays, FaCircleInfo } from "react-icons/fa6";
 import { BiSolidContact } from "react-icons/bi";
 
-export default function ActivityPanel() {
+const FILTER_DROPDOWN = {
+  email: <FilterDropdown Icon={GrMail} bgColor="bg-gray-500" />,
+  calendar: <FilterDropdown Icon={FaCalendarDays} bgColor="bg-purple-600" />,
+  contact: <FilterDropdown Icon={BiSolidContact} bgColor="bg-cyan-500" />,
+  list: <FilterDropdown Icon={List} bgColor="bg-green-600" />,
+};
+
+interface FilterDropdownProps {
+  filterDropdownOrder?: string[];
+}
+
+export default function ActivityPanel({
+  filterDropdownOrder = ["email", "calendar", "contact", "list"],
+}: FilterDropdownProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <div className="bg-white rounded-[20px] p-4 shadow-[0_0_15px_rgba(0,0,0,0.1)] h-fit">
       {/* Filter Dropdown Buttons */}
       <div className="flex items-center mx-1 gap-2 my-[2px]">
-        <FilterDropdown Icon={GrMail} bgColor="bg-gray-500" />
-        <FilterDropdown Icon={FaCalendarDays} bgColor="bg-purple-600" />
-        <FilterDropdown Icon={BiSolidContact} bgColor="bg-cyan-500" />
-        <FilterDropdown Icon={List} bgColor="bg-green-600" />
+        {filterDropdownOrder.map(
+          (filter) => FILTER_DROPDOWN[filter as keyof typeof FILTER_DROPDOWN]
+        )}
       </div>
 
       <div className="flex flex-col pt-4 pb-6">

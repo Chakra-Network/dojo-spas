@@ -103,6 +103,33 @@ export interface Opportunity {
   nextStep?: string;
 }
 
+export type CaseStatus =
+  | "New"
+  | "Working"
+  | "Waiting on Customer"
+  | "Escalated"
+  | "Closed";
+
+export type CaseOrigin = "--None--" | "Email" | "Phone" | "Web";
+
+export interface Case {
+  id: string;
+  // Case Information
+  status: CaseStatus;
+  caseOrigin?: CaseOrigin;
+  priority?: string;
+  caseOwner: string;
+  caseReason?: string;
+  // Contact Information
+  contactName?: string;
+  accountName?: string;
+  // Description Information
+  subject?: string;
+  description?: string;
+  // Additional
+  sendNotificationEmail?: boolean;
+}
+
 export interface Tab {
   id: string;
   type:
@@ -110,7 +137,8 @@ export interface Tab {
     | "home-lead"
     | "home-contact"
     | "home-listLeads"
-    | "home-opportunity";
+    | "home-opportunity"
+    | "home-case";
   dataId?: string;
   isEditDetails?: boolean;
 }

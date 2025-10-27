@@ -3,6 +3,7 @@ import type {
   BannerCardType,
   GuidanceContent,
   OpportunityStage,
+  CaseStatus,
 } from "../types";
 import { HiSparkles } from "react-icons/hi2";
 
@@ -102,4 +103,27 @@ export const GUIDANCE_CONTENT: Record<
     footer:
       "Note your successes and apply them to your sales process for future wins.",
   },
+};
+
+export const CASE_GUIDANCE_CONTENT: Record<CaseStatus, string[]> = {
+  New: [
+    "No action has started on this case — the customer needs help.",
+    "To start working on this case, add yourself as the Case Owner.",
+  ],
+  Working: [
+    "Review the case's details and update its Priority accordingly.",
+    "Search Knowledge for any existing help, answers, or useful content.",
+  ],
+  "Waiting on Customer": [
+    "Follow up with the customer in one or two days.",
+    "To help you follow up, create a New Task in the Related tab.",
+  ],
+  Escalated: [
+    "Review this case's Feed to understand its history and escalation.",
+    "If the customer has provided a phone number, call them to resolve the issue.",
+  ],
+  Closed: [
+    "Congratulations! You're done with this case.",
+    "You're ready to help solve another customer case.",
+  ],
 };

@@ -1,30 +1,28 @@
+import DetailsPanel from "@/components/common/details-panel/DetailsPanel";
 import SlackPanel from "./SlackPanel";
 import ActivityPanel from "../common/panels/ActivityPanel";
 import { useAppContext } from "@/context/AppProvider";
-import OpportunityHeader from "./OpportunityHeader";
-import OpportunityDetailsPanel from "./details-panel/OpportunityDetailsPanel";
+import LeadHeader from "./LeadHeader";
 
-export default function HomeOpportunity() {
-  const { activeTab, getOpportunity } = useAppContext();
+export default function HomeLead() {
+  const { activeTab, getLead } = useAppContext();
 
-  // Get the opportunity data from context
-  const opportunityData = activeTab?.dataId
-    ? getOpportunity(activeTab.dataId)
-    : undefined;
+  // Get the lead data from context
+  const leadData = activeTab?.dataId ? getLead(activeTab.dataId) : undefined;
 
-  if (!opportunityData) {
-    return <div>Opportunity not found</div>;
+  if (!leadData) {
+    return <div>Lead not found</div>;
   }
 
   return (
     <div className="bg-gray-50 flex flex-col p-4 gap-3">
-      <OpportunityHeader />
+      <LeadHeader name={leadData.name} />
 
       {/* Main Content */}
       <div className="flex items-start gap-3">
         {/* Left Column - Sections */}
         <div className="w-[32.5%]">
-          <OpportunityDetailsPanel />
+          <DetailsPanel type="lead" />
         </div>
 
         {/* Right Column - Activity & Slack */}

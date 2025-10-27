@@ -7,7 +7,14 @@ import {
   type ReactNode,
 } from "react";
 import { useDojoState } from "@chakra-dev/dojo-hooks";
-import type { Tab, LeadStatus, Lead, Contact, Opportunity } from "@/lib/types";
+import type {
+  Tab,
+  LeadStatus,
+  Lead,
+  Contact,
+  Opportunity,
+  Case,
+} from "@/lib/types";
 
 interface AppState {
   tabs: Tab[];
@@ -15,6 +22,7 @@ interface AppState {
   leads: Lead[];
   contacts: Contact[];
   opportunities: Opportunity[];
+  cases: Case[];
   isNewLeadDialogOpen: boolean;
   isNewContactDialogOpen: boolean;
   isConvertLeadDialogOpen: boolean;
@@ -24,6 +32,8 @@ interface AppState {
   isNewOpportunityDialogOpen: boolean;
   isCloseOpportunityDialogOpen: boolean;
   closingOpportunityId: string | null;
+  isNewCaseDialogOpen: boolean;
+  isEditCaseDialogOpen: boolean;
 }
 
 interface AppContextType {
@@ -36,6 +46,7 @@ interface AppContextType {
   getLead: (id: string) => Lead | undefined;
   getContact: (id: string) => Contact | undefined;
   getOpportunity: (id: string) => Opportunity | undefined;
+  getCase: (id: string) => Case | undefined;
   addLead: (lead: Lead) => void;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
@@ -43,6 +54,8 @@ interface AppContextType {
   updateContact: (id: string, updates: Partial<Contact>) => void;
   addOpportunity: (opportunity: Opportunity) => void;
   updateOpportunity: (id: string, updates: Partial<Opportunity>) => void;
+  addCase: (caseData: Case) => void;
+  updateCase: (id: string, updates: Partial<Case>) => void;
   updateTabLeadStatus: (leadId: string, status: LeadStatus) => void;
   convertLead: (leadId: string) => void;
   openNewLeadDialog: () => void;
@@ -57,6 +70,10 @@ interface AppContextType {
   closeNewOpportunityDialog: () => void;
   openCloseOpportunityDialog: (opportunityId: string) => void;
   closeCloseOpportunityDialog: () => void;
+  openNewCaseDialog: () => void;
+  closeNewCaseDialog: () => void;
+  openEditCaseDialog: () => void;
+  closeEditCaseDialog: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -67,6 +84,7 @@ const initialState: AppState = {
   leads: [],
   contacts: [],
   opportunities: [],
+  cases: [],
   isNewLeadDialogOpen: false,
   isNewContactDialogOpen: false,
   isConvertLeadDialogOpen: false,
@@ -76,6 +94,8 @@ const initialState: AppState = {
   isNewOpportunityDialogOpen: false,
   isCloseOpportunityDialogOpen: false,
   closingOpportunityId: null,
+  isNewCaseDialogOpen: false,
+  isEditCaseDialogOpen: false,
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -207,6 +227,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [state.opportunities]
   );
 
+  const getCase = useCallback(
+    (id: string) => {
+      return state.cases.find((caseItem) => caseItem.id === id);
+    },
+    [state.cases]
+  );
+
   // Lead management functions
   const addLead = useCallback(
     (lead: Lead) => {
@@ -280,6 +307,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...prev,
         opportunities: prev.opportunities.map((opportunity) =>
           opportunity.id === id ? { ...opportunity, ...updates } : opportunity
+        ),
+      }));
+    },
+    [setState]
+  );
+
+  // Case management functions
+  const addCase = useCallback(
+    (caseData: Case) => {
+      setState((prev) => ({
+        ...prev,
+        cases: [...prev.cases, caseData],
+      }));
+    },
+    [setState]
+  );
+
+  const updateCase = useCallback(
+    (id: string, updates: Partial<Case>) => {
+      setState((prev) => ({
+        ...prev,
+        cases: prev.cases.map((caseItem) =>
+          caseItem.id === id ? { ...caseItem, ...updates } : caseItem
         ),
       }));
     },
@@ -428,6 +478,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   }, [setState]);
 
+  const openNewCaseDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewCaseDialogOpen: true }));
+  }, [setState]);
+
+  const closeNewCaseDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewCaseDialogOpen: false }));
+  }, [setState]);
+
+  const openEditCaseDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isEditCaseDialogOpen: true }));
+  }, [setState]);
+
+  const closeEditCaseDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isEditCaseDialogOpen: false }));
+  }, [setState]);
+
   const activeTab = useMemo(() => {
     return state.tabs.find((tab) => tab.id === state.activeTabId);
   }, [state.tabs, state.activeTabId]);
@@ -443,6 +509,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       getLead,
       getContact,
       getOpportunity,
+      getCase,
       addLead,
       updateLead,
       deleteLead,
@@ -450,6 +517,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateContact,
       addOpportunity,
       updateOpportunity,
+      addCase,
+      updateCase,
       updateTabLeadStatus,
       convertLead,
       openNewLeadDialog,
@@ -464,6 +533,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeNewOpportunityDialog,
       openCloseOpportunityDialog,
       closeCloseOpportunityDialog,
+      openNewCaseDialog,
+      closeNewCaseDialog,
+      openEditCaseDialog,
+      closeEditCaseDialog,
     }),
     [
       state,
@@ -475,6 +548,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       getLead,
       getContact,
       getOpportunity,
+      getCase,
       addLead,
       updateLead,
       deleteLead,
@@ -482,6 +556,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateContact,
       addOpportunity,
       updateOpportunity,
+      addCase,
+      updateCase,
       updateTabLeadStatus,
       convertLead,
       openNewLeadDialog,
@@ -496,6 +572,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeNewOpportunityDialog,
       openCloseOpportunityDialog,
       closeCloseOpportunityDialog,
+      openNewCaseDialog,
+      closeNewCaseDialog,
+      openEditCaseDialog,
+      closeEditCaseDialog,
     ]
   );
 

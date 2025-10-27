@@ -80,3 +80,25 @@ export const FORECAST_CATEGORY_OPTIONS = [
   "Commmit",
   "Closed",
 ];
+
+export const CASE_STATUS_OPTIONS = [
+  "--None--",
+  "New",
+  "Working",
+  "Waiting on Customer",
+  "Escalated",
+  "Closed",
+];
+
+export const CASE_ORIGIN_OPTIONS = ["--None--", "Email", "Phone", "Web"];
+
+export const PRIORITY_OPTIONS = ["--None--", "High", "Medium", "Low"];
+
+export const CASE_REASON_OPTIONS = [
+  "--None--",
+  "User didn't attend training",
+  "Complex functionality",
+  "Existing problem",
+  "Instructions not clear",
+  "New problem",
+];

@@ -1,6 +1,6 @@
 import LeadDetailsPanel from "./details-panel/LeadDetailsPanel";
-import SlackPanel from "./SlackPanel";
-import ActivityPanel from "../common/ActivityPanel";
+import RightPanel from "./RightPanel";
+import ActivityPanel from "../common/panels/ActivityPanel";
 import { useAppContext } from "@/context/AppProvider";
 import LeadHeader from "./LeadHeader";
 
@@ -28,7 +28,7 @@ export default function HomeLead() {
         {/* Right Column - Activity & Slack */}
         <div className="w-[67.5%] space-y-4 grid grid-cols-2 gap-3">
           <ActivityPanel />
-          <SlackPanel />
+          <RightPanel />
         </div>
       </div>
     </div>

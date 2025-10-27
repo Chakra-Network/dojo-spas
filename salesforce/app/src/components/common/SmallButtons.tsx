@@ -1,6 +1,20 @@
 import { cn } from "@/lib/utils";
+import { cva } from "class-variance-authority";
 import type { JSX } from "react";
 import { VscTriangleDown } from "react-icons/vsc";
+
+const commonFormButtonVariants = cva(
+  "px-4 h-8 text-[13px] flex items-center justify-center  cursor-pointer font-semibold border border-gray-600 rounded-full",
+  {
+    variants: {
+      variant: {
+        secondary: "text-blue-600 hover:text-blue-800",
+        primary:
+          "text-white bg-blue-500 hover:bg-blue-600 border-blue-500 hover:border-blue-600",
+      },
+    },
+  }
+);
 
 export function PillButtonLayout({
   children,
@@ -98,5 +112,26 @@ export function PillButtonStandalone({
     >
       {children}
     </PillButtonItem>
+  );
+}
+
+export function CommonFormButton({
+  children,
+  className,
+  onClick,
+  variant = "primary",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  variant?: "secondary" | "primary";
+}) {
+  return (
+    <button
+      className={cn(commonFormButtonVariants({ variant }), className)}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 }
