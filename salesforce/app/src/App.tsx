@@ -7,21 +7,24 @@ import HomeContact from "./components/home-contact/HomeContact";
 import HomeListLeads from "./components/home-listLeads/HomeListLeads";
 import HomeOpportunity from "./components/home-opportunity/HomeOpportunity";
 import NewLeadDialog from "./components/dialogs/NewLeadDialog";
+import NewContactDialog from "./components/dialogs/NewContactDialog";
 import NewOpportunityDialog from "./components/dialogs/NewOpportunityDialog";
 import CloseOpportunityDialog from "./components/dialogs/CloseOpportunityDialog";
 import ConvertLeadDialog from "./components/dialogs/convert-lead-dialog/ConvertLeadDialog";
 import AfterConvertLeadDialog from "./components/dialogs/after-convert-dialog/AfterConvertLeadDialog";
 import { useAppContext } from "./context/AppProvider";
-import type { Lead, Opportunity, OpportunityStage } from "./lib/types";
+import type { Lead, Contact, Opportunity, OpportunityStage } from "./lib/types";
 
 export default function App() {
   const {
     state,
     addTab,
     addLead,
+    addContact,
     addOpportunity,
     updateOpportunity,
     closeNewLeadDialog,
+    closeNewContactDialog,
     closeNewOpportunityDialog,
     closeCloseOpportunityDialog,
     convertLead,
@@ -49,6 +52,25 @@ export default function App() {
       id: newTabId,
       type: "home-lead",
       dataId: leadId,
+    });
+  };
+
+  const handleSaveNewContact = (contactData: Contact) => {
+    // Generate a unique ID for the contact
+    const contactId = `contact-${Date.now()}`;
+    const contactWithId = { ...contactData, id: contactId };
+
+    // Add contact to contacts list
+    addContact(contactWithId);
+
+    // Generate a unique ID for the new tab
+    const newTabId = `contact-${contactId}`;
+
+    // Create new tab with contact dataId
+    addTab({
+      id: newTabId,
+      type: "home-contact",
+      dataId: contactId,
     });
   };
 
@@ -121,6 +143,13 @@ export default function App() {
         isOpen={state.isNewLeadDialogOpen}
         onClose={closeNewLeadDialog}
         onSave={handleSaveNewLead}
+      />
+
+      {/* New Contact Dialog */}
+      <NewContactDialog
+        isOpen={state.isNewContactDialogOpen}
+        onClose={closeNewContactDialog}
+        onSave={handleSaveNewContact}
       />
 
       {/* New Opportunity Dialog */}

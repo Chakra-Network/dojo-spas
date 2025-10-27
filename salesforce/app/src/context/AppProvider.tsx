@@ -16,6 +16,7 @@ interface AppState {
   contacts: Contact[];
   opportunities: Opportunity[];
   isNewLeadDialogOpen: boolean;
+  isNewContactDialogOpen: boolean;
   isConvertLeadDialogOpen: boolean;
   convertingLeadId: string | null;
   isAfterConvertDialogOpen: boolean;
@@ -46,6 +47,8 @@ interface AppContextType {
   convertLead: (leadId: string) => void;
   openNewLeadDialog: () => void;
   closeNewLeadDialog: () => void;
+  openNewContactDialog: () => void;
+  closeNewContactDialog: () => void;
   openConvertLeadDialog: (leadId: string) => void;
   closeConvertLeadDialog: () => void;
   openAfterConvertDialog: (leadId: string) => void;
@@ -65,6 +68,7 @@ const initialState: AppState = {
   contacts: [],
   opportunities: [],
   isNewLeadDialogOpen: false,
+  isNewContactDialogOpen: false,
   isConvertLeadDialogOpen: false,
   convertingLeadId: null,
   isAfterConvertDialogOpen: false,
@@ -309,21 +313,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
           salutation: lead.salutation,
           firstName: lead.firstName,
           lastName: lead.lastName,
+          accountName: lead.company,
           title: lead.title,
-          website: lead.website,
+          reportsTo: "",
           description: lead.description,
           contactOwner: lead.leadOwner,
           phone: lead.phone,
           email: lead.email,
-          country: lead.country,
-          street: lead.street,
-          city: lead.city,
-          state: lead.state,
-          zipCode: lead.zipCode,
-          numberOfEmployees: lead.numberOfEmployees,
-          annualRevenue: lead.annualRevenue,
-          leadSource: lead.leadSource,
-          industry: lead.industry,
+          mailingCountry: lead.country,
+          mailingStreet: lead.street,
+          mailingCity: lead.city,
+          mailingState: lead.state,
+          mailingZipCode: lead.zipCode,
         };
 
         // Update lead to mark as converted (keep in list for tab redirection)
@@ -352,6 +353,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const closeNewLeadDialog = useCallback(() => {
     setState((prev) => ({ ...prev, isNewLeadDialogOpen: false }));
+  }, [setState]);
+
+  const openNewContactDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewContactDialogOpen: true }));
+  }, [setState]);
+
+  const closeNewContactDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewContactDialogOpen: false }));
   }, [setState]);
 
   const openConvertLeadDialog = useCallback(
@@ -445,6 +454,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       convertLead,
       openNewLeadDialog,
       closeNewLeadDialog,
+      openNewContactDialog,
+      closeNewContactDialog,
       openConvertLeadDialog,
       closeConvertLeadDialog,
       openAfterConvertDialog,
@@ -475,6 +486,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       convertLead,
       openNewLeadDialog,
       closeNewLeadDialog,
+      openNewContactDialog,
+      closeNewContactDialog,
       openConvertLeadDialog,
       closeConvertLeadDialog,
       openAfterConvertDialog,

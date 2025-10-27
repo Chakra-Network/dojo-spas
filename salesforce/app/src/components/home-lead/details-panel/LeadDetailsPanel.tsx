@@ -1,7 +1,7 @@
 import { useAppContext } from "@/context/AppProvider";
 import { cn } from "@/lib/utils";
-import EditView from "@/components/common/details-panel/EditView";
-import { NormalView } from "@/components/common/details-panel/NormalView";
+import EditView from "./EditView";
+import { NormalView } from "./NormalView";
 
 export default function LeadDetailsPanel() {
   const { activeTab, getLead, updateLead } = useAppContext();
@@ -17,9 +17,9 @@ export default function LeadDetailsPanel() {
       )}
     >
       {!isEditDetails ? (
-        <NormalView type="lead" data={data} />
+        <NormalView data={data} />
       ) : (
-        <EditView type="lead" data={data} updateData={updateLead} />
+        <EditView data={data} updateData={updateLead} />
       )}
     </div>
   );

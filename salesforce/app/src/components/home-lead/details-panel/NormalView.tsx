@@ -1,18 +1,8 @@
-import SectionLayout from "./SectionLayout";
-import DetailField from "./DetailField";
-import type { Lead, Contact } from "@/lib/types";
+import SectionLayout from "@/components/common/details-panel/SectionLayout";
+import DetailField from "@/components/common/details-panel/DetailField";
+import type { Lead } from "@/lib/types";
 
-type NormalViewProps =
-  | {
-      type: "lead";
-      data?: Lead;
-    }
-  | {
-      type: "contact";
-      data?: Contact;
-    };
-
-export function NormalView({ type, data }: NormalViewProps) {
+export function NormalView({ data }: { data?: Lead }) {
   // Format address from individual fields
   const formatAddress = () => {
     if (!data) return "";
@@ -26,11 +16,8 @@ export function NormalView({ type, data }: NormalViewProps) {
     return parts.join(", ");
   };
 
-  const ownerLabel = type === "lead" ? "Lead Owner" : "Contact Owner";
-  const ownerValue =
-    type === "lead"
-      ? data?.leadOwner || "Dzaka Athif"
-      : data?.contactOwner || "Dzaka Athif";
+  const ownerLabel = "Lead Owner";
+  const ownerValue = data?.leadOwner || "Dzaka Athif";
 
   return (
     <>
@@ -40,9 +27,7 @@ export function NormalView({ type, data }: NormalViewProps) {
         <DetailField label="Title" value={data?.title || ""} />
         <DetailField label="Website" value={data?.website || ""} />
         <DetailField label="Description" value={data?.description || ""} />
-        {type === "lead" && (
-          <DetailField label="Lead Status" value={data?.leadStatus || ""} />
-        )}
+        <DetailField label="Lead Status" value={data?.leadStatus || ""} />
         <DetailField label={ownerLabel} value={ownerValue} hasAvatar />
       </SectionLayout>
 

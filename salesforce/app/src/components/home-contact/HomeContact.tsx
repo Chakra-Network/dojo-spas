@@ -1,4 +1,4 @@
-import ContactDetailsPanel from "./ContactDetailsPanel";
+import ContactDetailsPanel from "./details-panel/ContactDetailsPanel";
 import RightPanel from "./RightPanel";
 import ActivityPanel from "../common/ActivityPanel";
 import { useAppContext } from "@/context/AppProvider";

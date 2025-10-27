@@ -1,4 +1,4 @@
-import LeadDetailsPanel from "./LeadDetailsPanel";
+import LeadDetailsPanel from "./details-panel/LeadDetailsPanel";
 import SlackPanel from "./SlackPanel";
 import ActivityPanel from "../common/ActivityPanel";
 import { useAppContext } from "@/context/AppProvider";

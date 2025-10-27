@@ -1,7 +1,7 @@
 import { useAppContext } from "@/context/AppProvider";
 import { cn } from "@/lib/utils";
-import EditView from "@/components/common/details-panel/EditView";
-import { NormalView } from "@/components/common/details-panel/NormalView";
+import EditView from "./EditView";
+import { NormalView } from "./NormalView";
 
 export default function ContactDetailsPanel() {
   const { activeTab, getContact, updateContact } = useAppContext();
@@ -17,9 +17,9 @@ export default function ContactDetailsPanel() {
       )}
     >
       {!isEditDetails ? (
-        <NormalView type="lead" data={data} />
+        <NormalView data={data} />
       ) : (
-        <EditView type="contact" data={data} updateData={updateContact} />
+        <EditView data={data} updateData={updateContact} />
       )}
     </div>
   );

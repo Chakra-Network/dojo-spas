@@ -1,36 +1,24 @@
 import { useState, useEffect } from "react";
-import SectionLayout from "./SectionLayout";
+import SectionLayout from "@/components/common/details-panel/SectionLayout";
 import { DetailInput, SubSectionTitle } from "@/components/common/InputItems";
 import { useAppContext } from "@/context/AppProvider";
-import { DetailFieldSimple } from "./DetailField";
+import { DetailFieldSimple } from "@/components/common/details-panel/DetailField";
 import {
   SALUTATION_OPTIONS,
-  LEAD_STATUS_OPTIONS,
   COUNTRY_OPTIONS,
-  LEAD_SOURCE_OPTIONS,
-  INDUSTRY_OPTIONS,
 } from "@/lib/consts/dropdown-options";
-import type { Lead, Contact } from "@/lib/types";
+import type { Contact } from "@/lib/types";
 
-type EditViewProps =
-  | {
-      type: "lead";
-      data?: Lead;
-      updateData: (id: string, updates: Partial<Lead>) => void;
-    }
-  | {
-      type: "contact";
-      data?: Contact;
-      updateData: (id: string, updates: Partial<Contact>) => void;
-    };
+interface EditViewProps {
+  data?: Contact;
+  updateData: (id: string, updates: Partial<Contact>) => void;
+}
 
-export default function EditView({ type, data, updateData }: EditViewProps) {
+export default function EditView({ data, updateData }: EditViewProps) {
   const { activeTab, updateTabField } = useAppContext();
 
   // Local state for form data
-  const [formData, setFormData] = useState<Lead | Contact>(
-    data || ({} as Lead | Contact)
-  );
+  const [formData, setFormData] = useState<Contact>(data || ({} as Contact));
 
   // Update local state when data changes (e.g., switching tabs)
   useEffect(() => {
@@ -57,10 +45,7 @@ export default function EditView({ type, data, updateData }: EditViewProps) {
     }
   };
 
-  const handleFieldChange = (
-    field: keyof Lead | keyof Contact,
-    value: string
-  ) => {
+  const handleFieldChange = (field: keyof Contact, value: string) => {
     setFormData((prev) => {
       const updatedData = { ...prev, [field]: value };
 
@@ -75,7 +60,7 @@ export default function EditView({ type, data, updateData }: EditViewProps) {
     });
   };
 
-  const ownerLabel = type === "lead" ? "Lead Owner" : "Contact Owner";
+  const ownerLabel = "Contact Owner";
 
   return (
     <div className="flex flex-col">
@@ -109,10 +94,10 @@ export default function EditView({ type, data, updateData }: EditViewProps) {
             </div>
 
             <div className="flex flex-col px-1 mb-2">
-              <SubSectionTitle title="Company" isRequired />
+              <SubSectionTitle title="Account Name" isRequired />
               <DetailInput
-                value={formData?.company || ""}
-                setValue={(value) => handleFieldChange("company", value)}
+                value={formData?.accountName || ""}
+                setValue={(value) => handleFieldChange("accountName", value)}
                 isRequired
               />
             </div>
@@ -124,10 +109,10 @@ export default function EditView({ type, data, updateData }: EditViewProps) {
               />
             </div>
             <div className="flex flex-col px-1 mb-2">
-              <SubSectionTitle title="Website" />
+              <SubSectionTitle title="Reports To" />
               <DetailInput
-                value={formData?.website || ""}
-                setValue={(value) => handleFieldChange("website", value)}
+                value={formData?.reportsTo || ""}
+                setValue={(value) => handleFieldChange("reportsTo", value)}
               />
             </div>
             <div className="flex flex-col px-1 mb-2">
@@ -138,18 +123,6 @@ export default function EditView({ type, data, updateData }: EditViewProps) {
                 type="textarea"
               />
             </div>
-            {type === "lead" && (
-              <div className="flex flex-col px-1 mb-2">
-                <SubSectionTitle title="Lead Status" isRequired />
-                <DetailInput
-                  value={(formData as Lead)?.leadStatus || ""}
-                  setValue={(value) => handleFieldChange("leadStatus", value)}
-                  isRequired
-                  type="select"
-                  options={LEAD_STATUS_OPTIONS}
-                />
-              </div>
-            )}
             <DetailFieldSimple label={ownerLabel} value="Dzaka Athif" />
           </SectionLayout>
 
@@ -173,74 +146,37 @@ export default function EditView({ type, data, updateData }: EditViewProps) {
               <SubSectionTitle title="Address" size="medium" />
               <DetailInput
                 label="Country"
-                value={formData?.country || ""}
-                setValue={(value) => handleFieldChange("country", value)}
+                value={formData?.mailingCountry || ""}
+                setValue={(value) => handleFieldChange("mailingCountry", value)}
                 className="px-1"
                 type="select"
                 options={COUNTRY_OPTIONS}
               />
               <DetailInput
                 label="Street"
-                value={formData?.street || ""}
-                setValue={(value) => handleFieldChange("street", value)}
+                value={formData?.mailingStreet || ""}
+                setValue={(value) => handleFieldChange("mailingStreet", value)}
                 type="textarea"
               />
               <div className="grid grid-cols-3 gap-3">
                 <DetailInput
                   label="City"
-                  value={formData?.city || ""}
-                  setValue={(value) => handleFieldChange("city", value)}
+                  value={formData?.mailingCity || ""}
+                  setValue={(value) => handleFieldChange("mailingCity", value)}
                   className="col-span-2 w-full"
                 />
                 <DetailInput
                   label="State/Province"
-                  value={formData?.state || ""}
-                  setValue={(value) => handleFieldChange("state", value)}
+                  value={formData?.mailingState || ""}
+                  setValue={(value) => handleFieldChange("mailingState", value)}
                   className="col-span-1 w-full"
                 />
               </div>
 
               <DetailInput
                 label="Zip Code"
-                value={formData?.zipCode || ""}
-                setValue={(value) => handleFieldChange("zipCode", value)}
-              />
-            </div>
-          </SectionLayout>
-
-          <SectionLayout title="Segment">
-            <div className="flex flex-col px-1 mb-2">
-              <SubSectionTitle title="No. of Employees" />
-              <DetailInput
-                value={formData?.numberOfEmployees || ""}
-                setValue={(value) =>
-                  handleFieldChange("numberOfEmployees", value)
-                }
-              />
-            </div>
-            <div className="flex flex-col px-1 mb-2">
-              <SubSectionTitle title="Annual Revenue" />
-              <DetailInput
-                value={formData?.annualRevenue || ""}
-                setValue={(value) => handleFieldChange("annualRevenue", value)}
-              />
-            </div>
-            <div className="flex flex-col px-1 mb-2">
-              <SubSectionTitle title="Lead Source" />
-              <DetailInput
-                value={formData?.leadSource || ""}
-                setValue={(value) => handleFieldChange("leadSource", value)}
-                type="select"
-                options={LEAD_SOURCE_OPTIONS}
-              />
-            </div>
-            <div className="flex flex-col px-1 mb-2">
-              <SubSectionTitle title="Industry" />
-              <DetailInput
-                value={formData?.industry || ""}
-                setValue={(value) => handleFieldChange("industry", value)}
-                type="select"
-                options={INDUSTRY_OPTIONS}
+                value={formData?.mailingZipCode || ""}
+                setValue={(value) => handleFieldChange("mailingZipCode", value)}
               />
             </div>
           </SectionLayout>

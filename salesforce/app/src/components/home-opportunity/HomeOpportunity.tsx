@@ -2,7 +2,7 @@ import SlackPanel from "./SlackPanel";
 import ActivityPanel from "../common/ActivityPanel";
 import { useAppContext } from "@/context/AppProvider";
 import OpportunityHeader from "./OpportunityHeader";
-import OpportunityDetailsPanel from "./details-panel.tsx/OpportunityDetailsPanel";
+import OpportunityDetailsPanel from "./details-panel/OpportunityDetailsPanel";
 
 export default function HomeOpportunity() {
   const { activeTab, getOpportunity } = useAppContext();

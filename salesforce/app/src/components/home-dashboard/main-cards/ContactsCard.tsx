@@ -1,8 +1,11 @@
 import Card, { EmptyState } from "./Card";
 import { BiSolidIdCard } from "react-icons/bi";
 import { PATH_PREFIX } from "@/lib/consts";
+import { useAppContext } from "@/context/AppProvider";
 
 export default function ContactsCard() {
+  const { openNewContactDialog } = useAppContext();
+
   return (
     <Card
       Icon={BiSolidIdCard}
@@ -10,6 +13,7 @@ export default function ContactsCard() {
       searchPlaceholder="My Contacts"
       hasNewButton={true}
       hasDropdown={true}
+      onNewClick={openNewContactDialog}
     >
       <EmptyState
         src={`${PATH_PREFIX}/svgs/ContactEmptyState.svg`}
