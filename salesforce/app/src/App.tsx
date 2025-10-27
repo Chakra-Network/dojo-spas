@@ -5,18 +5,25 @@ import HomeDashboard from "./components/home-dashboard/HomeDashboard";
 import HomeLead from "./components/home-lead/HomeLead";
 import HomeContact from "./components/home-contact/HomeContact";
 import HomeListLeads from "./components/home-listLeads/HomeListLeads";
-import NewLeadDialog from "./components/dialogs/new-lead-dialog/NewLeadDialog";
+import HomeOpportunity from "./components/home-opportunity/HomeOpportunity";
+import NewLeadDialog from "./components/dialogs/NewLeadDialog";
+import NewOpportunityDialog from "./components/dialogs/NewOpportunityDialog";
+import CloseOpportunityDialog from "./components/dialogs/CloseOpportunityDialog";
 import ConvertLeadDialog from "./components/dialogs/convert-lead-dialog/ConvertLeadDialog";
 import AfterConvertLeadDialog from "./components/dialogs/after-convert-dialog/AfterConvertLeadDialog";
 import { useAppContext } from "./context/AppProvider";
-import type { Lead } from "./lib/types";
+import type { Lead, Opportunity, OpportunityStage } from "./lib/types";
 
 export default function App() {
   const {
     state,
     addTab,
     addLead,
+    addOpportunity,
+    updateOpportunity,
     closeNewLeadDialog,
+    closeNewOpportunityDialog,
+    closeCloseOpportunityDialog,
     convertLead,
     closeConvertLeadDialog,
     openAfterConvertDialog,
@@ -45,6 +52,25 @@ export default function App() {
     });
   };
 
+  const handleSaveNewOpportunity = (opportunityData: Opportunity) => {
+    // Generate a unique ID for the opportunity
+    const opportunityId = `opportunity-${Date.now()}`;
+    const opportunityWithId = { ...opportunityData, id: opportunityId };
+
+    // Add opportunity to opportunities list
+    addOpportunity(opportunityWithId);
+
+    // Generate a unique ID for the new tab
+    const newTabId = `opportunity-${opportunityId}`;
+
+    // Create new tab with opportunity dataId
+    addTab({
+      id: newTabId,
+      type: "home-opportunity",
+      dataId: opportunityId,
+    });
+  };
+
   const handleConvertLead = () => {
     if (state.convertingLeadId) {
       convertLead(state.convertingLeadId);
@@ -63,6 +89,13 @@ export default function App() {
     });
   };
 
+  const handleCloseOpportunity = (closedStage: OpportunityStage) => {
+    if (state.closingOpportunityId) {
+      updateOpportunity(state.closingOpportunityId, { stage: closedStage });
+      closeCloseOpportunityDialog();
+    }
+  };
+
   return (
     <div className="bg-gray-50">
       {/* Sidebar */}
@@ -77,6 +110,7 @@ export default function App() {
         {activeTab?.type === "home-lead" && <HomeLead />}
         {activeTab?.type === "home-contact" && <HomeContact />}
         {activeTab?.type === "home-listLeads" && <HomeListLeads />}
+        {activeTab?.type === "home-opportunity" && <HomeOpportunity />}
       </div>
 
       {/* Footer */}
@@ -87,6 +121,20 @@ export default function App() {
         isOpen={state.isNewLeadDialogOpen}
         onClose={closeNewLeadDialog}
         onSave={handleSaveNewLead}
+      />
+
+      {/* New Opportunity Dialog */}
+      <NewOpportunityDialog
+        isOpen={state.isNewOpportunityDialogOpen}
+        onClose={closeNewOpportunityDialog}
+        onSave={handleSaveNewOpportunity}
+      />
+
+      {/* Close Opportunity Dialog */}
+      <CloseOpportunityDialog
+        isOpen={state.isCloseOpportunityDialogOpen}
+        onClose={closeCloseOpportunityDialog}
+        onSave={handleCloseOpportunity}
       />
 
       {/* Convert Lead Dialog */}

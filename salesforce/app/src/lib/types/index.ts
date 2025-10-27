@@ -57,23 +57,19 @@ export interface Contact {
   salutation?: string;
   firstName?: string;
   lastName?: string;
+  accountName: string;
   title?: string;
-  website?: string;
+  reportsTo?: string;
   description?: string;
   contactOwner?: string;
   // Get in Touch section
   phone?: string;
   email?: string;
-  country?: string;
-  street?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  // Segment section
-  numberOfEmployees?: string;
-  annualRevenue?: string;
-  leadSource?: string;
-  industry?: string;
+  mailingCountry?: string;
+  mailingStreet?: string;
+  mailingCity?: string;
+  mailingState?: string;
+  mailingZipCode?: string;
 }
 
 export type OpportunityStage =
@@ -109,7 +105,18 @@ export interface Opportunity {
 
 export interface Tab {
   id: string;
-  type: "home-dashboard" | "home-lead" | "home-contact" | "home-listLeads";
+  type:
+    | "home-dashboard"
+    | "home-lead"
+    | "home-contact"
+    | "home-listLeads"
+    | "home-opportunity";
   dataId?: string;
   isEditDetails?: boolean;
+}
+
+export interface GuidanceContent {
+  title: string;
+  bullets: string[];
+  footer: string;
 }

@@ -7,18 +7,22 @@ import {
   type ReactNode,
 } from "react";
 import { useDojoState } from "@chakra-dev/dojo-hooks";
-import type { Tab, LeadStatus, Lead, Contact } from "@/lib/types";
+import type { Tab, LeadStatus, Lead, Contact, Opportunity } from "@/lib/types";
 
 interface AppState {
   tabs: Tab[];
   activeTabId: string;
   leads: Lead[];
   contacts: Contact[];
+  opportunities: Opportunity[];
   isNewLeadDialogOpen: boolean;
   isConvertLeadDialogOpen: boolean;
   convertingLeadId: string | null;
   isAfterConvertDialogOpen: boolean;
   afterConvertLeadId: string | null;
+  isNewOpportunityDialogOpen: boolean;
+  isCloseOpportunityDialogOpen: boolean;
+  closingOpportunityId: string | null;
 }
 
 interface AppContextType {
@@ -30,11 +34,14 @@ interface AppContextType {
   updateTabField: (tabId: string, field: keyof Tab, value: unknown) => void;
   getLead: (id: string) => Lead | undefined;
   getContact: (id: string) => Contact | undefined;
+  getOpportunity: (id: string) => Opportunity | undefined;
   addLead: (lead: Lead) => void;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
   addContact: (contact: Contact) => void;
   updateContact: (id: string, updates: Partial<Contact>) => void;
+  addOpportunity: (opportunity: Opportunity) => void;
+  updateOpportunity: (id: string, updates: Partial<Opportunity>) => void;
   updateTabLeadStatus: (leadId: string, status: LeadStatus) => void;
   convertLead: (leadId: string) => void;
   openNewLeadDialog: () => void;
@@ -43,6 +50,10 @@ interface AppContextType {
   closeConvertLeadDialog: () => void;
   openAfterConvertDialog: (leadId: string) => void;
   closeAfterConvertDialog: () => void;
+  openNewOpportunityDialog: () => void;
+  closeNewOpportunityDialog: () => void;
+  openCloseOpportunityDialog: (opportunityId: string) => void;
+  closeCloseOpportunityDialog: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -52,11 +63,15 @@ const initialState: AppState = {
   activeTabId: "home-dashboard",
   leads: [],
   contacts: [],
+  opportunities: [],
   isNewLeadDialogOpen: false,
   isConvertLeadDialogOpen: false,
   convertingLeadId: null,
   isAfterConvertDialogOpen: false,
   afterConvertLeadId: null,
+  isNewOpportunityDialogOpen: false,
+  isCloseOpportunityDialogOpen: false,
+  closingOpportunityId: null,
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -181,6 +196,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [state.contacts]
   );
 
+  const getOpportunity = useCallback(
+    (id: string) => {
+      return state.opportunities.find((opportunity) => opportunity.id === id);
+    },
+    [state.opportunities]
+  );
+
   // Lead management functions
   const addLead = useCallback(
     (lead: Lead) => {
@@ -231,6 +253,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...prev,
         contacts: prev.contacts.map((contact) =>
           contact.id === id ? { ...contact, ...updates } : contact
+        ),
+      }));
+    },
+    [setState]
+  );
+
+  // Opportunity management functions
+  const addOpportunity = useCallback(
+    (opportunity: Opportunity) => {
+      setState((prev) => ({
+        ...prev,
+        opportunities: [...prev.opportunities, opportunity],
+      }));
+    },
+    [setState]
+  );
+
+  const updateOpportunity = useCallback(
+    (id: string, updates: Partial<Opportunity>) => {
+      setState((prev) => ({
+        ...prev,
+        opportunities: prev.opportunities.map((opportunity) =>
+          opportunity.id === id ? { ...opportunity, ...updates } : opportunity
         ),
       }));
     },
@@ -347,6 +392,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   }, [setState]);
 
+  const openNewOpportunityDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewOpportunityDialogOpen: true }));
+  }, [setState]);
+
+  const closeNewOpportunityDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, isNewOpportunityDialogOpen: false }));
+  }, [setState]);
+
+  const openCloseOpportunityDialog = useCallback(
+    (opportunityId: string) => {
+      setState((prev) => ({
+        ...prev,
+        isCloseOpportunityDialogOpen: true,
+        closingOpportunityId: opportunityId,
+      }));
+    },
+    [setState]
+  );
+
+  const closeCloseOpportunityDialog = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isCloseOpportunityDialogOpen: false,
+      closingOpportunityId: null,
+    }));
+  }, [setState]);
+
   const activeTab = useMemo(() => {
     return state.tabs.find((tab) => tab.id === state.activeTabId);
   }, [state.tabs, state.activeTabId]);
@@ -361,11 +433,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateTabField,
       getLead,
       getContact,
+      getOpportunity,
       addLead,
       updateLead,
       deleteLead,
       addContact,
       updateContact,
+      addOpportunity,
+      updateOpportunity,
       updateTabLeadStatus,
       convertLead,
       openNewLeadDialog,
@@ -374,6 +449,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeConvertLeadDialog,
       openAfterConvertDialog,
       closeAfterConvertDialog,
+      openNewOpportunityDialog,
+      closeNewOpportunityDialog,
+      openCloseOpportunityDialog,
+      closeCloseOpportunityDialog,
     }),
     [
       state,
@@ -384,11 +463,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updateTabField,
       getLead,
       getContact,
+      getOpportunity,
       addLead,
       updateLead,
       deleteLead,
       addContact,
       updateContact,
+      addOpportunity,
+      updateOpportunity,
       updateTabLeadStatus,
       convertLead,
       openNewLeadDialog,
@@ -397,6 +479,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeConvertLeadDialog,
       openAfterConvertDialog,
       closeAfterConvertDialog,
+      openNewOpportunityDialog,
+      closeNewOpportunityDialog,
+      openCloseOpportunityDialog,
+      closeCloseOpportunityDialog,
     ]
   );
 

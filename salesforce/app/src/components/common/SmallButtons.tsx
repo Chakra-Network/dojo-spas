@@ -25,10 +25,12 @@ export function PillButtonItem({
   children,
   className,
   isLastItem = false,
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
   isLastItem?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
@@ -37,6 +39,7 @@ export function PillButtonItem({
         className,
         !isLastItem && "border-r"
       )}
+      onClick={onClick}
     >
       {children}
     </button>
@@ -46,13 +49,16 @@ export function PillButtonItem({
 export function PillButtonIconItem({
   children,
   className,
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }) {
   return (
     <PillButtonItem
       className={cn("h-8 w-8 p-0 border rounded-full", className)}
+      onClick={onClick}
     >
       {children}
     </PillButtonItem>

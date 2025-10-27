@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Opportunity } from "@/lib/types";
-import { SectionLayout } from "../DialogItems";
+import { SectionLayout } from "./DialogItems";
 import { DetailInput, SubSectionTitle } from "@/components/common/InputItems";
 import { DetailFieldSimple } from "@/components/common/details-panel/DetailField";
 import {

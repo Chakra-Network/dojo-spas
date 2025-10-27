@@ -8,6 +8,7 @@ interface StatusPathBarProps<T extends string> {
   onStatusSelect: (status: T) => void;
   onMarkComplete: () => void;
   markCompleteText?: string;
+  currentStatusDisplayText?: string;
 }
 
 export default function StatusPathBar<T extends string>({
@@ -17,6 +18,7 @@ export default function StatusPathBar<T extends string>({
   onStatusSelect,
   onMarkComplete,
   markCompleteText,
+  currentStatusDisplayText,
 }: StatusPathBarProps<T>) {
   const contextStatusIndex = statuses.indexOf(currentStatus);
   const selectedStatusIndex = statuses.indexOf(selectedStatus);
@@ -30,7 +32,7 @@ export default function StatusPathBar<T extends string>({
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between w-full">
       {/* Status Path */}
       <div className="grid grid-cols-5 items-center gap-0 flex-1">
         {statuses.map((status, index) => {
@@ -38,16 +40,24 @@ export default function StatusPathBar<T extends string>({
           const isContextStatus = index === contextStatusIndex;
           const isSelected = index === selectedStatusIndex;
 
+          // Check if this is the last status and it's the current status (completed journey)
+          const isLastStatusCompleted =
+            isContextStatus && index === statuses.length - 1;
+
           // Determine if this button should show border
-          const hasBorder = isContextStatus || isSelected;
+          // Don't show border for last completed status even when selected
+          const hasBorder = isLastStatusCompleted
+            ? false
+            : isContextStatus || isSelected;
 
           // Determine background color
           let bgColor = "bg-gray-200";
           let textColor = "text-gray-600";
 
-          if (isCompleted && !isSelected) {
-            bgColor = "bg-green-600";
-            textColor = "text-white";
+          // Keep green for last completed status even when selected
+          if ((isCompleted && !isSelected) || isLastStatusCompleted) {
+            bgColor = "bg-[#adf3e4]";
+            textColor = "text-[#2f8882]";
           } else if (isSelected) {
             bgColor = "bg-[#032D60]";
             textColor = "text-white";
@@ -72,13 +82,23 @@ export default function StatusPathBar<T extends string>({
                   bgColor,
                   textColor,
                   hasBorder && "border-[#032D60]",
-                  !isCompleted && !isSelected && "group-hover:bg-gray-300",
+                  !isCompleted &&
+                    !isSelected &&
+                    !isLastStatusCompleted &&
+                    "group-hover:bg-gray-300",
                   index === 0 && "rounded-l-full ",
                   index === statuses.length - 1 && "rounded-r-full "
                 )}
               >
-                {isCompleted && !isSelected ? (
-                  <Check className="w-3.5 h-3.5" />
+                {(isCompleted || isLastStatusCompleted) && !isSelected ? (
+                  // Show custom text for last status if provided, otherwise show checkmark
+                  isLastStatusCompleted && currentStatusDisplayText ? (
+                    currentStatusDisplayText
+                  ) : (
+                    <Check className="w-3.5 h-3.5" />
+                  )
+                ) : isContextStatus && currentStatusDisplayText ? (
+                  currentStatusDisplayText
                 ) : (
                   status
                 )}
@@ -102,11 +122,18 @@ export default function StatusPathBar<T extends string>({
 
 export function StatusPathBarContainer({
   children,
+  className,
 }: {
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="bg-white p-3 rounded-xl shadow-[0_0_15px_rgba(0,0,0,0.1)]">
+    <div
+      className={cn(
+        "bg-white p-3 rounded-xl shadow-[0_0_15px_rgba(0,0,0,0.1)] flex items-center",
+        className
+      )}
+    >
       {children}
     </div>
   );

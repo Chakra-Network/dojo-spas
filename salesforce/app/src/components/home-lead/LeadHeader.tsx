@@ -42,13 +42,50 @@ export default function LeadHeader({ name }: { name: string }) {
   };
 
   const handleMarkAsComplete = () => {
-    if (selectedStatus === "Converted" && activeTab?.dataId) {
-      // Open convert dialog instead of directly updating
-      openConvertLeadDialog(activeTab.dataId);
-    } else if (activeTab?.dataId) {
-      // Normal status update
-      updateTabLeadStatus(activeTab.dataId, selectedStatus);
+    if (!activeTab?.dataId) return;
+
+    // If selecting current status, move to next stage
+    if (selectedStatus === contextStatus) {
+      const currentIndex = STATUSES.indexOf(contextStatus);
+
+      // If on "Unqualified" (second-to-last), open dialog
+      if (contextStatus === "Unqualified") {
+        openConvertLeadDialog(activeTab.dataId);
+        return;
+      }
+
+      // If on "Converted" (last stage), open dialog
+      if (contextStatus === "Converted") {
+        openConvertLeadDialog(activeTab.dataId);
+        return;
+      }
+
+      // Otherwise, move to next stage
+      if (currentIndex < STATUSES.length - 1) {
+        const nextStatus = STATUSES[currentIndex + 1];
+        updateTabLeadStatus(activeTab.dataId, nextStatus);
+      }
+    } else {
+      // If selecting "Converted", open dialog
+      if (selectedStatus === "Converted") {
+        openConvertLeadDialog(activeTab.dataId);
+      } else {
+        // Normal status update
+        updateTabLeadStatus(activeTab.dataId, selectedStatus);
+      }
     }
+  };
+
+  // Determine button text
+  const getMarkCompleteText = () => {
+    if (selectedStatus === contextStatus && contextStatus !== "Converted") {
+      return "Mark Status as Complete";
+    }
+    if (selectedStatus === "Converted") {
+      return "Select Converted Status";
+    }
+
+    return `Mark as Current Status`;
   };
 
   return (
@@ -66,6 +103,7 @@ export default function LeadHeader({ name }: { name: string }) {
           selectedStatus={selectedStatus}
           onStatusSelect={handleStatusSelect}
           onMarkComplete={handleMarkAsComplete}
+          markCompleteText={getMarkCompleteText()}
         />
       </StatusPathBarContainer>
     </div>
