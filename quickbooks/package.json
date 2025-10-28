@@ -10,16 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/react": "2.8",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "framer-motion": "^6.5.1",
+    "framer-motion": "^10.18.0",
     "lucide-react": "^0.547.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.9.4",
+    "react-xarrows": "^2.0.2",
     "recharts": "^3.3.0",
     "typescript": "^5.9.3"
   },
