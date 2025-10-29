@@ -1,4 +1,4 @@
-name: Deploy SPAs to S3
+name: Deploy SPAs
 
 on:
   push:
@@ -114,6 +114,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
           role-session-name: deploy-spas-staging
           aws-region: us-east-1
+          role-duration-seconds: 900
 
       - name: Deploy to staging
         run: |
@@ -134,6 +135,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
           role-session-name: deploy-spas-production
           aws-region: us-east-1
+          role-duration-seconds: 900
 
       - name: Deploy to production
         run: |

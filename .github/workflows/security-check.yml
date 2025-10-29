@@ -1,0 +1,309 @@
+name: Security Check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '**'
+      - '.github/workflows/security-check.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Discover and validate SPAs
+        id: discover
+        run: |
+          echo "Discovering SPAs in the repository..."
+          
+          # Find all directories that contain app/package.json (excluding dojo-hooks and .github)
+          spa_names=()
+          for spa_dir in */; do
+            if [ -d "$spa_dir" ] && [ "$spa_dir" != "dojo-hooks/" ] && [ "$spa_dir" != ".github/" ]; then
+              spa_name=$(basename "$spa_dir")
+              package_json_path="$spa_name/app/package.json"
+              
+              if [ -f "$package_json_path" ]; then
+                # Validate that package.json has a build script
+                if jq -e '.scripts.build' "$package_json_path" >/dev/null 2>&1; then
+                  spa_names+=("$spa_name")
+                  echo "Found valid SPA: $spa_name"
+                else
+                  echo "Skipping $spa_name: no build script in package.json"
+                fi
+              else
+                echo "Skipping $spa_name: no app/package.json found"
+              fi
+            fi
+          done
+          
+          # Check if we found any SPAs
+          if [ ${#spa_names[@]} -eq 0 ]; then
+            echo "No valid SPAs found in repository!"
+            echo "Expected structure: {spa-name}/app/package.json with build script"
+            exit 1
+          fi
+          
+          echo "Discovery Summary:"
+          echo "  Found ${#spa_names[@]} valid SPAs: ${spa_names[*]}"
+          echo "  Will build and deploy to both staging and production"
+          
+          # Export for later steps
+          echo "SPA_LIST=${spa_names[*]}" >> $GITHUB_ENV
+          echo "SPA_COUNT=${#spa_names[@]}" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        run: |
+          echo "Installing dependencies for all SPAs..."
+          
+          for spa in $SPA_LIST; do
+            echo ""
+            echo "Installing dependencies for $spa..."
+            cd $spa/app
+            pnpm install
+            cd ../..
+          done
+
+      - name: Package Security Check
+        run: |
+          echo "Checking package.json security for all SPAs..."
+          
+          security_issues=()
+          
+          for spa in $SPA_LIST; do
+            echo ""
+            echo "Checking $spa package.json..."
+            cd $spa/app
+            
+            # Check for known vulnerabilities (high/critical only)
+            if ! pnpm audit --audit-level=high; then
+              echo "High or critical vulnerabilities found in $spa"
+              security_issues+=("$spa: High/critical vulnerabilities detected")
+            fi
+            
+            # Check for dangerous package names
+            if grep -E "(eval|exec|vm2)" package.json; then
+              echo "Dangerous packages detected in $spa"
+              security_issues+=("$spa: Dangerous packages detected")
+            fi
+            
+            # Limit dependency count (supply chain attack prevention)
+            dep_count=$(jq '.dependencies // {} | length' package.json)
+            if [ $dep_count -gt 50 ]; then
+              echo "Too many dependencies in $spa: $dep_count (max 50)"
+              security_issues+=("$spa: Excessive dependencies ($dep_count)")
+            fi
+            
+            # Check for Git dependencies (harder to audit)
+            if grep -E "git\+|github:" package.json; then
+              echo "Git dependencies not allowed in $spa"
+              security_issues+=("$spa: Git dependencies detected")
+            fi
+                        
+            if [ ${#security_issues[@]} -eq 0 ]; then
+              echo "$spa package security passed"
+            fi
+            
+            cd ../..
+          done
+          
+          # Report results
+          if [ ${#security_issues[@]} -gt 0 ]; then
+            echo ""
+            echo "Package security check failed! Issues found:"
+            for issue in "${security_issues[@]}"; do
+              echo "  - $issue"
+            done
+            echo ""
+            echo "Please fix these security issues before merging."
+            exit 1
+          else
+            echo ""
+            echo "All SPAs passed package security check!"
+          fi
+
+      - name: Source Code Security Scan
+        run: |
+          echo "Scanning source code for security issues..."
+          
+          security_issues=()
+          
+          for spa in $SPA_LIST; do
+            echo ""
+            echo "Scanning $spa source code..."
+            
+            # Check for dangerous code patterns
+            dangerous_patterns=$(grep -r -E "(eval\(|Function\(|dangerouslySetInnerHTML|javascript:)" $spa/app/src/ --include="*.{js,jsx,ts,tsx}" 2>/dev/null || true)
+            if [ -n "$dangerous_patterns" ]; then
+              echo "Dangerous code patterns found in $spa:"
+              echo "$dangerous_patterns" | head -3
+              security_issues+=("$spa: Dangerous code patterns detected")
+            fi
+            
+            # Check for external network calls
+            external_calls=$(grep -r -E "(fetch|axios|XMLHttpRequest).*(http:|https:)" $spa/app/src/ --include="*.{js,jsx,ts,tsx}" 2>/dev/null || true)
+            if [ -n "$external_calls" ]; then
+              echo "External network calls found in $spa:"
+              echo "$external_calls" | head -3
+              security_issues+=("$spa: External network calls detected")
+            fi
+            
+            # Check for WebSocket usage (potential data exfiltration)
+            websocket_usage=$(grep -r -E "(WebSocket|socket\.io|ws://|wss://)" $spa/app/src/ --include="*.{js,jsx,ts,tsx}" 2>/dev/null || true)
+            if [ -n "$websocket_usage" ]; then
+              echo "WebSocket usage found in $spa:"
+              echo "$websocket_usage" | head -3
+              security_issues+=("$spa: WebSocket usage detected")
+            fi
+            
+            if [ ${#security_issues[@]} -eq 0 ]; then
+              echo "$spa source code security passed"
+            fi
+          done
+          
+          # Report results
+          if [ ${#security_issues[@]} -gt 0 ]; then
+            echo ""
+            echo "Source code security scan failed! Issues found:"
+            for issue in "${security_issues[@]}"; do
+              echo "  - $issue"
+            done
+            echo ""
+            echo "Please fix these security issues before merging."
+            exit 1
+          else
+            echo ""
+            echo "All SPAs passed source code security scan!"
+          fi
+
+      - name: File Structure Security Check
+        run: |
+          echo "Validating file structure security..."
+          
+          security_issues=()
+          
+          for spa in $SPA_LIST; do
+            echo ""
+            echo "Checking $spa file structure..."
+            
+            # Check for executable files in source
+            executable_files=$(find $spa/app/src -type f -executable 2>/dev/null || true)
+            if [ -n "$executable_files" ]; then
+              echo "Executable files found in $spa source:"
+              echo "$executable_files" | head -3
+              security_issues+=("$spa: Executable files in source directory")
+            fi
+            
+            # Check for hidden files (except .gitignore)
+            hidden_files=$(find $spa/app/src -name ".*" -type f 2>/dev/null | grep -v ".gitignore" || true)
+            if [ -n "$hidden_files" ]; then
+              echo "Hidden files found in $spa source:"
+              echo "$hidden_files" | head -3
+              security_issues+=("$spa: Hidden files detected")
+            fi
+            
+            # Check for binary files in source
+            binary_files=$(find $spa/app/src -type f \( -name "*.exe" -o -name "*.dll" -o -name "*.so" -o -name "*.dylib" \) 2>/dev/null || true)
+            if [ -n "$binary_files" ]; then
+              echo "Binary files found in $spa source:"
+              echo "$binary_files" | head -3
+              security_issues+=("$spa: Binary files in source directory")
+            fi
+            
+            # Check for server-side scripts (should be client-side only)
+            server_files=$(find $spa/app/src -type f \( -name "*.php" -o -name "*.py" -o -name "*.rb" -o -name "*.go" \) 2>/dev/null || true)
+            if [ -n "$server_files" ]; then
+              echo "Server-side scripts found in $spa (should be client-side only):"
+              echo "$server_files" | head -3
+              security_issues+=("$spa: Server-side scripts detected")
+            fi
+            
+            if [ ${#security_issues[@]} -eq 0 ]; then
+              echo "$spa file structure security passed"
+            fi
+          done
+          
+          # Report results
+          if [ ${#security_issues[@]} -gt 0 ]; then
+            echo ""
+            echo "File structure security check failed! Issues found:"
+            for issue in "${security_issues[@]}"; do
+              echo "  - $issue"
+            done
+            echo ""
+            echo "Please fix these security issues before merging."
+            exit 1
+          else
+            echo ""
+            echo "All SPAs passed file structure security check!"
+          fi
+
+      - name: Build SPAs for Security Analysis
+        run: |
+          echo "Building SPAs for security analysis..."
+          
+          for spa in $SPA_LIST; do
+            echo ""
+            echo "Building $spa..."
+            cd $spa/app
+            pnpm build
+            
+            # Verify build output
+            if [ ! -f "dist/index.html" ]; then
+              echo "Build failed for $spa - no dist/index.html found"
+              exit 1
+            fi
+            
+            echo "Successfully built $spa"
+            cd ../..
+          done
+
+      - name: Security Check Summary
+        if: always()
+        run: |
+          echo ""
+          echo "======================================="
+          echo "SECURITY CHECK SUMMARY"
+          echo "======================================="
+          echo "SPAs checked: $SPA_COUNT ($SPA_LIST)"
+          echo ""
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "All security checks passed!"
+            echo "This PR is safe to review and merge."
+          else
+            echo "Security checks failed!"
+            echo "Please fix the issues above before merging."
+          fi
+          echo "======================================="
