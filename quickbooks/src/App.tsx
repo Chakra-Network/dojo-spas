@@ -6,7 +6,6 @@ import {
   Input,
   Text,
   Icon,
-  Collapse,
   Divider,
   IconButton,
 } from "@chakra-ui/react";
@@ -20,15 +19,17 @@ import {
 } from "lucide-react";
 import { initializeDojoState, DojoState } from "./dojo/state";
 import { Dashboard } from "./components/Dashboard/Dashboard";
+import { MenuBar } from "./components/MenuBar";
 import { Invoices } from "./components/Invoices/Invoices";
 import { Expenses } from "./components/Expenses/Expenses";
 import { Reconciliation } from "./components/Reconciliation/Reconciliation";
+import { CreateInvoice } from "./components/Invoices/CreateInvoice";
 
 import invoicesData from "./data/invoices.json";
 import expensesData from "./data/expenses.json";
 import bankData from "./data/bank.json";
 
-type View = "dashboard" | "invoices" | "expenses" | "reconciliation";
+type View = "dashboard" | "invoices" | "expenses" | "reconciliation" | "create-invoice";
 
 function App() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -56,20 +57,24 @@ function App() {
   const renderView = () => {
     switch (currentView) {
       case "dashboard":
-        return <Dashboard />;
+        return <Dashboard onOpenCreateInvoice={() => setCurrentView("create-invoice")} />;
       case "invoices":
         return <Invoices />;
       case "expenses":
         return <Expenses />;
       case "reconciliation":
         return <Reconciliation />;
+      case "create-invoice":
+        return <CreateInvoice />;
       default:
-        return <Dashboard />;
+        return <Dashboard onOpenCreateInvoice={() => setCurrentView("create-invoice")} />;
     }
   };
 
   return (
-    <Flex h="100vh" bg="gray.100">
+    <Box h="100vh" display="flex" flexDirection="column" bg="gray.100">
+      <MenuBar />
+      <Flex flex="1" minH={0}>
       {/* Sidebar */}
       <Box
         bg="#17314A"
@@ -166,7 +171,8 @@ function App() {
       </Box>
 
       {/* Audit sidebar removed per request */}
-    </Flex>
+      </Flex>
+    </Box>
   );
 }
 
