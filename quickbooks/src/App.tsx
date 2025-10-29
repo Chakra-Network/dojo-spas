@@ -24,12 +24,13 @@ import { Invoices } from "./components/Invoices/Invoices";
 import { Expenses } from "./components/Expenses/Expenses";
 import { Reconciliation } from "./components/Reconciliation/Reconciliation";
 import { CreateInvoice } from "./components/Invoices/CreateInvoice";
+import { CustomerCenter } from "./components/Customers/CustomerCenter";
 
 import invoicesData from "./data/invoices.json";
 import expensesData from "./data/expenses.json";
 import bankData from "./data/bank.json";
 
-type View = "dashboard" | "invoices" | "expenses" | "reconciliation" | "create-invoice";
+type View = "dashboard" | "invoices" | "expenses" | "reconciliation" | "create-invoice" | "customers";
 
 function App() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -66,6 +67,8 @@ function App() {
         return <Reconciliation />;
       case "create-invoice":
         return <CreateInvoice />;
+      case "customers":
+        return <CustomerCenter />;
       default:
         return <Dashboard onOpenCreateInvoice={() => setCurrentView("create-invoice")} />;
     }
@@ -73,7 +76,7 @@ function App() {
 
   return (
     <Box h="100vh" display="flex" flexDirection="column" bg="gray.100">
-      <MenuBar />
+      <MenuBar onClose={() => { if (currentView !== "dashboard") setCurrentView("dashboard"); }} />
       <Flex flex="1" minH={0}>
       {/* Sidebar */}
       <Box
@@ -150,7 +153,12 @@ function App() {
             onClick={() => setCurrentView("expenses")}
           />
           <SidebarItem icon={BarChart} label="Reports" />
-          <SidebarItem icon={Users} label="Customers" />
+          <SidebarItem
+            icon={Users}
+            label="Customers"
+            active={currentView === "customers"}
+            onClick={() => setCurrentView("customers")}
+          />
           <SidebarItem icon={Users} label="Vendors" />
         </VStack>
 

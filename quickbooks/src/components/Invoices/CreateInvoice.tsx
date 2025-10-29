@@ -42,7 +42,7 @@ export function CreateInvoice() {
         boxShadow="sm"
         px={4}
         height="155"
-        py={1.5}
+        py={1.5}                                                                    
       >
         {/* Tabs bar spanning full width (like the main menubar) */}
         <Box  borderBottom="1px solid #cfd8e3" w="100%" px={2} py={1} mb={2}>
@@ -162,7 +162,7 @@ export function CreateInvoice() {
       <Flex>
         {/* Left content */}
         <Box flex="1" px={4} py={4}>
-          <Text fontSize="4xl"  fontWeight="semibold"  mb={10}>
+          <Text fontSize="4xl" mb={10}>
             Invoice
           </Text>
           <Flex gap={6} ml="600px" mb={4}>

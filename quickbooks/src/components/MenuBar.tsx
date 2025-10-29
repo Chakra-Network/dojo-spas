@@ -20,7 +20,7 @@ const MENU_ITEMS: MenuItem[] = [
   { label: "Help"}
 ];
 
-export function MenuBar() {
+export function MenuBar({ onClose }: { onClose?: () => void }) {
   return (
     <Box
       bg="#e8edf3"
@@ -46,7 +46,7 @@ export function MenuBar() {
         <Flex align="center" gap={1} bg="#e8edf3" borderLeft="1px solid #000000" pl={2}>
           <ControlButton label="–" ariaLabel="Minimize" />
           <ControlButton label="☐" ariaLabel="Maximize" />
-          <ControlButton label="✕" ariaLabel="Close" isClose />
+          <ControlButton label="✕" ariaLabel="Close" isClose onClick={onClose} />
         </Flex>
       </Flex>
     </Box>
@@ -55,7 +55,7 @@ export function MenuBar() {
 
 export default MenuBar;
 
-function ControlButton({ label, ariaLabel, isClose }: { label: string; ariaLabel: string; isClose?: boolean }) {
+function ControlButton({ label, ariaLabel, isClose, onClick }: { label: string; ariaLabel: string; isClose?: boolean; onClick?: () => void }) {
   return (
     <Flex
       aria-label={ariaLabel}
@@ -70,6 +70,7 @@ function ControlButton({ label, ariaLabel, isClose }: { label: string; ariaLabel
       _hover={{ bg: isClose ? "#fca5a5" : "#dae4ef", color: isClose ? "#7f1d1d" : undefined }}
       transition="background 0.15s ease"
       userSelect="none"
+      onClick={onClick}
     >
       <Text fontSize="14px" lineHeight="1">{label}</Text>
     </Flex>
