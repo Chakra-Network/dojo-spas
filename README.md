@@ -4,7 +4,7 @@
 
 Curated single-page applications built with React, Vite, and a shared state layer—powering experiences on [trydojo.ai](https://trydojo.ai/).
 
-- Read the platform docs: [docs.trydojo.ai](https://docs.trydojo.ai/)
+- Read the platform docs: [docs.trydojo.ai](https://docs.trydojo.ai/).
 
 ## Why Mock SPAs Matter
 - Reinforcement-learning loops need safe, deterministic sandboxes; real production apps mutate too quickly. Our mock SPAs mirror the UX of live tools like [Linear](https://dojo-spas-production.s3.us-east-1.amazonaws.com/linear/index.html) without exposing private data.
