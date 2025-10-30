@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 
 
-/* ----------- Node + Connector Types ---------- */
 type NodeDef = {
   id: string;
   x: number;
