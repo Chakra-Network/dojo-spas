@@ -1,29 +1,30 @@
-import { useState } from "react";
-import RawExpandedBanner from "./ExpandedBanner";
-import RawCollapsedBanner from "./CollapsedBanner";
+import ExpandedBanner from "./ExpandedBanner";
+import CollapsedBanner from "./CollapsedBanner";
+import { useAppContext } from "@/context/AppProvider";
+import { CARDS } from "@/lib/consts";
 
 export default function WelcomeBanner() {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [dismissedCards, setDismissedCards] = useState<string[]>([]);
+  const { state, handleToggleWelcomeBanner, handleDismissCard } =
+    useAppContext();
+
+  const visibleCards = CARDS.filter(
+    (card) => !state.dismissedCards.includes(card.id)
+  );
 
   const handleToggle = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const handleDismissCard = (cardId: string) => {
-    setDismissedCards([...dismissedCards, cardId]);
+    handleToggleWelcomeBanner();
   };
 
   return (
     <div>
-      {isExpanded ? (
-        <RawExpandedBanner
+      {state.isWelcomeBannerExpanded ? (
+        <ExpandedBanner
           onToggle={handleToggle}
           onDismissCard={handleDismissCard}
-          dismissedCards={dismissedCards}
+          visibleCards={visibleCards}
         />
       ) : (
-        <RawCollapsedBanner onToggle={handleToggle} />
+        <CollapsedBanner onToggle={handleToggle} visibleCards={visibleCards} />
       )}
     </div>
   );

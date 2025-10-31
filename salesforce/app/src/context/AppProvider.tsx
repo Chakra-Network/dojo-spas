@@ -15,6 +15,7 @@ import type {
   Opportunity,
   Case,
 } from "@/lib/types";
+import { DEFAULT_CARD_SLOTS } from "@/lib/consts/card-types";
 
 interface AppState {
   tabs: Tab[];
@@ -23,6 +24,9 @@ interface AppState {
   contacts: Contact[];
   opportunities: Opportunity[];
   cases: Case[];
+  isWelcomeBannerExpanded: boolean;
+  dismissedCards: string[];
+  dashboardCardSlots: string[];
   isNewLeadDialogOpen: boolean;
   isNewContactDialogOpen: boolean;
   isConvertLeadDialogOpen: boolean;
@@ -34,6 +38,8 @@ interface AppState {
   closingOpportunityId: string | null;
   isNewCaseDialogOpen: boolean;
   isEditCaseDialogOpen: boolean;
+  isChangeHomeCardDialogOpen: boolean;
+  changingCardSlotIndex: number | null;
 }
 
 interface AppContextType {
@@ -74,6 +80,11 @@ interface AppContextType {
   closeNewCaseDialog: () => void;
   openEditCaseDialog: () => void;
   closeEditCaseDialog: () => void;
+  openChangeHomeCardDialog: (slotIndex: number) => void;
+  closeChangeHomeCardDialog: () => void;
+  changeCardAtSlot: (slotIndex: number, newCardType: string) => void;
+  handleToggleWelcomeBanner: () => void;
+  handleDismissCard: (cardId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -85,6 +96,9 @@ const initialState: AppState = {
   contacts: [],
   opportunities: [],
   cases: [],
+  isWelcomeBannerExpanded: true,
+  dismissedCards: [],
+  dashboardCardSlots: DEFAULT_CARD_SLOTS,
   isNewLeadDialogOpen: false,
   isNewContactDialogOpen: false,
   isConvertLeadDialogOpen: false,
@@ -96,7 +110,12 @@ const initialState: AppState = {
   closingOpportunityId: null,
   isNewCaseDialogOpen: false,
   isEditCaseDialogOpen: false,
+  isChangeHomeCardDialogOpen: false,
+  changingCardSlotIndex: null,
 };
+
+// const [isExpanded, setIsExpanded] = useState(true);
+//   const [dismissedCards, setDismissedCards] = useState<string[]>([]);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useDojoState(initialState);
@@ -106,13 +125,50 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setState((prev) => {
         // Check if tab with same id already exists
         const existingTab = prev.tabs.find((t) => t.id === tab.id);
+
+        // Update updatedAt for the item being opened
+        const now = Date.now();
+        let newState = { ...prev };
+
+        if (tab.dataId) {
+          if (tab.type === "home-lead") {
+            newState = {
+              ...newState,
+              leads: prev.leads.map((l) =>
+                l.id === tab.dataId ? { ...l, updatedAt: now } : l
+              ),
+            };
+          } else if (tab.type === "home-contact") {
+            newState = {
+              ...newState,
+              contacts: prev.contacts.map((c) =>
+                c.id === tab.dataId ? { ...c, updatedAt: now } : c
+              ),
+            };
+          } else if (tab.type === "home-opportunity") {
+            newState = {
+              ...newState,
+              opportunities: prev.opportunities.map((o) =>
+                o.id === tab.dataId ? { ...o, updatedAt: now } : o
+              ),
+            };
+          } else if (tab.type === "home-case") {
+            newState = {
+              ...newState,
+              cases: prev.cases.map((c) =>
+                c.id === tab.dataId ? { ...c, updatedAt: now } : c
+              ),
+            };
+          }
+        }
+
         if (existingTab) {
           // Just switch to it
-          return { ...prev, activeTabId: tab.id };
+          return { ...newState, activeTabId: tab.id };
         }
         // Add new tab
         return {
-          ...prev,
+          ...newState,
           tabs: [...prev.tabs, tab],
           activeTabId: tab.id,
         };
@@ -167,8 +223,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
             const contactTabId = `contact-${lead.convertedToContactId}`;
             const contactTab = prev.tabs.find((t) => t.id === contactTabId);
 
+            // Update contact's updatedAt
+            const updatedContacts = prev.contacts.map((c) =>
+              c.id === lead.convertedToContactId
+                ? { ...c, updatedAt: Date.now() }
+                : c
+            );
+
             if (contactTab) {
-              return { ...prev, activeTabId: contactTabId };
+              return {
+                ...prev,
+                activeTabId: contactTabId,
+                contacts: updatedContacts,
+              };
             } else {
               // Create contact tab if it doesn't exist
               return {
@@ -182,12 +249,49 @@ export function AppProvider({ children }: { children: ReactNode }) {
                   },
                 ],
                 activeTabId: contactTabId,
+                contacts: updatedContacts,
               };
             }
           }
         }
 
-        return { ...prev, activeTabId: tabId };
+        // Update updatedAt for the item being opened
+        const now = Date.now();
+        let newState = { ...prev, activeTabId: tabId };
+
+        if (tab?.dataId) {
+          if (tab.type === "home-lead") {
+            newState = {
+              ...newState,
+              leads: prev.leads.map((l) =>
+                l.id === tab.dataId ? { ...l, updatedAt: now } : l
+              ),
+            };
+          } else if (tab.type === "home-contact") {
+            newState = {
+              ...newState,
+              contacts: prev.contacts.map((c) =>
+                c.id === tab.dataId ? { ...c, updatedAt: now } : c
+              ),
+            };
+          } else if (tab.type === "home-opportunity") {
+            newState = {
+              ...newState,
+              opportunities: prev.opportunities.map((o) =>
+                o.id === tab.dataId ? { ...o, updatedAt: now } : o
+              ),
+            };
+          } else if (tab.type === "home-case") {
+            newState = {
+              ...newState,
+              cases: prev.cases.map((c) =>
+                c.id === tab.dataId ? { ...c, updatedAt: now } : c
+              ),
+            };
+          }
+        }
+
+        return newState;
       });
     },
     [setState]
@@ -250,7 +354,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setState((prev) => ({
         ...prev,
         leads: prev.leads.map((lead) =>
-          lead.id === id ? { ...lead, ...updates } : lead
+          lead.id === id ? { ...lead, ...updates, updatedAt: Date.now() } : lead
         ),
       }));
     },
@@ -283,7 +387,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setState((prev) => ({
         ...prev,
         contacts: prev.contacts.map((contact) =>
-          contact.id === id ? { ...contact, ...updates } : contact
+          contact.id === id
+            ? { ...contact, ...updates, updatedAt: Date.now() }
+            : contact
         ),
       }));
     },
@@ -306,7 +412,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setState((prev) => ({
         ...prev,
         opportunities: prev.opportunities.map((opportunity) =>
-          opportunity.id === id ? { ...opportunity, ...updates } : opportunity
+          opportunity.id === id
+            ? { ...opportunity, ...updates, updatedAt: Date.now() }
+            : opportunity
         ),
       }));
     },
@@ -329,7 +437,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setState((prev) => ({
         ...prev,
         cases: prev.cases.map((caseItem) =>
-          caseItem.id === id ? { ...caseItem, ...updates } : caseItem
+          caseItem.id === id
+            ? { ...caseItem, ...updates, updatedAt: Date.now() }
+            : caseItem
         ),
       }));
     },
@@ -375,6 +485,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           mailingCity: lead.city,
           mailingState: lead.state,
           mailingZipCode: lead.zipCode,
+          updatedAt: Date.now(),
         };
 
         // Update lead to mark as converted (keep in list for tab redirection)
@@ -494,14 +605,66 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, isEditCaseDialogOpen: false }));
   }, [setState]);
 
+  const openChangeHomeCardDialog = useCallback(
+    (slotIndex: number) => {
+      setState((prev) => ({
+        ...prev,
+        isChangeHomeCardDialogOpen: true,
+        changingCardSlotIndex: slotIndex,
+      }));
+    },
+    [setState]
+  );
+
+  const closeChangeHomeCardDialog = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isChangeHomeCardDialogOpen: false,
+      changingCardSlotIndex: null,
+    }));
+  }, [setState]);
+
+  const changeCardAtSlot = useCallback(
+    (slotIndex: number, newCardType: string) => {
+      setState((prev) => {
+        const newSlots = [...prev.dashboardCardSlots];
+        newSlots[slotIndex] = newCardType;
+        return {
+          ...prev,
+          dashboardCardSlots: newSlots,
+        };
+      });
+    },
+    [setState]
+  );
+
   const activeTab = useMemo(() => {
     return state.tabs.find((tab) => tab.id === state.activeTabId);
   }, [state.tabs, state.activeTabId]);
+
+  const handleToggleWelcomeBanner = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isWelcomeBannerExpanded: !prev.isWelcomeBannerExpanded,
+    }));
+  }, [setState]);
+
+  const handleDismissCard = useCallback(
+    (cardId: string) => {
+      setState((prev) => ({
+        ...prev,
+        dismissedCards: [...prev.dismissedCards, cardId],
+      }));
+    },
+    [setState]
+  );
 
   const value = useMemo(
     () => ({
       state,
       activeTab,
+      handleToggleWelcomeBanner,
+      handleDismissCard,
       addTab,
       removeTab,
       setActiveTab,
@@ -537,10 +700,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeNewCaseDialog,
       openEditCaseDialog,
       closeEditCaseDialog,
+      openChangeHomeCardDialog,
+      closeChangeHomeCardDialog,
+      changeCardAtSlot,
     }),
     [
       state,
       activeTab,
+      handleToggleWelcomeBanner,
+      handleDismissCard,
       addTab,
       removeTab,
       setActiveTab,
@@ -576,6 +744,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeNewCaseDialog,
       openEditCaseDialog,
       closeEditCaseDialog,
+      openChangeHomeCardDialog,
+      closeChangeHomeCardDialog,
+      changeCardAtSlot,
     ]
   );
 

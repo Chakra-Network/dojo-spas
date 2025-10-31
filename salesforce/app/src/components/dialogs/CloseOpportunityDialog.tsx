@@ -36,7 +36,7 @@ export default function CloseOpportunityDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-[512px] max-h-[90vh] p-0 flex flex-col">
+      <DialogContent className="w-[512px] max-h-[90vh] p-0 flex flex-col rounded-t-xl rounded-b-none">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-200 sr-only">
           <DialogTitle className="text-lg font-semibold">
             Close This Opportunity
@@ -70,14 +70,14 @@ export default function CloseOpportunityDialog({
           <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200">
             <button
               onClick={handleClose}
-              className="px-6 h-10 text-[13px] flex items-center justify-center text-blue-600 hover:text-blue-800 cursor-pointer font-semibold border border-gray-600 rounded-full"
+              className="px-4 h-8 text-[13px] flex items-center justify-center text-blue-600 hover:text-blue-800 cursor-pointer font-semibold border border-gray-600 rounded-full"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={!selectedStage}
-              className="px-6 h-10 text-[13px] flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 cursor-pointer font-semibold border border-blue-500 hover:border-blue-600 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 h-8 text-[13px] flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 cursor-pointer font-semibold border border-blue-500 hover:border-blue-600 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save
             </button>

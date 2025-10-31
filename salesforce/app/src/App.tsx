@@ -16,6 +16,7 @@ import EditCaseDialog from "./components/dialogs/case-dialogs/EditCaseDialog";
 import CloseOpportunityDialog from "./components/dialogs/CloseOpportunityDialog";
 import ConvertLeadDialog from "./components/dialogs/convert-lead-dialog/ConvertLeadDialog";
 import AfterConvertLeadDialog from "./components/dialogs/after-convert-dialog/AfterConvertLeadDialog";
+import ChangeHomeCardDialog from "./components/dialogs/ChangeHomeCardDialog";
 import { useAppContext } from "./context/AppProvider";
 import type {
   Lead,
@@ -59,7 +60,7 @@ export default function App() {
   const handleSaveNewLead = (leadData: Lead) => {
     // Generate a unique ID for the lead
     const leadId = `lead-${Date.now()}`;
-    const leadWithId = { ...leadData, id: leadId };
+    const leadWithId = { ...leadData, id: leadId, updatedAt: Date.now() };
 
     // Add lead to leads list
     addLead(leadWithId);
@@ -78,7 +79,11 @@ export default function App() {
   const handleSaveNewContact = (contactData: Contact) => {
     // Generate a unique ID for the contact
     const contactId = `contact-${Date.now()}`;
-    const contactWithId = { ...contactData, id: contactId };
+    const contactWithId = {
+      ...contactData,
+      id: contactId,
+      updatedAt: Date.now(),
+    };
 
     // Add contact to contacts list
     addContact(contactWithId);
@@ -97,7 +102,11 @@ export default function App() {
   const handleSaveNewOpportunity = (opportunityData: Opportunity) => {
     // Generate a unique ID for the opportunity
     const opportunityId = `opportunity-${Date.now()}`;
-    const opportunityWithId = { ...opportunityData, id: opportunityId };
+    const opportunityWithId = {
+      ...opportunityData,
+      id: opportunityId,
+      updatedAt: Date.now(),
+    };
 
     // Add opportunity to opportunities list
     addOpportunity(opportunityWithId);
@@ -116,7 +125,7 @@ export default function App() {
   const handleSaveNewCase = (caseData: Case) => {
     // Generate a unique ID for the case
     const caseId = `case-${Date.now()}`;
-    const caseWithId = { ...caseData, id: caseId };
+    const caseWithId = { ...caseData, id: caseId, updatedAt: Date.now() };
 
     // Add case to cases list
     addCase(caseWithId);
@@ -241,6 +250,9 @@ export default function App() {
         onClose={closeAfterConvertDialog}
         onGoToLeads={handleGoToLeads}
       />
+
+      {/* Change Home Card Dialog */}
+      <ChangeHomeCardDialog />
     </div>
   );
 }

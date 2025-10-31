@@ -47,6 +47,8 @@ export interface Lead {
   industry?: string;
   // Conversion tracking
   convertedToContactId?: string;
+  // Tracking
+  updatedAt: number;
 }
 
 export interface Contact {
@@ -70,6 +72,8 @@ export interface Contact {
   mailingCity?: string;
   mailingState?: string;
   mailingZipCode?: string;
+  // Tracking
+  updatedAt: number;
 }
 
 export type OpportunityStage =
@@ -101,6 +105,8 @@ export interface Opportunity {
   probability?: number;
   forecastCategory: ForecastCategory;
   nextStep?: string;
+  // Tracking
+  updatedAt: number;
 }
 
 export type CaseStatus =
@@ -128,6 +134,8 @@ export interface Case {
   description?: string;
   // Additional
   sendNotificationEmail?: boolean;
+  // Tracking
+  updatedAt: number;
 }
 
 export interface Tab {
@@ -148,3 +156,13 @@ export interface GuidanceContent {
   bullets: string[];
   footer: string;
 }
+
+export type RecordItem = {
+  id: string;
+  name: string;
+  type: "Lead" | "Contact" | "Opportunity" | "Case";
+  updatedAt: number;
+  icon: React.ComponentType<{ className?: string }>;
+  iconBgColor: string;
+  originalData: Lead | Contact | Opportunity | Case;
+};

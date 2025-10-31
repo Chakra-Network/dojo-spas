@@ -1,9 +1,13 @@
 import Card, { EmptyState } from "./Card";
 import { FaCrown } from "react-icons/fa";
-import { PATH_PREFIX } from "@/lib/consts";
 import { useAppContext } from "@/context/AppProvider";
+import { OpportunityEmptyState } from "@/components/resources/svgs";
 
-export default function OpportunityCard() {
+interface OpportunityCardProps {
+  slotIndex: number;
+}
+
+export default function OpportunityCard({ slotIndex }: OpportunityCardProps) {
   const { openNewOpportunityDialog } = useAppContext();
 
   const handleNewClick = () => {
@@ -17,10 +21,12 @@ export default function OpportunityCard() {
       searchPlaceholder="My Opportunities"
       hasNewButton={true}
       hasDropdown={true}
+      hasViewTable={true}
+      slotIndex={slotIndex}
       onNewClick={handleNewClick}
     >
       <EmptyState
-        src={`${PATH_PREFIX}/svgs/OpportunityEmptyState.svg`}
+        Icon={OpportunityEmptyState}
         text="View your deals to keep them moving."
       />
     </Card>

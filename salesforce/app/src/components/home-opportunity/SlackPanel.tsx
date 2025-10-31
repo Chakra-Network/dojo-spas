@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { JSX } from "react";
 import { PiArrowBendLeftUpFill } from "react-icons/pi";
-import { PATH_PREFIX } from "@/lib/consts";
+import { SlackLogo, SlackEmptyState } from "@/components/resources/svgs";
 
 export default function SlackPanel() {
   return (
@@ -20,11 +20,7 @@ export default function SlackPanel() {
       <div className="bg-white rounded-[20px] shadow-[0_0_15px_rgba(0,0,0,0.1)]  overflow-hidden h-[645px] flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 h-[50px]">
-          <img
-            src={`${PATH_PREFIX}/svgs/Slack_Logo.svg`}
-            alt="Slack"
-            className="w-6 h-6 shrink-0"
-          />
+          <SlackLogo className="w-6 h-6 shrink-0" />
           <h3 className="text-xl leading-[30px] font-bold text-gray-800">
             Slack Channel
           </h3>
@@ -36,11 +32,7 @@ export default function SlackPanel() {
           <div className="flex flex-col flex-1 justify-center">
             <div className="px-6 pt-6">
               <div className="mb-6 flex justify-center">
-                <img
-                  src={`${PATH_PREFIX}/svgs/Slack_Empty_State.svg`}
-                  alt="Slack collaboration"
-                  className="w-auto h-[164px] object-contain"
-                />
+                <SlackEmptyState className="w-auto h-[164px] object-contain" />
               </div>
 
               {/* Title */}

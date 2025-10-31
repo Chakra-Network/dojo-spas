@@ -7,15 +7,19 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "convert-images": "node scripts/convert-images-to-base64.mjs --images",
+    "convert-gifs": "node scripts/convert-images-to-base64.mjs --gifs",
+    "convert-all": "npm run convert-images && npm run convert-gifs"
   },
   "dependencies": {
+    "@chakra-dev/dojo-hooks": "^1.0.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/vite": "^4.1.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "@chakra-dev/dojo-hooks": "^1.0.0",
     "lucide-react": "^0.545.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
