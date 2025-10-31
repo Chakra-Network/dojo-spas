@@ -167,9 +167,6 @@ export function Dashboard({ onOpenCreateInvoice }: { onOpenCreateInvoice?: () =>
   return (
     <ChakraProvider theme={extendTheme({})}>
       <Box p={2} bg="gray.50">
-        <Text fontSize="lg" fontWeight="semibold" mb={4}>
-          QuickBooks-style Flow (Color-coded)
-        </Text>
 
         <Box
           ref={ref}

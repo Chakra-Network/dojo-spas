@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
-// Types
+// ---------- Types ----------
 export interface Invoice {
   id: string;
   clientName: string;
@@ -26,7 +26,7 @@ export interface BankTransaction {
   description: string;
   amount: number;
   matched: boolean;
-  matchedWith?: string; // Invoice or Expense ID
+  matchedWith?: string; 
 }
 
 export interface AuditLogEntry {
@@ -43,7 +43,7 @@ export interface DojoState {
   auditLog: AuditLogEntry[];
 }
 
-// Global state store
+// ---------- Global Store ----------
 let globalState: DojoState = {
   invoices: [],
   expenses: [],
@@ -51,19 +51,21 @@ let globalState: DojoState = {
   auditLog: [],
 };
 
-// Subscribers for state changes
 const listeners = new Set<() => void>();
 
-// Dojo state management object
 export const dojo = {
   getState(): DojoState {
     return globalState;
   },
 
-  setState<K extends keyof DojoState>(key: K, value: DojoState[K], auditDescription?: string) {
+  setState<K extends keyof DojoState>(
+    key: K,
+    value: DojoState[K],
+    auditDescription?: string
+  ) {
     globalState = { ...globalState, [key]: value };
 
-    // Auto-log to audit if not updating auditLog itself
+    // Auto audit log
     if (key !== 'auditLog' && auditDescription) {
       const auditEntry: AuditLogEntry = {
         id: `audit-${Date.now()}-${Math.random()}`,
@@ -77,8 +79,7 @@ export const dojo = {
       };
     }
 
-    // Notify all subscribers
-    listeners.forEach(listener => listener());
+    listeners.forEach((l) => l());
   },
 
   subscribe(listener: () => void) {
@@ -87,36 +88,46 @@ export const dojo = {
   },
 };
 
-// React hook to use dojo state
-export function useDojoState<K extends keyof DojoState>(key: K): DojoState[K] {
-  const [state, setState] = useState<DojoState[K]>(dojo.getState()[key]);
+// ---------- React Context ----------
+const DojoContext = createContext<typeof dojo | null>(null);
+
+export const DojoProvider = ({ children }: { children: React.ReactNode }) => {
+  const dojoRef = useRef(dojo);
 
   useEffect(() => {
-    const unsubscribe = dojo.subscribe(() => {
-      setState(dojo.getState()[key]);
+    // Expose dojo globally for debugging in browser console
+    (window as any).dojo = dojoRef.current;
+  }, []);
+
+  return (
+    <DojoContext.Provider value={dojoRef.current}>{children}</DojoContext.Provider>
+  );
+};
+
+// ---------- Hooks ----------
+export function useDojo() {
+  const context = useContext(DojoContext);
+  if (!context) {
+    throw new Error('useDojo must be used inside a <DojoProvider>');
+  }
+  return context;
+}
+
+export function useDojoState<K extends keyof DojoState>(key: K): DojoState[K] {
+  const dojoCtx = useDojo();
+  const [state, setState] = useState(dojoCtx.getState()[key]);
+
+  useEffect(() => {
+    const unsubscribe = dojoCtx.subscribe(() => {
+      setState(dojoCtx.getState()[key]);
     });
-    return () => unsubscribe();
-  }, [key]);
+    return unsubscribe;
+  }, [key, dojoCtx]);
 
   return state;
 }
 
-// Dojo Provider to initialize global state and provide context
-export const DojoProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    setIsInitialized(true);
-  }, []);
-
-  if (!isInitialized) {
-    return null;
-  }
-
-  return <>{children}</>;
-};
-
-// Initialize state with seed data (called once at app startup)
+// ---------- Initialize ----------
 export function initializeDojoState(initialData: Partial<DojoState>) {
   globalState = {
     invoices: initialData.invoices || [],
@@ -124,5 +135,5 @@ export function initializeDojoState(initialData: Partial<DojoState>) {
     bankTransactions: initialData.bankTransactions || [],
     auditLog: initialData.auditLog || [],
   };
-  listeners.forEach(listener => listener());
+  listeners.forEach((l) => l());
 }
