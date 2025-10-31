@@ -78,7 +78,7 @@ jobs:
           
           echo "Discovery Summary:"
           echo "  Found ${#spa_names[@]} valid SPAs: ${spa_names[*]}"
-          echo "  Will build and deploy to both staging and production"
+          echo "  Will build and deploy to production"
           
           # Export for later steps
           echo "SPA_LIST=${spa_names[*]}" >> $GITHUB_ENV
@@ -108,27 +108,6 @@ jobs:
           echo ""
           echo "All SPAs built successfully!"
 
-      - name: Configure AWS credentials for staging
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
-          role-session-name: deploy-spas-staging
-          aws-region: us-east-1
-          role-duration-seconds: 900
-
-      - name: Deploy to staging
-        run: |
-          echo "Deploying all SPAs to staging..."
-          
-          for spa in $SPA_LIST; do
-            echo "Deploying $spa to staging..."
-            aws s3 sync $spa/app/dist/ s3://dojo-spas-staging/$spa/ --delete
-            echo "$spa deployed to staging"
-          done
-          
-          echo ""
-          echo "All SPAs deployed to staging!"
-
       - name: Configure AWS credentials for production
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -155,10 +134,9 @@ jobs:
           echo ""
           echo "Deployment Summary:"
           echo "  SPAs processed: $SPA_COUNT ($SPA_LIST)"
-          echo "  Environments: staging, production"
+          echo "  Environments: production"
           echo ""
           echo "SPA URLs:"
-          echo "  Staging: https://dojo-spas-staging.s3.amazonaws.com/{spa-name}/index.html"
           echo "  Production: https://dojo-spas-production.s3.amazonaws.com/{spa-name}/index.html"
           echo ""
           echo "Deployment completed successfully!"
