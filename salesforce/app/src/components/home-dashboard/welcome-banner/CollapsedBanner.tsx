@@ -1,12 +1,23 @@
 import { ChevronRight } from "lucide-react";
+import type { BannerCardType } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface CollapsedBannerProps {
   onToggle: () => void;
+  visibleCards: BannerCardType[];
 }
 
-export default function CollapsedBanner({ onToggle }: CollapsedBannerProps) {
+export default function CollapsedBanner({
+  onToggle,
+  visibleCards,
+}: CollapsedBannerProps) {
   return (
-    <article className="bg-[#EEF4FF] rounded-[20px] shadow-sm border border-gray-200">
+    <article
+      className={cn(
+        "rounded-[20px] shadow-sm border border-gray-200",
+        visibleCards.length === 0 ? "bg-white" : "bg-[#EEF4FF]"
+      )}
+    >
       <header className="p-6">
         <div className="flex items-center gap-3">
           <button
@@ -19,7 +30,9 @@ export default function CollapsedBanner({ onToggle }: CollapsedBannerProps) {
             <span className="sr-only">Show suggestions</span>
           </button>
           <div className="text-base text-gray-700 font-semibold h-8 flex items-center">
-            Psst! You have more to discover here. 🌟
+            {visibleCards.length > 0
+              ? "Psst! You have more to discover here. 🌟"
+              : "You're caught up for now. 🎉"}
           </div>
         </div>
       </header>

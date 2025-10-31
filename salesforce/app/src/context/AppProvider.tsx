@@ -24,6 +24,8 @@ interface AppState {
   contacts: Contact[];
   opportunities: Opportunity[];
   cases: Case[];
+  isWelcomeBannerExpanded: boolean;
+  dismissedCards: string[];
   dashboardCardSlots: string[];
   isNewLeadDialogOpen: boolean;
   isNewContactDialogOpen: boolean;
@@ -81,6 +83,8 @@ interface AppContextType {
   openChangeHomeCardDialog: (slotIndex: number) => void;
   closeChangeHomeCardDialog: () => void;
   changeCardAtSlot: (slotIndex: number, newCardType: string) => void;
+  handleToggleWelcomeBanner: () => void;
+  handleDismissCard: (cardId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -92,6 +96,8 @@ const initialState: AppState = {
   contacts: [],
   opportunities: [],
   cases: [],
+  isWelcomeBannerExpanded: true,
+  dismissedCards: [],
   dashboardCardSlots: DEFAULT_CARD_SLOTS,
   isNewLeadDialogOpen: false,
   isNewContactDialogOpen: false,
@@ -107,6 +113,9 @@ const initialState: AppState = {
   isChangeHomeCardDialogOpen: false,
   changingCardSlotIndex: null,
 };
+
+// const [isExpanded, setIsExpanded] = useState(true);
+//   const [dismissedCards, setDismissedCards] = useState<string[]>([]);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useDojoState(initialState);
@@ -633,10 +642,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return state.tabs.find((tab) => tab.id === state.activeTabId);
   }, [state.tabs, state.activeTabId]);
 
+  const handleToggleWelcomeBanner = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isWelcomeBannerExpanded: !prev.isWelcomeBannerExpanded,
+    }));
+  }, [setState]);
+
+  const handleDismissCard = useCallback(
+    (cardId: string) => {
+      setState((prev) => ({
+        ...prev,
+        dismissedCards: [...prev.dismissedCards, cardId],
+      }));
+    },
+    [setState]
+  );
+
   const value = useMemo(
     () => ({
       state,
       activeTab,
+      handleToggleWelcomeBanner,
+      handleDismissCard,
       addTab,
       removeTab,
       setActiveTab,
@@ -679,6 +707,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [
       state,
       activeTab,
+      handleToggleWelcomeBanner,
+      handleDismissCard,
       addTab,
       removeTab,
       setActiveTab,

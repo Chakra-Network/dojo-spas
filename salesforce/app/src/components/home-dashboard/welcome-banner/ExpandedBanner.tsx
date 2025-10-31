@@ -1,24 +1,20 @@
 import { ChevronDown } from "lucide-react";
 import BannerCard from "./BannerCard";
-import { CARDS } from "@/lib/consts";
 import { EasyEmptySpotlight } from "@/components/resources/svgs";
 import { cn } from "@/lib/utils";
+import type { BannerCardType } from "@/lib/types";
 
 interface ExpandedBannerProps {
   onToggle: () => void;
   onDismissCard: (cardId: string) => void;
-  dismissedCards: string[];
+  visibleCards: BannerCardType[];
 }
 
 export default function ExpandedBanner({
   onToggle,
   onDismissCard,
-  dismissedCards,
+  visibleCards,
 }: ExpandedBannerProps) {
-  const visibleCards = CARDS.filter(
-    (card) => !dismissedCards.includes(card.id)
-  );
-
   return (
     <article
       className={cn(
