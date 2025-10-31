@@ -56,7 +56,7 @@ export default function AfterConvertLeadDialog({
           </div>
 
           {/* Three Column Layout */}
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center flex-wrap">
             {/* Account Section */}
             <ConvertedRecordCard
               sectionTitle="ACCOUNT"

@@ -127,7 +127,7 @@ export default function NewLeadDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
-      <DialogContent className="w-[840px] max-h-[90vh] p-0 flex flex-col">
+      <DialogContent className="w-[840px] max-h-[90vh] p-0 flex flex-col rounded-t-xl rounded-b-none">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-200 sr-only">
           <DialogTitle className="text-lg font-semibold">New Lead</DialogTitle>
           <DialogDescription className="sr-only">New Lead</DialogDescription>
@@ -327,7 +327,7 @@ export default function NewLeadDialog({
             </div>
 
             {/* Action Buttons */}
-            <div className="rounded-b-lg flex justify-end gap-3 px-4 py-3 border-t-2 border-gray-200 absolute bottom-[-1px] w-full bg-white/60 backdrop-blur-sm">
+            <div className="flex justify-end gap-3 px-4 py-3 border-t-2 border-gray-200 absolute bottom-[-1px] w-full bg-white/60 backdrop-blur-sm">
               <button
                 className="px-4 h-8 text-[13px] flex items-center justify-center text-blue-600 hover:text-blue-800 cursor-pointer font-semibold border border-gray-600 rounded-full"
                 onClick={handleCancel}
