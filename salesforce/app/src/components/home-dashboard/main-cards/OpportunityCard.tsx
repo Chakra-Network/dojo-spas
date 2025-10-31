@@ -3,7 +3,11 @@ import { FaCrown } from "react-icons/fa";
 import { useAppContext } from "@/context/AppProvider";
 import { OpportunityEmptyState } from "@/components/resources/svgs";
 
-export default function OpportunityCard() {
+interface OpportunityCardProps {
+  slotIndex: number;
+}
+
+export default function OpportunityCard({ slotIndex }: OpportunityCardProps) {
   const { openNewOpportunityDialog } = useAppContext();
 
   const handleNewClick = () => {
@@ -17,6 +21,8 @@ export default function OpportunityCard() {
       searchPlaceholder="My Opportunities"
       hasNewButton={true}
       hasDropdown={true}
+      hasViewTable={true}
+      slotIndex={slotIndex}
       onNewClick={handleNewClick}
     >
       <EmptyState

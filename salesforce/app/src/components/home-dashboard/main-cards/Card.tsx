@@ -1,7 +1,7 @@
 import { SearchIcon, RefreshCw } from "lucide-react";
-import { VscTriangleDown } from "react-icons/vsc";
 import { cn } from "@/lib/utils";
 import type { JSX } from "react";
+import CardDropdownMenu from "@/components/common/CardDropdownMenu";
 
 interface CardProps {
   title?: string;
@@ -10,6 +10,8 @@ interface CardProps {
   searchPlaceholder?: string;
   hasNewButton?: boolean;
   hasDropdown?: boolean;
+  hasViewTable?: boolean;
+  slotIndex?: number;
   children?: React.ReactNode;
   viewReportText?: string;
   timestamp?: string;
@@ -23,6 +25,8 @@ export default function Card({
   searchPlaceholder,
   hasNewButton = false,
   hasDropdown = false,
+  hasViewTable = false,
+  slotIndex,
   children,
   viewReportText = "View Report",
   timestamp = "As of Today at 11:18 am",
@@ -65,10 +69,11 @@ export default function Card({
             {hasNewButton && (
               <RightButton onClick={onNewClick}>New</RightButton>
             )}
-            {hasDropdown && (
-              <RightButton className="w-8 p-0">
-                <VscTriangleDown className="w-[14px] h-[14px] shrink-0" />
-              </RightButton>
+            {hasDropdown && slotIndex !== undefined && (
+              <CardDropdownMenu
+                slotIndex={slotIndex}
+                hasViewTable={hasViewTable}
+              />
             )}
           </div>
         </div>

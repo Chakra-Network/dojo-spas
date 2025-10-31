@@ -15,6 +15,7 @@ import type {
   Opportunity,
   Case,
 } from "@/lib/types";
+import { DEFAULT_CARD_SLOTS } from "@/lib/consts/card-types";
 
 interface AppState {
   tabs: Tab[];
@@ -23,6 +24,7 @@ interface AppState {
   contacts: Contact[];
   opportunities: Opportunity[];
   cases: Case[];
+  dashboardCardSlots: string[];
   isNewLeadDialogOpen: boolean;
   isNewContactDialogOpen: boolean;
   isConvertLeadDialogOpen: boolean;
@@ -34,6 +36,8 @@ interface AppState {
   closingOpportunityId: string | null;
   isNewCaseDialogOpen: boolean;
   isEditCaseDialogOpen: boolean;
+  isChangeHomeCardDialogOpen: boolean;
+  changingCardSlotIndex: number | null;
 }
 
 interface AppContextType {
@@ -74,6 +78,9 @@ interface AppContextType {
   closeNewCaseDialog: () => void;
   openEditCaseDialog: () => void;
   closeEditCaseDialog: () => void;
+  openChangeHomeCardDialog: (slotIndex: number) => void;
+  closeChangeHomeCardDialog: () => void;
+  changeCardAtSlot: (slotIndex: number, newCardType: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -85,6 +92,7 @@ const initialState: AppState = {
   contacts: [],
   opportunities: [],
   cases: [],
+  dashboardCardSlots: DEFAULT_CARD_SLOTS,
   isNewLeadDialogOpen: false,
   isNewContactDialogOpen: false,
   isConvertLeadDialogOpen: false,
@@ -96,6 +104,8 @@ const initialState: AppState = {
   closingOpportunityId: null,
   isNewCaseDialogOpen: false,
   isEditCaseDialogOpen: false,
+  isChangeHomeCardDialogOpen: false,
+  changingCardSlotIndex: null,
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -494,6 +504,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, isEditCaseDialogOpen: false }));
   }, [setState]);
 
+  const openChangeHomeCardDialog = useCallback(
+    (slotIndex: number) => {
+      setState((prev) => ({
+        ...prev,
+        isChangeHomeCardDialogOpen: true,
+        changingCardSlotIndex: slotIndex,
+      }));
+    },
+    [setState]
+  );
+
+  const closeChangeHomeCardDialog = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isChangeHomeCardDialogOpen: false,
+      changingCardSlotIndex: null,
+    }));
+  }, [setState]);
+
+  const changeCardAtSlot = useCallback(
+    (slotIndex: number, newCardType: string) => {
+      setState((prev) => {
+        const newSlots = [...prev.dashboardCardSlots];
+        newSlots[slotIndex] = newCardType;
+        return {
+          ...prev,
+          dashboardCardSlots: newSlots,
+        };
+      });
+    },
+    [setState]
+  );
+
   const activeTab = useMemo(() => {
     return state.tabs.find((tab) => tab.id === state.activeTabId);
   }, [state.tabs, state.activeTabId]);
@@ -537,6 +580,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeNewCaseDialog,
       openEditCaseDialog,
       closeEditCaseDialog,
+      openChangeHomeCardDialog,
+      closeChangeHomeCardDialog,
+      changeCardAtSlot,
     }),
     [
       state,
@@ -576,6 +622,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeNewCaseDialog,
       openEditCaseDialog,
       closeEditCaseDialog,
+      openChangeHomeCardDialog,
+      closeChangeHomeCardDialog,
+      changeCardAtSlot,
     ]
   );
 

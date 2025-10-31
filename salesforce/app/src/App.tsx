@@ -16,6 +16,7 @@ import EditCaseDialog from "./components/dialogs/case-dialogs/EditCaseDialog";
 import CloseOpportunityDialog from "./components/dialogs/CloseOpportunityDialog";
 import ConvertLeadDialog from "./components/dialogs/convert-lead-dialog/ConvertLeadDialog";
 import AfterConvertLeadDialog from "./components/dialogs/after-convert-dialog/AfterConvertLeadDialog";
+import ChangeHomeCardDialog from "./components/dialogs/ChangeHomeCardDialog";
 import { useAppContext } from "./context/AppProvider";
 import type {
   Lead,
@@ -241,6 +242,9 @@ export default function App() {
         onClose={closeAfterConvertDialog}
         onGoToLeads={handleGoToLeads}
       />
+
+      {/* Change Home Card Dialog */}
+      <ChangeHomeCardDialog />
     </div>
   );
 }

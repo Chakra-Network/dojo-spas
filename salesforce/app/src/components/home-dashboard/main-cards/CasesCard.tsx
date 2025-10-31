@@ -3,7 +3,11 @@ import { TbBriefcase2Filled } from "react-icons/tb";
 import { useAppContext } from "@/context/AppProvider";
 import { CaseEmptyState } from "@/components/resources/svgs";
 
-export default function CasesCard() {
+interface CasesCardProps {
+  slotIndex: number;
+}
+
+export default function CasesCard({ slotIndex }: CasesCardProps) {
   const { openNewCaseDialog } = useAppContext();
 
   return (
@@ -13,6 +17,8 @@ export default function CasesCard() {
       searchPlaceholder="All New Cases By Priority"
       hasNewButton={true}
       hasDropdown={true}
+      hasViewTable={false}
+      slotIndex={slotIndex}
       onNewClick={openNewCaseDialog}
     >
       <EmptyState

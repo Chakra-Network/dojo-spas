@@ -3,7 +3,11 @@ import { BiSolidIdCard } from "react-icons/bi";
 import { useAppContext } from "@/context/AppProvider";
 import { ContactEmptyState } from "@/components/resources/svgs";
 
-export default function ContactsCard() {
+interface ContactsCardProps {
+  slotIndex: number;
+}
+
+export default function ContactsCard({ slotIndex }: ContactsCardProps) {
   const { openNewContactDialog } = useAppContext();
 
   return (
@@ -13,6 +17,8 @@ export default function ContactsCard() {
       searchPlaceholder="My Contacts"
       hasNewButton={true}
       hasDropdown={true}
+      hasViewTable={false}
+      slotIndex={slotIndex}
       onNewClick={openNewContactDialog}
     >
       <EmptyState
