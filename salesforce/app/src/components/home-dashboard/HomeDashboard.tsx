@@ -2,7 +2,7 @@ import WelcomeBanner from "./welcome-banner/WelcomeBanner";
 import LeadsCard from "./main-cards/LeadsCard";
 import OpportunityCard from "./main-cards/OpportunityCard";
 import ContactsCard from "./main-cards/ContactsCard";
-import RecentRecordsCard from "./main-cards/RecentRecordsCard";
+import RecentRecordsCard from "./main-cards/recent-records-card/RecentRecordsCard";
 import MakeItYourHomeCard from "./main-cards/MakeItYourHomeCard";
 import CasesCard from "./main-cards/CasesCard";
 import { useAppContext } from "@/context/AppProvider";

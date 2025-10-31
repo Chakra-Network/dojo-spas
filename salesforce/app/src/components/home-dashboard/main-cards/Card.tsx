@@ -14,6 +14,7 @@ interface CardProps {
   slotIndex?: number;
   children?: React.ReactNode;
   viewReportText?: string;
+  onClickViewAll?: () => void;
   timestamp?: string;
   onNewClick?: () => void;
 }
@@ -29,6 +30,7 @@ export default function Card({
   slotIndex,
   children,
   viewReportText = "View Report",
+  onClickViewAll,
   timestamp = "As of Today at 11:18 am",
   onNewClick,
 }: CardProps) {
@@ -84,8 +86,8 @@ export default function Card({
 
       {/* Footer */}
       {viewReportText && (
-        <div className="px-4 pb-3 pt-4 border-t border-gray-200 flex items-center justify-between bg-white">
-          <button className="text-[#0176D3] hover:underline text-[13px] leading-[19.5px] cursor-pointer">
+        <div className="px-4 pb-3 pt-4 border-t border-[rgba(201,201,201,1)] flex items-center justify-between bg-white">
+          <button className="text-[rgba(2,80,217,1)] hover:underline text-[13px] leading-[19.5px] cursor-pointer">
             {viewReportText}
           </button>
           <div className="flex items-center gap-3 text-xs leading-[18px]">
@@ -94,6 +96,13 @@ export default function Card({
               <RefreshCw className="w-4 h-4" strokeWidth={3} />
             </button>
           </div>
+        </div>
+      )}
+      {onClickViewAll && (
+        <div className="px-4 pt-3 pb-5 border-t border-[rgba(201,201,201,1)] flex items-center justify-center bg-white">
+          <button className="text-[rgba(2,80,217,1)] hover:underline text-[13px] leading-[19.5px] cursor-pointer">
+            View All
+          </button>
         </div>
       )}
     </div>
