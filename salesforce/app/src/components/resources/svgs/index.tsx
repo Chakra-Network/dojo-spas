@@ -6,3 +6,4 @@ export { default as LeadEmptyState } from "./LeadEmptyState";
 export { default as OpportunityEmptyState } from "./OpportunityEmptyState";
 export { default as SlackEmptyState } from "./SlackEmptyState";
 export { default as SlackLogo } from "./SlackLogo";
+export { default as EasyEmptySpotlight } from "./EasyEmptySpotlight";

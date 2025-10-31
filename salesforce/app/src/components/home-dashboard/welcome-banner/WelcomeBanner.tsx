@@ -1,6 +1,6 @@
 import { useState } from "react";
-import RawExpandedBanner from "./ExpandedBanner";
-import RawCollapsedBanner from "./CollapsedBanner";
+import ExpandedBanner from "./ExpandedBanner";
+import CollapsedBanner from "./CollapsedBanner";
 
 export default function WelcomeBanner() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -17,13 +17,13 @@ export default function WelcomeBanner() {
   return (
     <div>
       {isExpanded ? (
-        <RawExpandedBanner
+        <ExpandedBanner
           onToggle={handleToggle}
           onDismissCard={handleDismissCard}
           dismissedCards={dismissedCards}
         />
       ) : (
-        <RawCollapsedBanner onToggle={handleToggle} />
+        <CollapsedBanner onToggle={handleToggle} />
       )}
     </div>
   );
