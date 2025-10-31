@@ -25,12 +25,13 @@ import { Expenses } from "./components/Expenses/Expenses";
 import { Reconciliation } from "./components/Reconciliation/Reconciliation";
 import { CreateInvoice } from "./components/Invoices/CreateInvoice";
 import { CustomerCenter } from "./components/Customers/CustomerCenter";
+import { ReportsPage } from "./components/Reports/ReportsPage"; 
 
 import invoicesData from "./data/invoices.json";
 import expensesData from "./data/expenses.json";
 import bankData from "./data/bank.json";
 
-type View = "dashboard" | "invoices" | "expenses" | "reconciliation" | "create-invoice" | "customers";
+type View = "dashboard" | "invoices" | "expenses" | "reconciliation" | "create-invoice" | "customers" | "reports";
 
 function App() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -69,6 +70,8 @@ function App() {
         return <CreateInvoice />;
       case "customers":
         return <CustomerCenter />;
+      case "reports":
+        return <ReportsPage />; // Render ReportsPage directly
       default:
         return <Dashboard onOpenCreateInvoice={() => setCurrentView("create-invoice")} />;
     }
@@ -89,7 +92,7 @@ function App() {
         fontFamily="Segoe UI, sans-serif"
         boxShadow="inset -1px 0 0 rgba(0,0,0,0.4)"
       >
-        {/* Search Bar - Updated to match reference image */}
+      
         <Box
           bg="#0C253A"
           px={3}
@@ -152,25 +155,36 @@ function App() {
             active={currentView === "expenses"}
             onClick={() => setCurrentView("expenses")}
           />
-          <SidebarItem icon={BarChart} label="Reports" />
+          <SidebarItem
+            icon={BarChart}
+            label="Reports"
+            active={currentView === "reports"}
+            onClick={() => setCurrentView("reports")}
+          />
           <SidebarItem
             icon={Users}
             label="Customers"
             active={currentView === "customers"}
             onClick={() => setCurrentView("customers")}
           />
-          <SidebarItem icon={Users} label="Vendors" />
+          <SidebarItem
+            icon={Users}
+            label="Vendors"
+            active={currentView === "vendors"} 
+            onClick={() => setCurrentView("vendors")}
+          />
         </VStack>
 
         {/* Divider */}
         <Divider borderColor="#0f2235" my={3} />
 
         {/* Secondary Shortcuts */}
-        <Box>
+        <Box pb={4}>
           <SidebarSubItem label="View Balances" />
           <SidebarSubItem label="Run Favorite Reports" />
           <SidebarSubItem label="Open Windows" />
         </Box>
+      
       </Box>
 
       {/* Main Content */}
@@ -224,6 +238,7 @@ const SidebarSubItem = ({ label }: { label: string }) => (
     color="#D1D5DB"
     _hover={{ bg: "#1D3C5B" }}
     fontSize="15px"
+
   >
     <Text>{label}</Text>
   </Flex>
