@@ -213,7 +213,7 @@ export default function Detail({ issue }: { issue: Issue }) {
         </section>
 
         <form onSubmit={handleAddComment} className="flex flex-col gap-3">
-          <div className="rounded-2xl bg-hover-2/60 px-4 py-3 w-[820px] relative left-1/2 -translate-x-1/2">
+          <div className="rounded-lg bg-badge-bg border border-badge-border-2 px-4 py-3 w-[calc(100%+15px)] relative left-1/2 -translate-x-1/2">
             <ExpandingTextarea
               value={commentInput}
               onChange={(event) => setCommentInput(event.target.value)}

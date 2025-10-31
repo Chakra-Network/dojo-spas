@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@chakra-dev/dojo-hooks':
+        specifier: ^1.0.0
+        version: 1.0.2(react@19.1.1)
       '@radix-ui/react-dropdown-menu':
         specifier: ^2.1.16
         version: 2.1.16(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -20,9 +23,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      dojo-hooks:
-        specifier: file:../../dojo-hooks
-        version: file:../../dojo-hooks(react@19.1.1)
       lucide-react:
         specifier: ^0.545.0
         version: 0.545.0(react@19.1.1)
@@ -169,6 +169,11 @@ packages:
   '@babel/types@7.28.4':
     resolution: {integrity: sha512-bkFqkLhh3pMBUQQkpVgWDWq/lqzc2678eUyDlTBhRqhCHFguYYGM0Efga7tYk4TogG/3x0EEl66/OQ+WGbWB/Q==}
     engines: {node: '>=6.9.0'}
+
+  '@chakra-dev/dojo-hooks@1.0.2':
+    resolution: {integrity: sha512-gNdCPElK56pjoSXu+yeqtTGh0lej8zo58/nkz1WDUghEVEHXdyljJCPraqSjY641eqDPRFiiHMuKXJ6xuNlcWQ==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   '@esbuild/aix-ppc64@0.25.10':
     resolution: {integrity: sha512-0NFWnA+7l41irNuaSVlLfgNT12caWJVLzp5eAVhZ0z1qpxbockccEt3s+149rE64VUI3Ml2zt8Nv5JVc4QXTsw==}
@@ -1097,11 +1102,6 @@ packages:
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
 
-  dojo-hooks@file:../../dojo-hooks:
-    resolution: {directory: ../../dojo-hooks, type: directory}
-    peerDependencies:
-      react: '>=16.8.0'
-
   electron-to-chromium@1.5.222:
     resolution: {integrity: sha512-gA7psSwSwQRE60CEoLz6JBCQPIxNeuzB2nL8vE03GK/OHxlvykbLyeiumQy1iH5C2f3YbRAZpGCMT12a/9ih9w==}
 
@@ -1858,6 +1858,10 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@chakra-dev/dojo-hooks@1.0.2(react@19.1.1)':
+    dependencies:
+      react: 19.1.1
 
   '@esbuild/aix-ppc64@0.25.10':
     optional: true
@@ -2657,10 +2661,6 @@ snapshots:
   detect-libc@2.1.0: {}
 
   detect-node-es@1.1.0: {}
-
-  dojo-hooks@file:../../dojo-hooks(react@19.1.1):
-    dependencies:
-      react: 19.1.1
 
   electron-to-chromium@1.5.222: {}
 
