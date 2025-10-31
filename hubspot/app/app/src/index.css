@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  /* Custom Colors */
+  --color-hub-orange: #FF7A59;
+  --color-hub-blue: #007A9B;
+  --color-hub-text: #33475B;
+
+  /* Custom Gray Scale */
+  --color-hub-gray-50: #F2F5F8;
+  --color-hub-gray-100: #EAF0F6;
+  --color-hub-gray-200: #CAD5E2;
+  --color-hub-gray-600: #7C98B6;
+  --color-hub-gray-800: #33475B;
+  --color-hub-gray-900: #253342;
+
+  /* Font Family */
+  --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-hub-blue;
+}
