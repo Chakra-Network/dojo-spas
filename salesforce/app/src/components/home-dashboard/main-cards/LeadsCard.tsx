@@ -1,7 +1,7 @@
 import { IoIosStar } from "react-icons/io";
 import Card, { EmptyState } from "./Card";
 import { useAppContext } from "@/context/AppProvider";
-import { PATH_PREFIX } from "@/lib/consts";
+import { LeadEmptyState } from "@/components/resources/svgs";
 
 export default function LeadsCard() {
   const { openNewLeadDialog } = useAppContext();
@@ -20,7 +20,7 @@ export default function LeadsCard() {
       onNewClick={handleNewClick}
     >
       <EmptyState
-        src={`${PATH_PREFIX}/svgs/LeadEmptyState.svg`}
+        Icon={LeadEmptyState}
         text="Track progress as you qualify leads."
       />
     </Card>

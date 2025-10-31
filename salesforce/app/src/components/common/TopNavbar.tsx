@@ -3,7 +3,10 @@ import { BiQuestionMark } from "react-icons/bi";
 import { useAppContext } from "@/context/AppProvider";
 import { cn } from "@/lib/utils";
 import { FaChevronDown, FaXmark } from "react-icons/fa6";
-import { PATH_PREFIX } from "@/lib/consts";
+import {
+  LOGO_COSMOS_IMAGE,
+  PROFILE_AVATAR_IMAGE,
+} from "@/components/resources/images";
 
 export default function TopNavbar() {
   const {
@@ -37,7 +40,7 @@ export default function TopNavbar() {
         {/* Salesforce logo */}
         <div className="flex items-center">
           <img
-            src={`${PATH_PREFIX}/logo/logo-cosmos.png`}
+            src={LOGO_COSMOS_IMAGE}
             alt="Salesforce"
             className="h-10 w-[200px]"
           />
@@ -64,7 +67,7 @@ export default function TopNavbar() {
           </button>
           <div className="mx-2 shrink-0 pl-2">
             <img
-              src={`${PATH_PREFIX}/images/profile-avatar.png`}
+              src={PROFILE_AVATAR_IMAGE}
               alt="Profile"
               className="w-8 h-8 rounded-full cursor-pointer hover:opacity-80"
             />

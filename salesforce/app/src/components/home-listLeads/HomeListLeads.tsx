@@ -19,7 +19,7 @@ import { VscTriangleDown } from "react-icons/vsc";
 import { IoRefresh } from "react-icons/io5";
 import { IoIosStar } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa6";
-import { PATH_PREFIX } from "@/lib/consts";
+import { DesertSmall } from "@/components/resources/svgs";
 
 export default function HomeListLeads() {
   const { state } = useAppContext();
@@ -149,11 +149,7 @@ export default function HomeListLeads() {
                 >
                   <div className="flex flex-col items-center justify-center">
                     <div className="h-[200px] w-[300px] shrink-0">
-                      <img
-                        src={`${PATH_PREFIX}/svgs/desertSmall.svg`}
-                        alt="Lead Empty State"
-                        className="h-[200px] w-auto mx-auto shrink-0"
-                      />
+                      <DesertSmall className="h-[200px] w-auto mx-auto shrink-0" />
                     </div>
                     <span className="whitespace-pre-line text-[13px] leading-[19.5px]">
                       {

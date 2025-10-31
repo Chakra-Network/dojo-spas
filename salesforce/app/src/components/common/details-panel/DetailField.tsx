@@ -1,7 +1,7 @@
 import { Pencil } from "lucide-react";
 import { useAppContext } from "@/context/AppProvider";
-import { PATH_PREFIX } from "@/lib/consts";
 import { cn } from "@/lib/utils";
+import { PROFILE_AVATAR_IMAGE } from "@/components/resources/images";
 
 interface DetailFieldProps {
   label: string;
@@ -36,7 +36,7 @@ export default function DetailField({
           {hasAvatar && value && (
             <div className="flex items-center gap-1">
               <img
-                src={`${PATH_PREFIX}/images/profile-avatar.png`}
+                src={PROFILE_AVATAR_IMAGE}
                 alt="Profile"
                 className="w-5 h-5 rounded-full"
               />
@@ -90,7 +90,7 @@ export function DetailFieldSimple({
         <div className="relative py-[2px] flex-1">
           <div className="flex items-center gap-1">
             <img
-              src={`${PATH_PREFIX}/images/profile-avatar.png`}
+              src={PROFILE_AVATAR_IMAGE}
               alt="Profile"
               className="w-5 h-5 rounded-full"
             />

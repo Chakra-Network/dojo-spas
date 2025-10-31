@@ -1,5 +1,5 @@
 import Card from "./Card";
-import { PATH_PREFIX } from "@/lib/consts";
+import { ANNOUNCEMENTPANEL_IMAGE } from "@/components/resources/images";
 
 export default function MakeItYourHomeCard() {
   return (
@@ -14,9 +14,9 @@ export default function MakeItYourHomeCard() {
         </div>
         <div className="relative w-full flex justify-center pt-3">
           <img
-            src={`${PATH_PREFIX}/svgs/AnnouncementPanel.svg`}
-            alt="Customize your home illustration"
-            className="h-[156px] w-auto"
+            src={ANNOUNCEMENTPANEL_IMAGE}
+            alt="Announcement Panel"
+            className="h-[138px] w-auto"
           />
         </div>
       </div>

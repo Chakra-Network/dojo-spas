@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "convert-images": "node scripts/convert-images-to-base64.mjs --images",
+    "convert-gifs": "node scripts/convert-images-to-base64.mjs --gifs",
+    "convert-all": "npm run convert-images && npm run convert-gifs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

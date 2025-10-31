@@ -117,14 +117,16 @@ function RightButton({
   );
 }
 
-export function EmptyState({ src, text }: { src: string; text: string }) {
+export function EmptyState({
+  Icon,
+  text,
+}: {
+  Icon: React.ComponentType<{ className?: string }>;
+  text: string;
+}) {
   return (
     <div className="flex flex-col items-center justify-center mt-12">
-      <img
-        src={src}
-        alt="Empty state illustration"
-        className="w-auto h-[142px] mb-3"
-      />
+      <Icon className="w-auto h-[142px] mb-3" />
       <p className="text-[13px] leading-[19.5px] text-gray-600 text-center">
         {text}
       </p>

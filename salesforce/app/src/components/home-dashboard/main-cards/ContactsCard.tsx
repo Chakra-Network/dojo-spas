@@ -1,7 +1,7 @@
 import Card, { EmptyState } from "./Card";
 import { BiSolidIdCard } from "react-icons/bi";
-import { PATH_PREFIX } from "@/lib/consts";
 import { useAppContext } from "@/context/AppProvider";
+import { ContactEmptyState } from "@/components/resources/svgs";
 
 export default function ContactsCard() {
   const { openNewContactDialog } = useAppContext();
@@ -16,7 +16,7 @@ export default function ContactsCard() {
       onNewClick={openNewContactDialog}
     >
       <EmptyState
-        src={`${PATH_PREFIX}/svgs/ContactEmptyState.svg`}
+        Icon={ContactEmptyState}
         text="Add contacts and see who is new."
       />
     </Card>
