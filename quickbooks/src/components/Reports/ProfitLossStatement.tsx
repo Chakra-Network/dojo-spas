@@ -20,12 +20,17 @@ import {
   RadioGroup,
   Stack,
   Flex,
+  Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
+import { ChevronDownIcon, ChevronRightIcon, Search } from 'lucide-react';
 
 export default function ProfitLossReport() {
-  const [fromDate, setFromDate] = useState('01/01/2021');
-  const [toDate, setToDate] = useState('08/05/2021');
+  const [fromDate, setFromDate] = useState('2021-01-01');
+  const [toDate, setToDate] = useState('2021-08-05');
   const [reportBasis, setReportBasis] = useState('accrual');
   const [showFilters, setShowFilters] = useState(false);
   
@@ -82,15 +87,88 @@ export default function ProfitLossReport() {
 
   return (
     <ChakraProvider>
-      <Box bg="gray.50" minH="100vh">
+      <Box  minH="100vh">
         
+        <Flex gap={3} wrap="wrap">
+          <Button bg="white" size="sm" variant="solid">Customize Report</Button>
+          <Button bg="white" size="sm" variant="solid">Comment on Report</Button>
+          <Button bg="white" size="sm" variant="link" colorScheme="blue">Share Template</Button>
+          <Button bg="white" size="sm" variant="solid">Memorize</Button>
+
+          <Menu>
+            <MenuButton bg="white" as={Button} size="sm" rightIcon={<Search />} variant="solid">
+              Print
+            </MenuButton>
+            <MenuList>
+              <MenuItem>Print Report</MenuItem>
+              <MenuItem>Print List</MenuItem>
+            </MenuList>
+          </Menu>
+
+          <Menu>
+            <MenuButton bg="white" as={Button} size="sm" rightIcon={<Search />} variant="solid">
+              E-mail
+            </MenuButton>
+            <MenuList>
+              <MenuItem>E-mail Report</MenuItem>
+              <MenuItem>E-mail List</MenuItem>
+            </MenuList>
+          </Menu>
+
+          <Menu>
+            <MenuButton bg="white" as={Button} size="sm" rightIcon={<Search />} variant="solid">
+              Excel
+            </MenuButton>
+            <MenuList>
+              <MenuItem>Export to Excel</MenuItem>
+            </MenuList>
+          </Menu>
+
+          <Button size="sm" bg="white" variant="solid">Hide Header</Button>
+          <Button size="sm" bg="white" variant="solid">Collapse Rows</Button>
+          <Button size="sm" bg="white" variant="solid">Refresh</Button>
+        </Flex>
+
+        {/* Date and Filter Section */}
+        <Flex align="center" mb={6} wrap="wrap" gap={2}>
+          <Text fontSize="sm" fontWeight="medium">Dates:</Text>
+          <Select placeholder="Custom" size="sm" width="120px">
+            <option value="custom">Custom</option>
+          </Select>
+          <Text fontSize="sm" fontWeight="medium">From</Text>
+          <Input type="date" size="sm" width="140px" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+          <Text fontSize="sm" fontWeight="medium">To</Text>
+          <Input type="date" size="sm" width="140px" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+          <Text fontSize="sm" fontWeight="medium">Show Columns:</Text>
+          <Select placeholder="Total only" size="sm" width="120px">
+            <option value="total">Total only</option>
+          </Select>
+          <Text fontSize="sm" fontWeight="medium">Sort By:</Text>
+          <Select placeholder="Default" size="sm" width="120px">
+            <option value="default">Default</option>
+          </Select>
+        </Flex>
+
+        {/* Report Basis Section */}
+        <Flex align="center" mb={6}>
+          <Text fontSize="sm" fontWeight="medium" mr={2}>Report Basis:</Text>
+          <RadioGroup defaultValue="accrual" size="sm" value={reportBasis} onChange={setReportBasis}>
+            <Stack direction="row">
+              <Radio value="accrual">Accrual</Radio>
+              <Radio value="cash">Cash</Radio>
+            </Stack>
+          </RadioGroup>
+          <Button variant="link" colorScheme="blue" size="sm" ml={4} onClick={() => setShowFilters(!showFilters)}>Show Filters</Button>
+        </Flex>
+
         <Flex height="100vh" align="center" justify="center">
           <Box
             bg="white"
             p={6}
+
             borderRadius="md"
             boxShadow="sm"
-            width="850px"
+            width="650px"
             height="950px"
           >
             <VStack spacing={1} mb={6}>
@@ -145,10 +223,11 @@ export default function ProfitLossReport() {
                 {!collapsed.income && (
                   <>
                     <Tr>
-                      <Td pl={12}>
+                      <Td fontWeight="bold" pl={12}>
                         <HStack>
                           <IconButton
                             size="xs"
+                      
                             variant="ghost"
                             aria-label="Toggle Construction Income Section"
                             icon={
@@ -168,19 +247,19 @@ export default function ProfitLossReport() {
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td pl={12}>Freight Income</Td>
+                      <Td fontWeight="bold" pl={12}>Freight Income</Td>
                       <Td isNumeric>
                         {reportData.income.freightIncome.toFixed(2)}
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td pl={12}>Parts Sales</Td>
+                      <Td fontWeight="bold" pl={12}>Parts Sales</Td>
                       <Td isNumeric>
                         {reportData.income.partsSales.toFixed(2)}
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td pl={12}>Service Income</Td>
+                      <Td fontWeight="bold" pl={12}>Service Income</Td>
                       <Td isNumeric>
                         {reportData.income.serviceIncome.toFixed(2)}
                       </Td>
@@ -212,7 +291,7 @@ export default function ProfitLossReport() {
                         }
                         onClick={() => toggleSection('cogs')}
                       />
-                      <Text fontWeight="semibold">Cost of Goods Sold</Text>
+                      <Text fontWeight="bold">Cost of Goods Sold</Text>
                     </HStack>
                   </Td>
                   <Td></Td>
@@ -221,19 +300,19 @@ export default function ProfitLossReport() {
                 {!collapsed.cogs && (
                   <>
                     <Tr>
-                      <Td pl={12}>Construction Labor</Td>
+                      <Td fontWeight="bold" pl={12}>Construction Labor</Td>
                       <Td isNumeric>
                         {reportData.cogs.constructionLabor.toFixed(2)}
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td pl={12}>Cost of Sales</Td>
+                      <Td fontWeight="bold" pl={12}>Cost of Sales</Td>
                       <Td isNumeric>
                         {reportData.cogs.costOfSales.toFixed(2)}
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td pl={12}>Materials</Td>
+                      <Td fontWeight="bold" pl={12}>Materials</Td>
                       <Td isNumeric>
                         {reportData.cogs.materials.toFixed(2)}
                       </Td>
@@ -242,7 +321,7 @@ export default function ProfitLossReport() {
                 )}
 
                 <Tr bg="gray.50">
-                  <Td fontWeight="semibold">Total COGS</Td>
+                  <Td fontWeight="bold">Total COGS</Td>
                   <Td isNumeric fontWeight="semibold">
                     {reportData.cogs.total.toFixed(2)}
                   </Td>
@@ -298,7 +377,7 @@ export default function ProfitLossReport() {
                             }
                             onClick={() => toggleSection('advertising')}
                           />
-                          <Text fontWeight="semibold">Advertising</Text>
+                          <Text fontWeight="bold">Advertising</Text>
                         </HStack>
                       </Td>
                       <Td></Td>
@@ -323,7 +402,7 @@ export default function ProfitLossReport() {
                                 }
                                 onClick={() => toggleSection('web')}
                               />
-                              <Text fontWeight="semibold">Web</Text>
+                              <Text fontWeight="bold">Web</Text>
                             </HStack>
                           </Td>
                           <Td></Td>
@@ -332,7 +411,7 @@ export default function ProfitLossReport() {
                         {!collapsed.web && (
                           <>
                             <Tr>
-                              <Td pl={24}>Banner Ads</Td>
+                              <Td fontWeight="bold" pl={24}>Banner Ads</Td>
                               <Td isNumeric>
                                 {reportData.expenses.advertising.web.bannerAds.toFixed(
                                   2
@@ -340,7 +419,7 @@ export default function ProfitLossReport() {
                               </Td>
                             </Tr>
                             <Tr>
-                              <Td pl={24}>Social Media</Td>
+                              <Td fontWeight="bold" pl={24}>Social Media</Td>
                               <Td isNumeric>
                                 {reportData.expenses.advertising.web.socialMedia.toFixed(
                                   2
@@ -351,7 +430,7 @@ export default function ProfitLossReport() {
                         )}
 
                         <Tr bg="gray.50">
-                          <Td pl={20} fontWeight="semibold">
+                          <Td pl={20} fontWeight="bold">
                             Total Web
                           </Td>
                           <Td isNumeric fontWeight="semibold">
@@ -376,7 +455,7 @@ export default function ProfitLossReport() {
                                 }
                                 onClick={() => toggleSection('print')}
                               />
-                              <Text fontWeight="semibold">Print</Text>
+                              <Text fontWeight="bold">Print</Text>
                             </HStack>
                           </Td>
                           <Td></Td>
@@ -385,7 +464,7 @@ export default function ProfitLossReport() {
                           {!collapsed.print && (
                             <>
                               <Tr>
-                                <Td pl={24}>Newspapers & Magazines</Td>
+                                <Td fontWeight="bold" pl={24}>Newspapers & Magazines</Td>
                                 <Td isNumeric>
                                   {reportData.expenses.advertising.print.newspapersMagazines.toFixed(
                                     2
@@ -393,7 +472,7 @@ export default function ProfitLossReport() {
                                 </Td>
                               </Tr>
                               <Tr>
-                                <Td pl={24}>Brochures</Td>
+                                <Td fontWeight="bold" pl={24}>Brochures</Td>
                                 <Td isNumeric>
                                   {reportData.expenses.advertising.print.brochures.toFixed(
                                     2
@@ -404,7 +483,7 @@ export default function ProfitLossReport() {
                           )}
 
                           <Tr bg="gray.50">
-                            <Td pl={20} fontWeight="semibold">
+                            <Td pl={20} fontWeight="bold">
                               Total Print
                             </Td>
                             <Td isNumeric fontWeight="semibold">
@@ -415,35 +494,35 @@ export default function ProfitLossReport() {
                       )}
 
                       <Tr bg="gray.50">
-                        <Td pl={12} fontWeight="semibold">
+                        <Td pl={12} fontWeight="bold">
                           Total Advertising
                         </Td>
-                        <Td isNumeric fontWeight="semibold">
+                        <Td isNumeric fontWeight="bold">
                           {reportData.expenses.advertising.total.toFixed(2)}
                         </Td>
                       </Tr>
 
                       {/* Other Expenses */}
                       <Tr>
-                        <Td pl={12}>Bank Service Charges</Td>
+                        <Td fontWeight="bold" pl={12}>Bank Service Charges</Td>
                         <Td isNumeric>
                           {reportData.expenses.bankServiceCharges.toFixed(2)}
                         </Td>
                       </Tr>
                       <Tr>
-                        <Td pl={12}>Cleaning</Td>
+                        <Td fontWeight="bold" pl={12}>Cleaning</Td>
                         <Td isNumeric>
                           {reportData.expenses.cleaning.toFixed(2)}
                         </Td>
                       </Tr>
                       <Tr>
-                        <Td pl={12}>Dues and Subscriptions</Td>
+                        <Td fontWeight="bold" pl={12}>Dues and Subscriptions</Td>
                         <Td isNumeric>
                           {reportData.expenses.duesSubscriptions.toFixed(2)}
                         </Td>
                       </Tr>
                       <Tr>
-                        <Td pl={12}>Equipment Rental</Td>
+                        <Td fontWeight="bold" pl={12}>Equipment Rental</Td>
                         <Td isNumeric>
                           {reportData.expenses.equipmentRental.toFixed(2)}
                         </Td>
