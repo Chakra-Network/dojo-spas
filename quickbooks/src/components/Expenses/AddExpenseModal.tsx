@@ -31,6 +31,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
     description: '',
     amount: '',
     date: new Date().toISOString().split('T')[0],
+    receiptUrl: '',
   });
 
   const categories = [
@@ -61,6 +62,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
       description: formData.description,
       amount: parseFloat(formData.amount),
       date: new Date(formData.date).toISOString(),
+      receiptUrl: formData.receiptUrl,
     };
 
     dojo.setState(
@@ -83,6 +85,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
       description: '',
       amount: '',
       date: new Date().toISOString().split('T')[0],
+      receiptUrl: '',
     });
 
     onClose();
@@ -151,6 +154,19 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                 value={formData.date}
                 onChange={(e) =>
                   setFormData({ ...formData, date: e.target.value })
+                }
+              />
+            </Box>
+
+            <Box>
+              <Text fontSize="sm" fontWeight="medium" mb={2}>
+                Receipt URL (Optional)
+              </Text>
+              <Input
+                placeholder="Enter receipt URL"
+                value={formData.receiptUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, receiptUrl: e.target.value })
                 }
               />
             </Box>

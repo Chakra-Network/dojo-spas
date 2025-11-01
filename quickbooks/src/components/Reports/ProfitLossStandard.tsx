@@ -1,12 +1,54 @@
 import React from 'react';
 import { Box, Text, Flex, Button, Menu, MenuButton, MenuList, MenuItem, IconButton } from '@chakra-ui/react';
 import { ChevronDown, RefreshCcw, FileText, Heart, HelpCircle } from 'lucide-react';
+import { useDojoState, Invoice, Expense } from '../../dojo/state';
 
 interface ProfitLossStandardProps {
   onViewDetailedReport: () => void;
 }
 
 export const ProfitLossStandard: React.FC<ProfitLossStandardProps> = ({ onViewDetailedReport }) => {
+  const invoices = useDojoState<Invoice[]>('invoices');
+  const expenses = useDojoState<Expense[]>('expenses');
+
+  // Calculate totals dynamically
+  const calculateTotals = () => {
+    let totalIncome = 0;
+    let totalCOGS = 0;
+    let totalExpenses = 0;
+
+    invoices.forEach(invoice => {
+      if (invoice.status === 'paid') {
+        totalIncome += invoice.amount;
+      }
+    });
+
+    expenses.forEach(expense => {
+      // For simplicity, categorizing all expenses as general for now.
+      // In a real scenario, this would involve more detailed categorization.
+      totalExpenses += expense.amount;
+    });
+
+    // Placeholder for COGS. In a real app, this would be more complex.
+    // Assuming 50% of paid invoice amount for now.
+    totalCOGS = totalIncome * 0.5;
+
+    const grossProfit = totalIncome - totalCOGS;
+    const netOrdinaryIncome = grossProfit - totalExpenses;
+    const netIncome = netOrdinaryIncome; // No other income/expense for simplicity
+
+    return {
+      totalIncome: totalIncome.toFixed(2),
+      totalCOGS: totalCOGS.toFixed(2),
+      grossProfit: grossProfit.toFixed(2),
+      totalExpenses: totalExpenses.toFixed(2),
+      netOrdinaryIncome: netOrdinaryIncome.toFixed(2),
+      netIncome: netIncome.toFixed(2),
+    };
+  };
+
+  const totals = calculateTotals();
+
   return (
     <Flex direction="column" alignItems="center">
       <Box
@@ -53,7 +95,7 @@ export const ProfitLossStandard: React.FC<ProfitLossStandardProps> = ({ onViewDe
             <Text fontWeight="semibold" mt={2} mb={1}>Income</Text>
             <Flex justify="space-between" mb={1}>
               <Text>40100 - Construction Income</Text>
-              <Text>39,324.16</Text>
+              <Text>{totals.totalIncome}</Text>
             </Flex>
             <Flex justify="space-between" mb={1}>
               <Text>40500 - Reimbursement Income</Text>
@@ -61,65 +103,61 @@ export const ProfitLossStandard: React.FC<ProfitLossStandardProps> = ({ onViewDe
             </Flex>
             <Flex justify="space-between" fontWeight="semibold" mb={2}>
               <Text>Total Income</Text>
-              <Text>39,324.16</Text>
+              <Text>{totals.totalIncome}</Text>
             </Flex>
             
             <Text fontWeight="semibold" mt={2} mb={1}>Cost of Goods Sold</Text>
             <Flex justify="space-between" mb={1}>
               <Text>50100 - Cost of Goods Sold</Text>
-              <Text>2,043.67</Text>
+              <Text>{totals.totalCOGS}</Text>
             </Flex>
             <Flex justify="space-between" mb={1}>
               <Text>54000 - Job Expenses</Text>
-              <Text>16,677.46</Text>
+              <Text>0.00</Text>
             </Flex>
             <Flex justify="space-between" fontWeight="semibold" mb={2}>
               <Text>Total COGS</Text>
-              <Text>18,721.13</Text>
+              <Text>{totals.totalCOGS}</Text>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" mb={2}>
               <Text>Gross Profit</Text>
-              <Text>20,603.03</Text>
+              <Text>{totals.grossProfit}</Text>
             </Flex>
             
             <Text fontWeight="semibold" mt={2} mb={1}>Expense</Text>
             <Flex justify="space-between" mb={1}>
-              <Text>64200 - Repairs</Text>
-              <Text>175.00</Text>
-            </Flex>
-            <Flex justify="space-between" mb={1}>
-              <Text>64800 - Tools and Machinery</Text>
-              <Text>810.00</Text>
+              <Text>Total General Expenses</Text>
+              <Text>{totals.totalExpenses}</Text>
             </Flex>
             <Flex justify="space-between" fontWeight="semibold" mb={2}>
               <Text>Total Expense</Text>
-              <Text>985.00</Text>
+              <Text>{totals.totalExpenses}</Text>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" mb={2}>
               <Text>Net Ordinary Income</Text>
-              <Text>19,618.03</Text>
+              <Text>{totals.netOrdinaryIncome}</Text>
             </Flex>
             
             <Text fontWeight="semibold" mt={2} mb={1}>Other Income/Expense</Text>
             <Text fontWeight="semibold" mb={1}>Other Income</Text>
             <Flex justify="space-between" mb={1}>
               <Text>70100 - Other Income</Text>
-              <Text>43.53</Text>
+              <Text>0.00</Text>
             </Flex>
             <Flex justify="space-between" fontWeight="semibold" mb={1}>
               <Text>Total Other Income</Text>
-              <Text>43.53</Text>
+              <Text>0.00</Text>
             </Flex>
             <Flex justify="space-between" fontWeight="semibold" mb={2}>
               <Text>Net Other Income</Text>
-              <Text>43.53</Text>
+              <Text>0.00</Text>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" borderTop="2px solid" borderColor="gray.300" pt={2}>
               <Text>Net Income</Text>
-              <Text>19,661.56</Text>
+              <Text>{totals.netIncome}</Text>
             </Flex>
           </Box>
         </Box>

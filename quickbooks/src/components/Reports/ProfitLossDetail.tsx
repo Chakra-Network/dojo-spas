@@ -1,8 +1,54 @@
 import React from 'react';
-import { Box, Text, Flex, Icon, Button, Menu, MenuButton, MenuList, MenuItem, IconButton } from '@chakra-ui/react';
+import { Box, Text, Flex, Button, Menu, MenuButton, MenuList, MenuItem, IconButton } from '@chakra-ui/react';
 import { ChevronDown, RefreshCcw, FileText, Heart, HelpCircle } from 'lucide-react';
+import { useDojoState, Invoice, Expense } from '../../dojo/state';
 
 export const ProfitLossDetail: React.FC = () => {
+  const invoices: Invoice[] = useDojoState('invoices');
+  const expenses: Expense[] = useDojoState('expenses');
+
+  // Calculate dynamic data based on invoices and expenses
+  const calculateDetailedData = () => {
+    let totalSales = 0;
+    let totalCOGS = 0;
+    let totalExpenses = 0;
+
+    const salesByClient: Record<string, number> = {};
+    const expensesByCategory: Record<string, number> = {};
+
+    invoices.forEach((invoice: Invoice) => {
+      if (invoice.status === 'paid') {
+        totalSales += invoice.amount;
+        salesByClient[invoice.clientName] = (salesByClient[invoice.clientName] || 0) + invoice.amount;
+      }
+    });
+
+    expenses.forEach((expense: Expense) => {
+      totalExpenses += expense.amount;
+      expensesByCategory[expense.category] = (expensesByCategory[expense.category] || 0) + expense.amount;
+    });
+
+    // Simplified COGS calculation (e.g., 50% of sales for now)
+    totalCOGS = totalSales * 0.5;
+
+    const grossProfit = totalSales - totalCOGS;
+    const netOrdinaryIncome = grossProfit - totalExpenses;
+    const netIncome = netOrdinaryIncome; // No other income/expense for simplicity
+
+    return {
+      totalSales: totalSales.toFixed(2),
+      totalCOGS: totalCOGS.toFixed(2),
+      grossProfit: grossProfit.toFixed(2),
+      totalExpenses: totalExpenses.toFixed(2),
+      netOrdinaryIncome: netOrdinaryIncome.toFixed(2),
+      netIncome: netIncome.toFixed(2),
+      salesByClient,
+      expensesByCategory,
+    };
+  };
+
+  const detailedData = calculateDetailedData();
+
   return (
     <Flex direction="column" alignItems="center">
       <Box
@@ -49,142 +95,78 @@ export const ProfitLossDetail: React.FC = () => {
             <Text fontWeight="semibold" mt={2} mb={1}>Income</Text>
             <Text fontWeight="medium" ml={2} mb={1}>Sales</Text>
             
-            <Text fontWeight="medium" ml={4} mb={1}>Merchandise</Text>
-            <Box ml={6} mb={1}>
-              <Flex justify="space-between" fontSize="2xs" mb={0.5}>
-                <Text>Sales Receipt 01/02 Sun, Alan</Text>
-                <Flex gap={4}>
-                  <Text>Debit: 0.80</Text>
-                  <Text>Credit: 0.00</Text>
-                  <Text fontWeight="medium">Balance: 0.80</Text>
+            {Object.entries(detailedData.salesByClient).map(([client, amount]) => (
+              <Box key={client} ml={4} mb={1}>
+                <Flex justify="space-between" fontSize="2xs" mb={0.5}>
+                  <Text>{client}</Text>
+                  <Text fontWeight="medium">Balance: {amount.toFixed(2)}</Text>
                 </Flex>
-              </Flex>
-              <Flex justify="space-between" fontSize="2xs" mb={0.5}>
-                <Text>Sales Receipt 01/02 Vu, Don</Text>
-                <Flex gap={4}>
-                  <Text>Debit: 78.90</Text>
-                  <Text>Credit: 0.00</Text>
-                  <Text fontWeight="medium">Balance: 99.60</Text>
-                </Flex>
-              </Flex>
-            </Box>
-            <Flex justify="space-between" fontWeight="semibold" ml={4} mb={2} fontSize="2xs">
-              <Text>Total Merchandise</Text>
-              <Flex gap={4}>
-                <Text>Debit: 79.70</Text>
-                <Text>Credit: 0.00</Text>
-                <Text>Balance: 99.60</Text>
-              </Flex>
-            </Flex>
-            
-            <Text fontWeight="medium" ml={4} mb={1}>Service</Text>
-            <Box ml={6} mb={1}>
-              <Flex justify="space-between" fontSize="2xs" mb={0.5}>
-                <Text>Sales Receipt 01/02 Sun, Alan</Text>
-                <Flex gap={4}>
-                  <Text>Debit: 15.00</Text>
-                  <Text>Credit: 0.00</Text>
-                  <Text fontWeight="medium">Balance: 15.00</Text>
-                </Flex>
-              </Flex>
-              <Flex justify="space-between" fontSize="2xs" mb={0.5}>
-                <Text>Sales Receipt 01/02 Vu, Don</Text>
-                <Flex gap={4}>
-                  <Text>Debit: 20.00</Text>
-                  <Text>Credit: 0.00</Text>
-                  <Text fontWeight="medium">Balance: 104.95</Text>
-                </Flex>
-              </Flex>
-            </Box>
-            <Flex justify="space-between" fontWeight="semibold" ml={4} mb={2} fontSize="2xs">
-              <Text>Total Service</Text>
-              <Flex gap={4}>
-                <Text>Debit: 35.00</Text>
-                <Text>Credit: 0.00</Text>
-                <Text>Balance: 104.95</Text>
-              </Flex>
-            </Flex>
-            
+              </Box>
+            ))}
+
             <Flex justify="space-between" fontWeight="bold" ml={2} mb={2} fontSize="2xs">
               <Text>Total Sales</Text>
               <Flex gap={4}>
-                <Text>Debit: 114.70</Text>
-                <Text>Credit: 0.00</Text>
-                <Text>Balance: 204.55</Text>
+                <Text>Balance: {detailedData.totalSales}</Text>
               </Flex>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" mb={2} fontSize="xs">
               <Text>Total Income</Text>
               <Flex gap={4}>
-                <Text>Debit: 114.70</Text>
-                <Text>Credit: 0.00</Text>
-                <Text>Balance: 204.55</Text>
+                <Text>Balance: {detailedData.totalSales}</Text>
               </Flex>
             </Flex>
             
             <Text fontWeight="semibold" mt={2} mb={1}>Cost of Goods Sold</Text>
-            <Text fontWeight="medium" ml={2} mb={1}>Cost of Goods Sold</Text>
-            <Box ml={4} mb={1}>
-              <Flex justify="space-between" fontSize="2xs" mb={0.5}>
-                <Text>Sales Receipt 01/02 Sun, Alan</Text>
-                <Flex gap={4}>
-                  <Text>Debit: 0.20</Text>
-                  <Text>Credit: 0.00</Text>
-                  <Text fontWeight="medium">Balance: 0.20</Text>
-                </Flex>
-              </Flex>
-              <Flex justify="space-between" fontSize="2xs" mb={0.5}>
-                <Text>Sales Receipt 01/02 Vu, Don</Text>
-                <Flex gap={4}>
-                  <Text>Debit: 19.73</Text>
-                  <Text>Credit: 0.00</Text>
-                  <Text fontWeight="medium">Balance: 24.91</Text>
-                </Flex>
-              </Flex>
-            </Box>
-            <Flex justify="space-between" fontWeight="semibold" ml={2} mb={2} fontSize="2xs">
+            <Flex justify="space-between" fontWeight="bold" ml={2} mb={2} fontSize="2xs">
               <Text>Total Cost of Goods Sold</Text>
               <Flex gap={4}>
-                <Text>Debit: 19.93</Text>
-                <Text>Credit: 0.00</Text>
-                <Text>Balance: 24.91</Text>
+                <Text>Balance: {detailedData.totalCOGS}</Text>
               </Flex>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" mb={2} fontSize="xs">
               <Text>Total COGS</Text>
               <Flex gap={4}>
-                <Text>Debit: 19.93</Text>
-                <Text>Credit: 0.00</Text>
-                <Text>Balance: 24.91</Text>
+                <Text>Balance: {detailedData.totalCOGS}</Text>
               </Flex>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" mb={2} fontSize="xs">
               <Text>Gross Profit</Text>
               <Flex gap={4}>
-                <Text>Debit: 19.93</Text>
-                <Text>Credit: 114.70</Text>
-                <Text>Balance: 179.64</Text>
+                <Text>Balance: {detailedData.grossProfit}</Text>
+              </Flex>
+            </Flex>
+            
+            <Text fontWeight="semibold" mt={2} mb={1}>Expense</Text>
+            {Object.entries(detailedData.expensesByCategory).map(([category, amount]) => (
+              <Box key={category} ml={4} mb={1}>
+                <Flex justify="space-between" fontSize="2xs" mb={0.5}>
+                  <Text>{category}</Text>
+                  <Text fontWeight="medium">Amount: {amount.toFixed(2)}</Text>
+                </Flex>
+              </Box>
+            ))}
+            <Flex justify="space-between" fontWeight="semibold" ml={2} mb={2} fontSize="2xs">
+              <Text>Total Expense</Text>
+              <Flex gap={4}>
+                <Text>Balance: {detailedData.totalExpenses}</Text>
               </Flex>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" mb={2} fontSize="xs">
               <Text>Net Ordinary Income</Text>
               <Flex gap={4}>
-                <Text>Debit: 19.93</Text>
-                <Text>Credit: 114.70</Text>
-                <Text>Balance: 179.64</Text>
+                <Text>Balance: {detailedData.netOrdinaryIncome}</Text>
               </Flex>
             </Flex>
             
             <Flex justify="space-between" fontWeight="bold" borderTop="2px solid" borderColor="gray.300" pt={2} fontSize="xs">
               <Text>Net Income</Text>
               <Flex gap={4}>
-                <Text>Debit: 19.93</Text>
-                <Text>Credit: 114.70</Text>
-                <Text>Balance: 179.64</Text>
+                <Text>Balance: {detailedData.netIncome}</Text>
               </Flex>
             </Flex>
           </Box>
