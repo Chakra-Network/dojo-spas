@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import ReportsSidebar from './ReportsSidebar';
-import { Input, Flex, Box, Spacer, Menu, MenuButton, MenuList, MenuItem, Button, RadioGroup, Radio, Stack, Select, Text } from "@chakra-ui/react";
-import { Search } from "lucide-react";
+import { Box, Flex } from "@chakra-ui/react";
 import { ProfitLossStandard } from "./ProfitLossStandard";
 import { ProfitLossDetail } from "./ProfitLossDetail";
 import ProfitLossStatement from "./ProfitLossStatement"; 
+
+interface ReportsPageProps {
+  // Define any props if needed, otherwise leave empty
+}
 
 export const ReportsPage: React.FC<ReportsPageProps> = () => {
   const [activeCategory, setActiveCategory] = useState<string>("Company & Financial");
@@ -19,7 +22,7 @@ export const ReportsPage: React.FC<ReportsPageProps> = () => {
         <ReportsSidebar activeCategory={activeCategory} onSelectCategory={handleSelectCategory} />
       )}
       
-      <Box flex="1" bg="gray.50" overflow="auto">
+      <Box flex="1" bg="gray.50" overflow="auto" >
         <Box p={1}>
           {activeCategory === "Company & Financial" && (
             <Box>
@@ -33,12 +36,12 @@ export const ReportsPage: React.FC<ReportsPageProps> = () => {
                   </Box>
                 </>
               )}
-              
+
               {!showProfitLossStatement ? (
                 <>
                   <Flex gap={6} mb={6} flexWrap="wrap">
                     <ProfitLossStandard onViewDetailedReport={() => setShowProfitLossStatement(true)} />
-                    <ProfitLossDetail />
+                    <ProfitLossDetail onViewDetailedReport={() => setShowProfitLossStatement(true)} />
                   </Flex>
                   </>
               ) : (

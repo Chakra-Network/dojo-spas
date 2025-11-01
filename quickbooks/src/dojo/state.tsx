@@ -20,6 +20,30 @@ export interface Expense {
   receiptUrl?: string;
 }
 
+export interface CustomerTransaction {
+  type: string;
+  num: string;
+  date: string;
+  account: string;
+  amount: string | number;
+}
+
+export interface Customer {
+  name: string;
+  balance: number;
+  transactions?: CustomerTransaction[];
+  children?: Customer[];
+  phone?: string;
+  ownerName?: string;
+  altPhone?: string;
+  type?: string;
+  fax?: string;
+  terms?: string;
+  email?: string;
+  address?: string;
+  id?: string;
+}
+
 export interface BankTransaction {
   id: string;
   date: string;
@@ -41,6 +65,7 @@ export interface DojoState {
   expenses: Expense[];
   bankTransactions: BankTransaction[];
   auditLog: AuditLogEntry[];
+  customers: Customer[];
 }
 
 // ---------- Global Store ----------
@@ -49,6 +74,7 @@ let globalState: DojoState = {
   expenses: [],
   bankTransactions: [],
   auditLog: [],
+  customers: [],
 };
 
 const listeners = new Set<() => void>();
@@ -84,7 +110,9 @@ export const dojo = {
 
   subscribe(listener: () => void) {
     listeners.add(listener);
-    return () => listeners.delete(listener);
+    return () => {
+      listeners.delete(listener);
+    };
   },
 };
 
@@ -134,6 +162,7 @@ export function initializeDojoState(initialData: Partial<DojoState>) {
     expenses: initialData.expenses || [],
     bankTransactions: initialData.bankTransactions || [],
     auditLog: initialData.auditLog || [],
+    customers: initialData.customers || [],
   };
   listeners.forEach((l) => l());
 }

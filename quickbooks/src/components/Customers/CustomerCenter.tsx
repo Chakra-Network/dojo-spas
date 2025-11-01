@@ -1,7 +1,30 @@
-import React, { useState } from 'react';
-import transaction from "./transactions.json"; // your JSON file
+import { useState } from 'react';
+import { useDojoState } from '../../dojo/state';
 
-// fallback sample data (keeps hierarchy / children structure for left list)
+interface CustomerTransaction {
+  type: string;
+  num: string;
+  date: string;
+  account: string;
+  amount: string | number;
+}
+
+interface Customer {
+  name: string;
+  balance: number;
+  transactions?: CustomerTransaction[];
+  children?: Customer[];
+  phone?: string;
+  ownerName?: string;
+  altPhone?: string;
+  type?: string;
+  fax?: string;
+  terms?: string;
+  email?: string;
+  address?: string;
+  id?: string;
+}
+
 const customersDataFallback = [
   { name: "Aaron's Photography Studio", balance: 85.00, children: [] },
   { name: "Alamo Foundation", balance: 16295.00, children: [] },
@@ -61,7 +84,17 @@ const customersDataFallback = [
 ];
 
 // Helper component: a single row (recursively renders children)
-function CustomerRow({ customer, level = 0, onSelect, selected }) {
+function CustomerRow({
+  customer,
+  level = 0,
+  onSelect,
+  selected,
+}: {
+  customer: Customer;
+  level?: number;
+  onSelect: (customer: Customer) => void;
+  selected?: string;
+}) {
   const [expanded, setExpanded] = useState(true);
   const hasChildren = customer.children && customer.children.length > 0;
   const isSelected = selected === customer.name;
@@ -120,7 +153,7 @@ function CustomerRow({ customer, level = 0, onSelect, selected }) {
         }}>
         </td>
       </tr>
-      {hasChildren && expanded && customer.children.map((child, idx) => (
+      {hasChildren && expanded && customer.children && customer.children.map((child, idx) => (
         <CustomerRow 
           key={idx} 
           customer={child} 
@@ -134,47 +167,27 @@ function CustomerRow({ customer, level = 0, onSelect, selected }) {
 }
 
 export function CustomerCenter() {
-  // Use imported transaction JSON if it has data; otherwise fallback to customersDataFallback
-  const leftList = (Array.isArray(transaction) && transaction.length > 0) ? transaction : customersDataFallback;
+  const customers: Customer[] = useDojoState("customers");
+  const initialCustomers: Customer[] = customers.length > 0 ? customers : customersDataFallback;
 
-  // Default selected: try to pick Auldridge Windows if present, otherwise first entry
   const defaultSelected = (() => {
-    if (Array.isArray(transaction) && transaction.length > 0) {
-      const found = transaction.find(item => item.name && item.name.toLowerCase().includes('auldridge'));
-      return found || transaction[0];
+    if (initialCustomers.length > 0) {
+      const found = initialCustomers.find((item: Customer) => item.name && item.name.toLowerCase().includes('auldridge'));
+      return found || initialCustomers[0];
     }
-    // fallback: find in fallback
-    const foundFallback = customersDataFallback.find(item => item.name && item.name.toLowerCase().includes('auldridge'));
-    return foundFallback || customersDataFallback[0];
+    return customersDataFallback[0];
   })();
 
-  // selectedCustomer will be set to an object that likely comes from transaction.json (so it has `transactions`, `name`, etc)
-  const [selectedCustomer, setSelectedCustomer] = useState(defaultSelected);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | undefined>(defaultSelected);
   const [activeTab, setActiveTab] = useState('customers');
 
-  // when a customer row is clicked: try to find a matching company object in transaction (by name)
-  function handleSelect(customer) {
+  function handleSelect(customer: Customer) {
     if (!customer) return;
-    // prefer to match against transaction import array if it exists
-    if (Array.isArray(transaction) && transaction.length > 0) {
-      const found = transaction.find(t => t.name && customer.name && t.name.toLowerCase() === customer.name.toLowerCase());
-      if (found) {
-        setSelectedCustomer(found);
-        return;
-      }
-      // try looser match (includes)
-      const loose = transaction.find(t => t.name && customer.name && t.name.toLowerCase().includes(customer.name.toLowerCase()));
-      if (loose) {
-        setSelectedCustomer(loose);
-        return;
-      }
-    }
-    // fallback to the clicked object itself
     setSelectedCustomer(customer);
   }
 
   // helper to display safe text value (or placeholder)
-  const show = (val, placeholder = '') => (val === undefined || val === null ? placeholder : val);
+  const show = (val: any, placeholder = '') => (val === undefined || val === null ? placeholder : val);
 
   return (
     <div style={{ 
@@ -403,7 +416,7 @@ export function CustomerCenter() {
                 </tr>
               </thead>
               <tbody>
-                {leftList.map((cust, idx) => (
+                {initialCustomers.map((cust: Customer, idx: number) => (
                   <CustomerRow 
                     key={idx} 
                     customer={cust} 

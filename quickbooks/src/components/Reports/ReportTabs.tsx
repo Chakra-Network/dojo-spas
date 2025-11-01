@@ -7,7 +7,7 @@ interface ReportTabsProps {
   onSelectTab: (tab: string) => void;
 }
 
-const tabs = ["Standard", "Memorized", "Favorites", "Contributed"]; // Removed "Recent"
+const tabs = ["Standard", "Memorized", "Favorites", "Contributed"]; 
 
 const ReportTabs: React.FC<ReportTabsProps> = ({ activeTab, onSelectTab }) => {
   return (
