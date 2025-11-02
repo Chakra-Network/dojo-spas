@@ -191,25 +191,40 @@ export function Invoices() {
             </tr>
           </thead>
           <tbody>
-            {/* Map over filteredData to create rows */}
-            {filteredData.map((rowData: TableRowData) => (
-              <tr key={rowData.id} style={{ color: "black", borderBottom: '1px solid #555', backgroundColor: "white" }}>
-                <td style={{ padding: '8px', borderRight: '1px solid #555' }}><input type="checkbox" /></td>
-                <td style={{ padding: '8px', borderRight: '1px solid #555' }}>{rowData.customerName}</td>
-                <td style={{ padding: '8px', borderRight: '1px solid #555' }}>{rowData.type}</td>
-                <td style={{ padding: '8px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.time.toFixed(2)}</td>
-                <td style={{ padding: '8px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.expenses.toFixed(2)}</td>
-                <td style={{ padding: '8px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.mileage.toFixed(2)}</td>
-                <td style={{ padding: '8px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.items.toFixed(2)}</td>
-                <td style={{ padding: '8px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.amount.toFixed(2)}</td>
-                <td style={{ padding: '8px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.openBalance.toFixed(2)}</td>
-                <td style={{ padding: '8px', borderRight: '1px solid #555' }}>{rowData.status}</td>
-                <td style={{ padding: '8px', textAlign: 'left' }}>
-                  <Select size="sm" bg="#666666" border="1px solid #777" color="white" onChange={(e) => {
-                    if (e.target.value === 'view') handleViewDetails(rowData.originalData);
-                    if (rowData.type === 'Invoice' && rowData.originalData && 'status' in rowData.originalData && rowData.originalData.status === 'unpaid' && e.target.value === 'mark_paid') handleMarkAsPaid(rowData.originalData as Invoice);
-                    if (rowData.type === 'Invoice' && rowData.originalData && 'status' in rowData.originalData && rowData.originalData.status === 'unpaid' && e.target.value === 'remind') handleSendReminder(rowData.originalData as Invoice);
-                  }}>
+            {filteredData.map((rowData: TableRowData, index: number) => (
+              <tr
+                key={rowData.id}
+                style={{
+                  color: "black",
+                  fontWeight: "bold",
+                  borderBottom: "1px solid #555",
+                  backgroundColor: index % 2 === 1 ? "#e0eefc" : "white", // every even row gets blue bg
+                }}
+              >
+                <td style={{ padding: '3px', borderRight: '1px solid #555' }}><input type="checkbox" /></td>
+                <td style={{ padding: '3px', borderRight: '1px solid #555' }}>{rowData.customerName}</td>
+                <td style={{ padding: '3px', borderRight: '1px solid #555' }}>{rowData.type}</td>
+                <td style={{ padding: '3px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.time.toFixed(2)}</td>
+                <td style={{ padding: '3px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.expenses.toFixed(2)}</td>
+                <td style={{ padding: '3px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.mileage.toFixed(2)}</td>
+                <td style={{ padding: '3px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.items.toFixed(2)}</td>
+                <td style={{ padding: '3px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.amount.toFixed(2)}</td>
+                <td style={{ padding: '3px', textAlign: 'right', borderRight: '1px solid #555' }}>{rowData.openBalance.toFixed(2)}</td>
+                <td style={{ padding: '3px', borderRight: '1px solid #555' }}>{rowData.status}</td>
+                <td style={{ padding: '3px', textAlign: 'left' }}>
+                  <Select
+                    size="sm"
+                    bg="white"
+                    border="1px solid #777"
+                    color="black"
+                    onChange={(e) => {
+                      if (e.target.value === 'view') handleViewDetails(rowData.originalData);
+                      if (rowData.type === 'Invoice' && rowData.originalData && 'status' in rowData.originalData && rowData.originalData.status === 'unpaid' && e.target.value === 'mark_paid')
+                        handleMarkAsPaid(rowData.originalData as Invoice);
+                      if (rowData.type === 'Invoice' && rowData.originalData && 'status' in rowData.originalData && rowData.originalData.status === 'unpaid' && e.target.value === 'remind')
+                        handleSendReminder(rowData.originalData as Invoice);
+                    }}
+                  >
                     <option value="select">Select</option>
                     <option value="view">View</option>
                     {rowData.type === 'Invoice' && rowData.status === 'Open' && <option value="mark_paid">Mark as Paid</option>}
@@ -218,15 +233,16 @@ export function Invoices() {
                 </td>
               </tr>
             ))}
+
           </tbody>
         </table>
       </Box>
 
       {/* Bottom Action Bar and Pagination */}
-      <Flex bg="#333333" p={2} justify="space-between" align="center" borderTop="1px solid #555">
+      <Flex bg="white" color="black" p={2} justify="space-between" align="center" borderTop="1px solid #555">
         <HStack spacing={2}>
-          <Button size="sm" bg="#6b46c1" color="white" _hover={{ bg: "#805ad5" }}>Batch Actions</Button>
-          <Button size="sm" bg="#4299e1" color="white" _hover={{ bg: "#63b3ed" }}>Manage Transactions</Button>
+          <Button size="sm" bg="grey" color="white" _hover={{ bg: "#805ad5" }}>Batch Actions</Button>
+          <Button size="sm" bg="grey" color="white" _hover={{ bg: "#63b3ed" }}>Manage Transactions</Button>
         </HStack>
         <HStack>
           <Text>Total: {totalAmountInTable.toFixed(2)}</Text>
