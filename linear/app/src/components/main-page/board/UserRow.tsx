@@ -28,7 +28,7 @@ export default function UserRow({
   hoveredSectionId,
   activeSectionId,
 }: UserRowProps) {
-  const { toggleUserRowVisibility } = useLinearState();
+  const { toggleUserRowVisibility, hiddenColumnStatuses } = useLinearState();
   const totalIssues = Array.from(issuesByStatus.values()).reduce(
     (sum, issues) => sum + issues.length,
     0
@@ -88,7 +88,9 @@ export default function UserRow({
 
       {/* User sections across all columns */}
       <div className="flex min-w-fit">
-        {COLUMNS.map((column) => {
+        {COLUMNS.filter(
+          (column) => !hiddenColumnStatuses.includes(column.status)
+        ).map((column) => {
           const sectionId = user
             ? `${column.status}-${user.id}`
             : `${column.status}-unassigned`;

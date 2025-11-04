@@ -18,6 +18,12 @@ import HiddenRowsSection from "./HiddenRowsSection";
 import { useLinearState } from "@/context/LinearStateContext";
 import { Ellipsis, Plus } from "lucide-react";
 import Button from "@/components/common/Button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function KanbanBoard() {
   const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
@@ -28,6 +34,8 @@ export default function KanbanBoard() {
     users,
     handleReorderIssues: onReorderIssues,
     hiddenUserIds,
+    hiddenColumnStatuses,
+    toggleColumnVisibility,
   } = useLinearState();
 
   // Group issues by user and status
@@ -190,7 +198,9 @@ export default function KanbanBoard() {
       <div className="flex flex-col min-h-full min-w-fit">
         {/* Column headers */}
         <div className="flex sticky top-0 z-20 h-[50px] min-w-fit pr-1 bg-background-3">
-          {COLUMNS.map((column) => {
+          {COLUMNS.filter(
+            (column) => !hiddenColumnStatuses.includes(column.status)
+          ).map((column) => {
             const config = STATUS_CONFIG[column.status];
             const columnIssues = issues.filter(
               (issue) => issue.status === column.status
@@ -214,9 +224,24 @@ export default function KanbanBoard() {
                     </span>
                   </div>
                   <div className="flex items-center gap-[2px]">
-                    <Button variant="ghost" size="icon">
-                      <Ellipsis className="w-4 h-4" />
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Ellipsis className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-[174px] min-w-[174px]"
+                        onCloseAutoFocus={(e) => e.preventDefault()}
+                      >
+                        <DropdownMenuItem
+                          onClick={() => toggleColumnVisibility(column.status)}
+                        >
+                          Hide column
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button variant="ghost" size="icon">
                       <Plus className="w-4 h-4" />
                     </Button>

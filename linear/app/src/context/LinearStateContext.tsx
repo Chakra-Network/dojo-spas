@@ -18,6 +18,7 @@ import type {
   Cycle,
   Project,
   Milestone,
+  IssueStatus,
 } from "@/lib/types";
 import { useDojoState } from "@chakra-dev/dojo-hooks";
 import {
@@ -50,6 +51,8 @@ interface LinearStateContextType {
   setIsNewIssueModalOpen: (isNewIssueModalOpen: boolean) => void;
   hiddenUserIds: string[];
   toggleUserRowVisibility: (userId: string) => void;
+  hiddenColumnStatuses: IssueStatus[];
+  toggleColumnVisibility: (status: IssueStatus) => void;
   kanbanContainerRef: React.RefObject<HTMLDivElement | null>;
   showRightSidebar: boolean;
   toggleRightSidebar: () => void;
@@ -66,6 +69,7 @@ interface LinearState {
   taskId?: string;
   isNewIssueModalOpen: boolean;
   hiddenUserIds: string[];
+  hiddenColumnStatuses: IssueStatus[];
   showRightSidebar: boolean;
 }
 
@@ -90,6 +94,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     taskId: undefined,
     isNewIssueModalOpen: false,
     hiddenUserIds: [],
+    hiddenColumnStatuses: [],
     showRightSidebar: true,
   });
 
@@ -225,6 +230,19 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     [setState]
   );
 
+  const toggleColumnVisibility = useCallback(
+    (status: IssueStatus) => {
+      setState((prevState) => {
+        const isHidden = prevState.hiddenColumnStatuses.includes(status);
+        const hiddenColumnStatuses = isHidden
+          ? prevState.hiddenColumnStatuses.filter((s) => s !== status)
+          : [...prevState.hiddenColumnStatuses, status];
+        return { ...prevState, hiddenColumnStatuses };
+      });
+    },
+    [setState]
+  );
+
   const toggleRightSidebar = useCallback(() => {
     setState((prevState) => ({
       ...prevState,
@@ -252,6 +270,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       setIsNewIssueModalOpen,
       hiddenUserIds: state.hiddenUserIds,
       toggleUserRowVisibility,
+      hiddenColumnStatuses: state.hiddenColumnStatuses,
+      toggleColumnVisibility,
       kanbanContainerRef,
       showRightSidebar: state.showRightSidebar,
       toggleRightSidebar,
@@ -275,6 +295,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       setIsNewIssueModalOpen,
       state.hiddenUserIds,
       toggleUserRowVisibility,
+      state.hiddenColumnStatuses,
+      toggleColumnVisibility,
       kanbanContainerRef,
       state.showRightSidebar,
       toggleRightSidebar,

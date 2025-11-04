@@ -56,25 +56,27 @@ export default function HiddenRowsSection({
 
   return (
     <div
-      className="mt-2 flex flex-col sticky left-0 z-10 bg-background-2 pl-2 pt-[10px] pb-5"
+      className="mt-2 flex flex-col sticky left-0 z-10 bg-background-2 pt-[10px] pb-5"
       style={{ width: containerWidth > 0 ? `${containerWidth}px` : "100%" }}
     >
       {/* Section header */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center text-[13px] text-neutral-3"
-      >
-        <div className="w-6 h-6 flex items-center justify-center">
-          <TriangleDown
-            className={cn(
-              "w-[18px] h-[18px] mt-[1px] transition-all text-neutral-3 hover:text-neutral-1",
-              isExpanded ? "rotate-90" : "rotate-0"
-            )}
-          />
-        </div>
-        <span className="font-medium ml-1">Hidden rows</span>
-        <span className="ml-[10px]">{hiddenUsers.length}</span>
-      </button>
+      <div className="sticky left-0 w-fit">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center text-[13px] text-neutral-3"
+        >
+          <div className="w-6 h-6 flex items-center justify-center">
+            <TriangleDown
+              className={cn(
+                "w-[18px] h-[18px] mt-[1px] transition-all text-neutral-3 hover:text-neutral-1",
+                isExpanded ? "rotate-90" : "rotate-0"
+              )}
+            />
+          </div>
+          <span className="font-medium ml-1">Hidden rows</span>
+          <span className="ml-[10px]">{hiddenUsers.length}</span>
+        </button>
+      </div>
 
       {/* Hidden user rows */}
       {isExpanded && (
@@ -86,7 +88,7 @@ export default function HiddenRowsSection({
                 key={userId}
                 className="flex items-center justify-between h-[40px] bg-card-bg rounded p-1 pl-3"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 sticky left-2">
                   {user ? (
                     <>
                       <Avatar src={user.avatar} alt={user.name} size="sm" />
