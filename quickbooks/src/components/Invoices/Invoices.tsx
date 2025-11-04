@@ -109,9 +109,12 @@ export function Invoices() {
   };
 
   const handleSendReminder = (invoice: Invoice) => {
+    const updatedInvoices = invoices.map((inv) =>
+      inv.id === invoice.id ? { ...inv, lastReminderSent: Date.now() } : inv
+    );
     dojo.setState(
       'invoices',
-      invoices,
+      updatedInvoices,
       `Sent payment reminder for invoice ${invoice.id} to ${invoice.clientName}`
     );
   };
@@ -121,6 +124,26 @@ export function Invoices() {
       inv.id === invoiceId ? { ...inv, lineItems: updatedLineItems, amount: updatedLineItems.reduce((sum, item) => sum + item.quantity * item.rate, 0) } : inv
     );
     dojo.setState('invoices', updatedInvoices, `Edited line items for invoice ${invoiceId}`);
+  };
+
+  const handleConvertToBill = (expense: Expense) => {
+    const newInvoice: Invoice = {
+      id: `inv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      clientName: expense.description, // Or a more sophisticated way to derive client name
+      amount: expense.amount,
+      status: 'unpaid',
+      dueDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0],
+      lineItems: [{ description: expense.description, quantity: 1, rate: expense.amount }],
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+
+    const updatedInvoices = [...invoices, newInvoice];
+    dojo.setState('invoices', updatedInvoices, `Converted expense ${expense.id} to invoice ${newInvoice.id}`);
+
+    const updatedExpenses = expenses.map((exp) =>
+      exp.id === expense.id ? { ...exp, isBilled: true } : exp
+    );
+    dojo.setState('expenses', updatedExpenses, `Marked expense ${expense.id} as billed`);
   };
 
   const handleCloseModal = () => {
@@ -223,12 +246,15 @@ export function Invoices() {
                         handleMarkAsPaid(rowData.originalData as Invoice);
                       if (rowData.type === 'Invoice' && rowData.originalData && 'status' in rowData.originalData && rowData.originalData.status === 'unpaid' && e.target.value === 'remind')
                         handleSendReminder(rowData.originalData as Invoice);
+                      if (rowData.type === 'Time & Expense' && rowData.originalData && !('isBilled' in rowData.originalData && rowData.originalData.isBilled) && e.target.value === 'convert_to_bill')
+                        handleConvertToBill(rowData.originalData as Expense);
                     }}
                   >
                     <option value="select">Select</option>
                     <option value="view">View</option>
                     {rowData.type === 'Invoice' && rowData.status === 'Open' && <option value="mark_paid">Mark as Paid</option>}
                     {rowData.type === 'Invoice' && rowData.status === 'Open' && <option value="remind">Send Reminder</option>}
+                    {rowData.type === 'Time & Expense' && !(('isBilled' in rowData.originalData) && (rowData.originalData as Expense).isBilled) && <option value="convert_to_bill">Convert to Bill</option>}
                   </Select>
                 </td>
               </tr>

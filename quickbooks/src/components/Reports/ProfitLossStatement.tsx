@@ -26,41 +26,85 @@
     MenuItem,
   } from '@chakra-ui/react';
   import { ChevronDownIcon, ChevronRightIcon, ArrowDownIcon, RepeatIcon } from 'lucide-react';
+  import { useDojoState, Invoice, Expense } from '../../dojo/state';
 
   export default function ProfitLossReport() {
-    const [fromDate, setFromDate] = useState('2021-01-01');
-    const [toDate, setToDate] = useState('2021-08-05');
+    const [fromDate, setFromDate] = useState('2025-01-01');
+    const [toDate, setToDate] = useState('2025-12-31');
     const [reportBasis, setReportBasis] = useState('accrual');
     const [showFilters, setShowFilters] = useState(false);
     
+    const invoices: Invoice[] = useDojoState('invoices');
+    const expenses: Expense[] = useDojoState('expenses');
+
     // Calculate dynamic report data
     const calculateReportData = () => {
-        const dummyData = {
-            income: {
-                constructionIncome: 300,
-                freightIncome: 200,
-                partsSales: 250,
-                serviceIncome: 250,
-                total: 1000,
-            },
-            cogs: {
-                constructionLabor: 150,
-                costOfSales: 100,
-                materials: 100,
-                total: 350,
-            },
-            grossProfit: 650,
-            expenses: {
-                advertising: { web: { bannerAds: 50, socialMedia: 50, total: 100 }, print: { newspapersMagazines: 50, brochures: 50, total: 100 }, total: 200 },
-                bankServiceCharges: 20,
-                cleaning: 30,
-                duesSubscriptions: 40,
-                equipmentRental: 50,
-            },
-            netOrdinaryIncome: 310,
-            netIncome: 310,
-        };
-        return dummyData;
+      const startDate = new Date(fromDate);
+      const endDate = new Date(toDate);
+
+      const filteredInvoices = invoices.filter(invoice => {
+        const invoiceDate = new Date(invoice.createdAt);
+        return invoiceDate >= startDate && invoiceDate <= endDate;
+      });
+
+      const filteredExpenses = expenses.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= startDate && expenseDate <= endDate;
+      });
+
+      let totalIncome = 0;
+      filteredInvoices.forEach(invoice => {
+        if (invoice.status === 'paid') {
+          totalIncome += invoice.amount;
+        }
+      });
+
+      const totalCOGS = totalIncome * 0.5; // Simplified COGS as 50% of income
+
+      let totalExpenses = 0;
+      const expensesByCategory: Record<string, number> = {};
+
+      filteredExpenses.forEach(expense => {
+        totalExpenses += expense.amount;
+        expensesByCategory[expense.category] = (expensesByCategory[expense.category] || 0) + expense.amount;
+      });
+
+      const grossProfit = totalIncome - totalCOGS;
+      const netOrdinaryIncome = grossProfit - totalExpenses;
+      const netIncome = netOrdinaryIncome;
+
+      const reportData = {
+          income: {
+              constructionIncome: expensesByCategory['Construction Income'] || 0, // Placeholder, needs actual income categorization
+              freightIncome: expensesByCategory['Freight Income'] || 0,     // Placeholder
+              partsSales: expensesByCategory['Parts Sales'] || 0,         // Placeholder
+              serviceIncome: expensesByCategory['Service Income'] || 0,     // Placeholder
+              total: totalIncome,
+          },
+          cogs: {
+              constructionLabor: expensesByCategory['Construction Labor'] || 0, // Placeholder
+              costOfSales: expensesByCategory['Cost of Sales'] || 0,       // Placeholder
+              materials: expensesByCategory['Materials'] || 0,             // Placeholder
+              total: totalCOGS,
+          },
+          grossProfit: grossProfit,
+          expenses: {
+              advertising: {
+                web: { bannerAds: 0, socialMedia: 0, total: expensesByCategory['Advertising'] || 0 }, // Simplified
+                print: { newspapersMagazines: 0, brochures: 0, total: 0 }, // Simplified
+                total: expensesByCategory['Advertising'] || 0 // Sum of all advertising
+              },
+              bankServiceCharges: expensesByCategory['Bank Service Charges'] || 0,
+              cleaning: expensesByCategory['Cleaning'] || 0,
+              duesSubscriptions: expensesByCategory['Dues & Subscriptions'] || 0,
+              equipmentRental: expensesByCategory['Equipment Rental'] || 0,
+              // Add other categories here as needed, or aggregate
+              total: totalExpenses
+          },
+          netOrdinaryIncome: netOrdinaryIncome,
+          netIncome: netIncome,
+      };
+      return reportData;
     };
 
     const reportData = calculateReportData();

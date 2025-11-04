@@ -9,6 +9,7 @@ export interface Invoice {
   dueDate: string;
   lineItems: { description: string; quantity: number; rate: number }[];
   createdAt: string;
+  lastReminderSent?: number;
 }
 
 export interface Expense {
@@ -19,6 +20,7 @@ export interface Expense {
   date: string;
   receiptUrl?: string;
   status: 'paid' | 'unpaid';
+  isBilled?: boolean;
 }
 
 export interface CustomerTransaction {
