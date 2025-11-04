@@ -32,6 +32,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
     amount: '',
     date: new Date().toISOString().split('T')[0],
     receiptUrl: '',
+    status: 'unpaid',
   });
 
   const categories = [
@@ -63,6 +64,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
       amount: parseFloat(formData.amount),
       date: new Date(formData.date).toISOString(),
       receiptUrl: formData.receiptUrl,
+      status: formData.status as 'paid' | 'unpaid',
     };
 
     dojo.setState(
@@ -86,6 +88,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
       amount: '',
       date: new Date().toISOString().split('T')[0],
       receiptUrl: '',
+      status: 'unpaid',
     });
 
     onClose();

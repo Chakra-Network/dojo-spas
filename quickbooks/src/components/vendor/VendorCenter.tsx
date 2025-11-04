@@ -1,111 +1,31 @@
 import { useState } from 'react';
 import { useDojoState } from '../../dojo/state';
 import { dojo } from '../../dojo/state';
-import { NewCustomerModal } from './NewCustomerModal';
+import { NewVendorModal } from './NewVendorModal'; // Will create this file later
+import { Vendor, VendorTransaction } from '../../dojo/state';
 import { AddTransactionModal } from '../common/AddTransactionModal';
 
-interface CustomerTransaction {
-  type: string;
-  num: string;
-  date: string;
-  account: string;
-  amount: string | number;
-}
-
-interface Customer {
-  name: string;
-  balance: number;
-  transactions?: CustomerTransaction[];
-  children?: Customer[];
-  phone?: string;
-  ownerName?: string;
-  altPhone?: string;
-  type?: string;
-  fax?: string;
-  terms?: string;
-  email?: string;
-  address?: string;
-  id: string;
-}
-
-const customersDataFallback = [
-  { name: "Aaron's Photography Studio", balance: 85.00, id: "cust-1", children: [] },
-  { name: "Alamo Foundation", balance: 16295.00, id: "cust-2", children: [] },
-  { name: "Amy's Bird Sanctuary", balance: 750.00, id: "cust-3", children: [] },
-  { 
-    name: "Auldridge Windows", 
-    balance: 53472.00,
-    id: "cust-4",
-    transactions: [
-      { type: "Payment", num: "2929", date: "02/25/2023", account: "Checking", amount: 10000.00 },
-      { type: "Payment", num: "39992", date: "02/07/2023", account: "Checking", amount: 2494.12 },
-      { type: "Invoice", num: "40", date: "01/28/2023", account: "Accounts Receiva...", amount: 7874.50 },
-      { type: "Invoice", num: "24", date: "01/01/2023", account: "Accounts Receiva...", amount: 2494.12 },
-      { type: "Invoice", num: "25", date: "01/01/2023", account: "Accounts Receiva...", amount: 21972.50 },
-      { type: "Invoice", num: "26", date: "01/01/2023", account: "Accounts Receiva...", amount: 33625.00 }
-    ],
-    children: [] 
-  },
-  { name: "Bill's Windsurf Shop", balance: 150.00, id: "cust-5", children: [] },
-  { 
-    name: "Building 101", 
-    balance: 0.00,
-    id: "cust-6",
-    children: [
-      { name: "Unit 1", balance: 0.00, id: "cust-6-1", children: [
-        { name: "Tenant - Smith", balance: 0.00, id: "cust-6-1-1", children: [] }
-      ]},
-      { name: "Unit 2", balance: 0.00, id: "cust-6-2", children: [
-        { name: "Tenant - Jones", balance: 0.00, id: "cust-6-2-1", children: [] }
-      ]}
-    ]
-  },
-  { 
-    name: "Building 201", 
-    balance: 0.00,
-    id: "cust-7",
-    children: [
-      { name: "Unit 1", balance: 0.00, id: "cust-7-1", children: [
-        { name: "Tenant - Johnson", balance: 0.00, id: "cust-7-1-1", children: [] }
-      ]}
-    ]
-  },
-  { name: "Cassie's Dog Grooming", balance: 1125.00, id: "cust-8", children: [] },
-  { 
-    name: "Columbia Management", 
-    balance: 0.00,
-    id: "cust-9",
-    children: [
-      { name: "Seattle School", balance: 0.00, id: "cust-9-1", children: [] },
-      { name: "Spokane Civic Center", balance: 0.00, id: "cust-9-2", children: [] }
-    ]
-  },
-  { name: "Cool Cars", balance: 0.00, id: "cust-10", children: [] },
-  { 
-    name: "Crandall Contractors", 
-    balance: 27320.34,
-    id: "cust-11",
-    children: [
-      { name: "Cheyenne 1", balance: 27320.34, id: "cust-11-1", children: [] }
-    ]
-  }
+const vendorsDataFallback = [
+  { name: "Office Supplies Inc.", balance: 1200.50, id: "vend-1", children: [], transactions: [], contactName: "Alice Smith", email: "alice@officesupplies.com", phone: "555-111-2222", address: "123 Main St, Anytown, USA" },
+  { name: "Tech Solutions LLC", balance: 5000.00, id: "vend-2", children: [], transactions: [], contactName: "Bob Johnson", email: "bob@techsolutions.com", phone: "555-333-4444", address: "456 Tech Ave, Techville, USA"  },
+  { name: "Cleaning Services Co.", balance: 300.00, id: "vend-3", children: [], transactions: [], contactName: "Charlie Brown", email: "charlie@cleaningservices.com", phone: "555-555-6666", address: "789 Clean Rd, Sparkle City, USA"  }
 ];
 
 // Helper component: a single row (recursively renders children)
-function CustomerRow({
-  customer,
+function VendorRow({
+  vendor,
   level = 0,
   onSelect,
   selected,
 }: {
-  customer: Customer;
+  vendor: Vendor;
   level?: number;
-  onSelect: (customer: Customer) => void;
+  onSelect: (vendor: Vendor) => void;
   selected?: string;
 }) {
   const [expanded, setExpanded] = useState(true);
-  const hasChildren = customer.children && customer.children.length > 0;
-  const isSelected = selected === customer.name;
+  const hasChildren = vendor.children && vendor.children.length > 0; // Assuming vendors can have children for now
+  const isSelected = selected === vendor.name;
   
   return (
     <>
@@ -115,7 +35,7 @@ function CustomerRow({
           cursor: 'pointer',
           borderBottom: '1px solid #e5e7eb'
         }}
-        onClick={() => onSelect(customer)}
+        onClick={() => onSelect(vendor)}
       >
         <td style={{ 
           padding: '4px 8px',
@@ -142,7 +62,7 @@ function CustomerRow({
               </span>
             )}
             {!hasChildren && <span style={{ width: '12px', display: 'inline-block' }}></span>}
-            {customer.name}
+            {vendor.name}
           </div>
         </td>
         <td style={{ 
@@ -151,7 +71,7 @@ function CustomerRow({
           fontSize: '18px',
           fontFamily: 'Tahoma, Arial, sans-serif'
         }}>
-          {(customer.balance ?? 0).toFixed(2)}
+          {(vendor.balance ?? 0).toFixed(2)}
         </td>
         <td style={{ 
           padding: '4px 8px',
@@ -161,10 +81,10 @@ function CustomerRow({
         }}>
         </td>
       </tr>
-      {hasChildren && expanded && customer.children && customer.children.map((child) => (
-        <CustomerRow 
+      {hasChildren && expanded && vendor.children && vendor.children.map((child: Vendor) => (
+        <VendorRow 
           key={child.id} 
-          customer={child} 
+          vendor={child} 
           level={level + 1} 
           onSelect={onSelect} 
           selected={selected}
@@ -174,27 +94,27 @@ function CustomerRow({
   );
 }
 
-export function CustomerCenter() {
-  const customers: Customer[] = useDojoState("customers");
-  const initialCustomers: Customer[] = customers.length > 0 ? customers : customersDataFallback;
+export function VendorCenter() {
+  const vendors: Vendor[] = useDojoState("vendors");
+  const initialVendors: Vendor[] = vendors.length > 0 ? vendors : vendorsDataFallback;
 
   const defaultSelected = (() => {
-    if (initialCustomers.length > 0) {
-      const found = initialCustomers.find((item: Customer) => item.name && item.name.toLowerCase().includes('auldridge'));
-      return found || initialCustomers[0];
+    if (initialVendors.length > 0) {
+      const found = initialVendors.find((item: Vendor) => item.name && item.name.toLowerCase().includes('office'));
+      return found || initialVendors[0];
     }
-    return customersDataFallback[0];
+    return vendorsDataFallback[0];
   })();
 
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | undefined>(defaultSelected);
-  const [activeTab, setActiveTab] = useState('customers');
+  const [selectedVendor, setSelectedVendor] = useState<Vendor | undefined>(defaultSelected);
+  const [activeTab, setActiveTab] = useState('vendors');
   const [isEditing, setIsEditing] = useState(false);
-  const [isNewCustomerModalOpen, setIsNewCustomerModalOpen] = useState(false);
+  const [isNewVendorModalOpen, setIsNewVendorModalOpen] = useState(false);
   const [isAddTransactionModalOpen, setIsAddTransactionModalOpen] = useState(false);
 
-  function handleSelect(customer: Customer) {
-    if (!customer) return;
-    setSelectedCustomer(customer);
+  function handleSelect(vendor: Vendor) {
+    if (!vendor) return;
+    setSelectedVendor(vendor);
   }
 
   // helper to display safe text value (or placeholder)
@@ -222,9 +142,9 @@ export function CustomerCenter() {
           alignItems: 'center',
           gap: '8px'
         }}
-        onClick={() => setIsNewCustomerModalOpen(true)}
+        onClick={() => setIsNewVendorModalOpen(true)}
         >
-          <span>📄</span> New Customer & Job <span style={{ fontSize: '20px' }}>▼</span>
+          <span>📄</span> New Vendor <span style={{ fontSize: '20px' }}>▼</span>
         </button>
 
         <button style={{
@@ -298,7 +218,7 @@ export function CustomerCenter() {
 
       {/* Main Content */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Center Panel - Customer List */}
+        {/* Center Panel - Vendor List */}
         <div style={{ 
           width: '420px',
           backgroundColor: '#F5F5F5',
@@ -311,16 +231,16 @@ export function CustomerCenter() {
             <div 
               style={{ 
                 padding: '6px 16px',
-                backgroundColor: activeTab === 'customers' ? 'white' : '#C0C0C0',
+                backgroundColor: activeTab === 'vendors' ? 'white' : '#C0C0C0',
                 borderRight: '1px solid #9DB0C6',
                 cursor: 'pointer',
                 fontSize: '11px',
                 fontWeight: 'bold',
-                borderTop: activeTab === 'customers' ? '2px solid #1E4A7A' : 'none'
+                borderTop: activeTab === 'vendors' ? '2px solid #1E4A7A' : 'none'
               }}
-              onClick={() => setActiveTab('customers')}
+              onClick={() => setActiveTab('vendors')}
             >
-              Customers & Jobs
+              Vendors
             </div>
             <div 
               style={{ 
@@ -352,7 +272,7 @@ export function CustomerCenter() {
               flex: 1,
               fontWeight: 'bold'
             }}>
-              <option>Active Customers</option>
+              <option>Active Vendors</option>
             </select>
             <button style={{ 
               backgroundColor: '#ECE9D8',
@@ -393,7 +313,7 @@ export function CustomerCenter() {
             }}>🔍</button>
           </div>
 
-          {/* Customer Table */}
+          {/* Vendor Table */}
           <div style={{ flex: 1, overflow: 'auto', backgroundColor: 'white' }}>
             <table style={{ 
               width: '100%',
@@ -431,12 +351,12 @@ export function CustomerCenter() {
                 </tr>
               </thead>
               <tbody>
-                {initialCustomers.map((cust: Customer) => (
-                  <CustomerRow 
-                    key={cust.id} 
-                    customer={cust} 
+                {initialVendors.map((vend: Vendor) => (
+                  <VendorRow 
+                    key={vend.id} 
+                    vendor={vend} 
                     onSelect={handleSelect}
-                    selected={selectedCustomer?.name}
+                    selected={selectedVendor?.name}
                   />
                 ))}
               </tbody>
@@ -444,14 +364,14 @@ export function CustomerCenter() {
           </div>
         </div>
 
-        {/* Right Panel - Customer Info */}
+        {/* Right Panel - Vendor Info */}
         <div style={{ 
           flex: 1,
           backgroundColor: 'white',
           display: 'flex',
           flexDirection: 'column'
         }}>
-          {/* Customer Info Header */}
+          {/* Vendor Info Header */}
           <div style={{ 
             backgroundColor: '#F5F5F5',
             padding: '12px 16px',
@@ -468,7 +388,7 @@ export function CustomerCenter() {
                   fontWeight: 'normal',
                   margin: '0 0 8px 0',
                 }}>
-                  Customer Information
+                  Vendor Information
                 </h2>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -505,23 +425,23 @@ export function CustomerCenter() {
               {isEditing ? (
                 <input 
                   type="text" 
-                  value={selectedCustomer?.name || ''}
+                  value={selectedVendor?.name || ''}
                   onChange={(e) => {
-                    if (selectedCustomer) {
-                      setSelectedCustomer({
-                        ...selectedCustomer,
+                    if (selectedVendor) {
+                      setSelectedVendor({
+                        ...selectedVendor,
                         name: e.target.value,
                       });
                     }
                   }}
                   onBlur={() => {
                     // Save changes to dojo state
-                    if (selectedCustomer) {
-                      // Find the customer in the global state and update its name
-                      const updatedCustomers = customers.map((cust) => 
-                        cust.id === selectedCustomer.id ? selectedCustomer : cust
+                    if (selectedVendor) {
+                      // Find the vendor in the global state and update its name
+                      const updatedVendors = vendors.map((vend) => 
+                        vend.id === selectedVendor.id ? selectedVendor : vend
                       );
-                      dojo.setState("customers", updatedCustomers, `Updated customer name to ${selectedCustomer.name}`);
+                      dojo.setState("vendors", updatedVendors, `Updated vendor name to ${selectedVendor.name}`);
                     }
                     setIsEditing(false);
                   }}
@@ -533,40 +453,40 @@ export function CustomerCenter() {
                   style={{ fontWeight: 'bold', fontSize: "15px", padding: '2px 5px', border: '1px solid #7C99B5' }}
                 />
               ) : (
-                <div style={{ fontWeight: 'bold', fontSize: "15px" }}>{show(selectedCustomer?.name, '—')}</div>
+                <div style={{ fontWeight: 'bold', fontSize: "15px" }}>{show(selectedVendor?.name, '—')}</div>
               )}
 
               <div style={{ color: '#666', textAlign: 'right', fontSize: "15px" }}>Main Phone</div>
-              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedCustomer?.phone, '555-555-555')}</div>
+              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedVendor?.phone, '555-555-555')}</div>
               
-              <div style={{ color: '#666', textAlign: 'right',fontSize: "15px" }}>Full Name</div>
-              <div>{show(selectedCustomer?.ownerName, '—')}</div>
+              <div style={{ color: '#666', textAlign: 'right',fontSize: "15px" }}>Contact Name</div>
+              <div>{show(selectedVendor?.contactName, '—')}</div>
 
               <div style={{ color: '#666', textAlign: 'right', fontSize: "15px" }}>Alt. Phone</div>
-              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedCustomer?.altPhone, '555-555-555')}</div>
+              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedVendor?.phone, '555-555-555')}</div> {/* Using main phone as alt for now */}
               
-              <div style={{ color: '#666', textAlign: 'right', fontSize: "15px" }}>Customer Type</div>
-              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedCustomer?.type, 'Direct Mail')}</div>
+              <div style={{ color: '#666', textAlign: 'right', fontSize: "15px" }}>Vendor Type</div>
+              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedVendor?.name, 'Supplier')}</div>
 
               <div style={{ color: '#666', textAlign: 'right', fontSize: "15px" }}>Fax</div>
-              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedCustomer?.fax, '555-555-555')}</div>
+              <div style={{ fontSize: "15px", fontWeight: "bold"}}>{show(selectedVendor?.phone, '555-555-555')}</div> {/* Using main phone as fax for now */}
               
               <div style={{ color: '#666', textAlign: 'right',fontSize: "15px" }}>Terms</div>
-              <div>{show(selectedCustomer?.terms, 'Net 30')}</div>
+              <div>{show(selectedVendor?.name, 'Net 30')}</div>
 
               <div style={{ color: '#666', textAlign: 'right' }}>Main Email</div>
-              <div style={{ color: '#0066CC' }}>{show(selectedCustomer?.email, '—')}</div>
+              <div style={{ color: '#0066CC' }}>{show(selectedVendor?.email, '—')}</div>
               
               <div style={{ color: '#666', textAlign: 'right' }}>Bill To</div>
-              <div dangerouslySetInnerHTML={{ __html: show(selectedCustomer?.address, '—') }} />
+              <div dangerouslySetInnerHTML={{ __html: show(selectedVendor?.address, '—') }} />
               <div></div>
               <div></div>
 
               <div style={{ color: '#666', textAlign: 'right' , fontSize: "15px"}}>Balance</div>
-              <div style={{ fontWeight: 'bold', fontSize: "15px" }}>{(selectedCustomer?.balance ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div style={{ fontWeight: 'bold', fontSize: "15px" }}>{(selectedVendor?.balance ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
 
               <div style={{ color: '#666', textAlign: 'right' }}>ID</div>
-              <div>{show(selectedCustomer?.id, '—')}</div>
+              <div>{show(selectedVendor?.id, '—')}</div>
             </div>
           </div>
 
@@ -695,8 +615,8 @@ export function CustomerCenter() {
                 </tr>
               </thead>
               <tbody>
-                {Array.isArray(selectedCustomer?.transactions) && selectedCustomer.transactions.length > 0 ? (
-                  selectedCustomer.transactions.map((tx, idx) => (
+                {Array.isArray(selectedVendor?.transactions) && selectedVendor.transactions.length > 0 ? (
+                  selectedVendor.transactions.map((tx: VendorTransaction, idx) => (
                     <tr
                       key={idx}
                       style={{
@@ -721,7 +641,7 @@ export function CustomerCenter() {
                 ) : (
                   <tr>
                     <td colSpan={5} style={{ padding: '16px', textAlign: 'center', color: '#777' }}>
-                      No transactions to display for this customer.
+                      No transactions to display for this vendor.
                     </td>
                   </tr>
                 )}
@@ -767,15 +687,15 @@ export function CustomerCenter() {
           </div>
         </div>
       </div>
-      <NewCustomerModal 
-        isOpen={isNewCustomerModalOpen} 
-        onClose={() => setIsNewCustomerModalOpen(false)}
+      <NewVendorModal 
+        isOpen={isNewVendorModalOpen} 
+        onClose={() => setIsNewVendorModalOpen(false)}
       />
       <AddTransactionModal
         isOpen={isAddTransactionModalOpen}
         onClose={() => setIsAddTransactionModalOpen(false)}
-        entityType="customer"
-        selectedEntity={selectedCustomer}
+        entityType="vendor"
+        selectedEntity={selectedVendor}
       />
     </div>
   );

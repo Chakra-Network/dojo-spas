@@ -18,6 +18,7 @@ export interface Expense {
   amount: number;
   date: string;
   receiptUrl?: string;
+  status: 'paid' | 'unpaid';
 }
 
 export interface CustomerTransaction {
@@ -41,7 +42,27 @@ export interface Customer {
   terms?: string;
   email?: string;
   address?: string;
-  id?: string;
+  id: string;
+}
+
+export interface VendorTransaction {
+  type: string;
+  num: string;
+  date: string;
+  account: string;
+  amount: string | number;
+}
+
+export interface Vendor {
+  id: string;
+  name: string;
+  balance: number;
+  transactions?: VendorTransaction[];
+  children?: Vendor[];
+  phone?: string;
+  contactName?: string;
+  email?: string;
+  address?: string;
 }
 
 export interface BankTransaction {
@@ -66,6 +87,7 @@ export interface DojoState {
   bankTransactions: BankTransaction[];
   auditLog: AuditLogEntry[];
   customers: Customer[];
+  vendors: Vendor[];
 }
 
 // ---------- Global Store ----------
@@ -75,6 +97,7 @@ let globalState: DojoState = {
   bankTransactions: [],
   auditLog: [],
   customers: [],
+  vendors: [],
 };
 
 const listeners = new Set<() => void>();
@@ -89,7 +112,8 @@ export const dojo = {
     value: DojoState[K],
     auditDescription?: string
   ) {
-    globalState = { ...globalState, [key]: value };
+    console.log(`Dojo State Change: Key=${key}, Value=`, value);
+    globalState = { ...globalState, [key]: value }; 
 
     // Auto audit log
     if (key !== 'auditLog' && auditDescription) {
@@ -163,6 +187,7 @@ export function initializeDojoState(initialData: Partial<DojoState>) {
     bankTransactions: initialData.bankTransactions || [],
     auditLog: initialData.auditLog || [],
     customers: initialData.customers || [],
+    vendors: initialData.vendors || [],
   };
   listeners.forEach((l) => l());
 }

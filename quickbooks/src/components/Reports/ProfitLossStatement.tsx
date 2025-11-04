@@ -26,7 +26,6 @@
     MenuItem,
   } from '@chakra-ui/react';
   import { ChevronDownIcon, ChevronRightIcon, ArrowDownIcon, RepeatIcon } from 'lucide-react';
-  import { useDojoState, Invoice, Expense } from '../../dojo/state';
 
   export default function ProfitLossReport() {
     const [fromDate, setFromDate] = useState('2021-01-01');
@@ -34,112 +33,34 @@
     const [reportBasis, setReportBasis] = useState('accrual');
     const [showFilters, setShowFilters] = useState(false);
     
-    const invoices: Invoice[] = useDojoState('invoices');
-    const expenses: Expense[] = useDojoState('expenses');
-
-    
-    const filteredInvoices = invoices.filter((invoice: Invoice) => {
-      const invoiceDate = new Date(invoice.createdAt);
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
-      return invoiceDate >= from && invoiceDate <= to;
-    });
-
-    const filteredExpenses = expenses.filter((expense: Expense) => {
-      const expenseDate = new Date(expense.date);
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
-      return expenseDate >= from && expenseDate <= to;
-    });
-
     // Calculate dynamic report data
     const calculateReportData = () => {
-      let totalIncome = 0;
-      let constructionIncome = 0;
-      let freightIncome = 0;
-      let partsSales = 0;
-      let serviceIncome = 0;
-
-      let totalCOGS = 0;
-      let constructionLabor = 0;
-      let costOfSales = 0;
-      let materials = 0;
-
-      let totalExpenses = 0;
-      const advertising = { web: { bannerAds: 0, socialMedia: 0, total: 0 }, print: { newspapersMagazines: 0, brochures: 0, total: 0 }, total: 0 };
-      let bankServiceCharges = 0;
-      let cleaning = 0;
-      let duesSubscriptions = 0;
-      let equipmentRental = 0;
-
-      filteredInvoices.forEach((invoice: Invoice) => {
-        if (invoice.status === 'paid') {
-          totalIncome += invoice.amount;
-          // For simplicity, distributing income evenly across categories for now
-          constructionIncome += invoice.amount / 4;
-          freightIncome += invoice.amount / 4;
-          partsSales += invoice.amount / 4;
-          serviceIncome += invoice.amount / 4;
-        }
-      });
-
-      filteredExpenses.forEach((expense: Expense) => {
-        totalExpenses += expense.amount;
-        // Categorize expenses (simplified)
-        if (expense.category === 'Marketing') {
-          advertising.total += expense.amount;
-          advertising.web.total += expense.amount / 2; // Assuming half marketing is web
-          advertising.web.bannerAds += expense.amount / 4; // Further breakdown
-          advertising.web.socialMedia += expense.amount / 4;
-          advertising.print.total += expense.amount / 2;
-          advertising.print.newspapersMagazines += expense.amount / 4;
-          advertising.print.brochures += expense.amount / 4;
-        } else if (expense.category === 'Professional Services') {
-          bankServiceCharges += expense.amount; // For simplicity
-        } else if (expense.category === 'Office Supplies') {
-          cleaning += expense.amount; // For simplicity
-        } else if (expense.category === 'Software') {
-          duesSubscriptions += expense.amount; // For simplicity
-        } else if (expense.category === 'Utilities') {
-          equipmentRental += expense.amount; // For simplicity
-        }
-        // More detailed categorization would go here
-      });
-
-      // Simplified COGS calculation (e.g., 50% of construction income)
-      totalCOGS = constructionIncome * 0.5;
-      constructionLabor = totalCOGS / 3;
-      costOfSales = totalCOGS / 3;
-      materials = totalCOGS / 3;
-
-      const grossProfit = totalIncome - totalCOGS;
-      const netOrdinaryIncome = grossProfit - totalExpenses;
-
-      return {
-        income: {
-          constructionIncome,
-          freightIncome,
-          partsSales,
-          serviceIncome,
-          total: totalIncome,
-        },
-        cogs: {
-          constructionLabor,
-          costOfSales,
-          materials,
-          total: totalCOGS,
-        },
-        grossProfit,
-        expenses: {
-          advertising,
-          bankServiceCharges,
-          cleaning,
-          duesSubscriptions,
-          equipmentRental,
-        },
-        netOrdinaryIncome,
-        netIncome: netOrdinaryIncome, // No other income/expense for simplicity
-      };
+        const dummyData = {
+            income: {
+                constructionIncome: 300,
+                freightIncome: 200,
+                partsSales: 250,
+                serviceIncome: 250,
+                total: 1000,
+            },
+            cogs: {
+                constructionLabor: 150,
+                costOfSales: 100,
+                materials: 100,
+                total: 350,
+            },
+            grossProfit: 650,
+            expenses: {
+                advertising: { web: { bannerAds: 50, socialMedia: 50, total: 100 }, print: { newspapersMagazines: 50, brochures: 50, total: 100 }, total: 200 },
+                bankServiceCharges: 20,
+                cleaning: 30,
+                duesSubscriptions: 40,
+                equipmentRental: 50,
+            },
+            netOrdinaryIncome: 310,
+            netIncome: 310,
+        };
+        return dummyData;
     };
 
     const reportData = calculateReportData();

@@ -42,7 +42,7 @@ export function Arrow({ from, to, dashed = false }: ArrowProps) {
           fill="none"
           stroke="#6B7280"
           strokeWidth="1.5"
-          strokeDasharray={dashed ? "4,3" : "none"}
+          strokeDasharray={dashed ? "7,4" : "none"}
         />
         {/* Arrow head */}
         <polygon

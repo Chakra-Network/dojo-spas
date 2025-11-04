@@ -21,7 +21,7 @@ interface TableRowData {
   amount: number;
   openBalance: number;
   status: 'Open' | 'Paid';
-  originalData: Invoice | Expense; // Reference to original data for actions
+  originalData: Invoice | Expense; 
 }
 
 export function Invoices() {
@@ -132,7 +132,7 @@ export function Invoices() {
   const totalAmountInTable = filteredData.reduce((sum: number, row: TableRowData) => sum + row.amount, 0);
 
   return (
-    <Box bg="white" minH="100vh" p={0} color="white" fontSize="13px" fontFamily="Arial, sans-serif">
+    <Box bg="white" minH="100vh" p={0} color="white" fontSize="13px" fontFamily="Arial, sans-serif" >
       {/* Top Summary Cards */}
       <Flex bg="white" p={4} justify="space-around" align="center" borderBottom="1px solid #555">
         <SummaryCard label="UNBILLED" value={unbilledEstimates.toFixed(2)} count="3 ESTIMATES" color="#6b46c1" />

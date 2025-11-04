@@ -28,6 +28,7 @@ import { CustomerCenter } from "./components/Customers/CustomerCenter";
 import { ReportsPage } from "./components/Reports/ReportsPage"; 
 import OpenWindowsSidebar from "./components/OpenWindowsSidebar";
 import ViewBalancesSidebar from "./components/ViewBalancesSidebar";
+import { VendorCenter } from "./components/vendor/VendorCenter";
 
 
 type View = "dashboard" | "invoices" | "expenses" | "reconciliation" | "create-invoice" | "customers" | "reports" | "vendors" | "profit-loss" | "report-center" | "customer-center" | "home-open-window";
@@ -69,6 +70,9 @@ function App() {
       const customers = await fetch("/src/data/transactions.json").then((res) =>
         res.json()
       );
+      const vendors = await fetch("/src/data/vendors.json").then((res) =>
+        res.json()
+      );
 
       // Set data in Dojo state
       dojo.setState("invoices", invoices, "Loaded initial invoices data");
@@ -79,6 +83,7 @@ function App() {
         "Loaded initial bank transactions data"
       );
       dojo.setState("customers", customers, "Loaded initial customer data");
+      dojo.setState("vendors", vendors, "Loaded initial vendor data");
 
       setIsInitialized(true);
     };
@@ -104,6 +109,8 @@ function App() {
       case "customers":
       case "customer-center": // Added for Open Windows customer center
         return <CustomerCenter />;
+      case "vendors":
+        return <VendorCenter />;
       case "reports":
       case "profit-loss": // Added for Open Windows profit & loss
       case "report-center": // Added for Open Windows report center
