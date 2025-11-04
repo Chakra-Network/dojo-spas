@@ -65,11 +65,11 @@ export default function HiddenRowsSection({
 
   return (
     <div
-      className="mt-2 flex flex-col sticky left-0 z-10 bg-background-2 pt-[10px] pb-5"
+      className="mt-2 flex flex-col sticky left-0 z-10  pt-[10px] pb-5"
       style={{ width: containerWidth > 0 ? `${containerWidth}px` : "100%" }}
     >
       {/* Section header */}
-      <div className="sticky left-0 w-fit">
+      <div className="sticky left-2 w-fit">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center text-[13px] text-neutral-3"
