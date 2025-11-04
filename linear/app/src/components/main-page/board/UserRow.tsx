@@ -1,5 +1,4 @@
 import type { Issue, IssueStatus, User } from "@/lib/types";
-import { COLUMNS } from "@/lib/consts";
 import UserSection from "./UserSection";
 import Avatar from "@/components/common/Avatar";
 import { Ellipsis } from "lucide-react";
@@ -28,7 +27,7 @@ export default function UserRow({
   hoveredSectionId,
   activeSectionId,
 }: UserRowProps) {
-  const { toggleUserRowVisibility, hiddenColumnStatuses } = useLinearState();
+  const { columns, toggleUserRowVisibility, hiddenColumnStatuses } = useLinearState();
   const totalIssues = Array.from(issuesByStatus.values()).reduce(
     (sum, issues) => sum + issues.length,
     0
@@ -88,7 +87,7 @@ export default function UserRow({
 
       {/* User sections across all columns */}
       <div className="flex min-w-fit">
-        {COLUMNS.filter(
+        {columns.filter(
           (column) => !hiddenColumnStatuses.includes(column.status)
         ).map((column) => {
           const sectionId = user

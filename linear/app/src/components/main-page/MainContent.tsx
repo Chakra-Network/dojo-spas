@@ -29,17 +29,15 @@ export default function MainContent() {
           )}
           ref={kanbanContainerRef}
         >
-          <div className="flex h-full min-w-fit justify-between">
+          <div className="flex min-w-fit justify-between h-fit min-h-full">
             <div>
               <KanbanBoard />
             </div>
             {hiddenColumnStatuses.length > 0 && (
-              <div>
-                <HiddenColumnsSection
-                  hiddenColumnStatuses={hiddenColumnStatuses}
-                  issues={issues}
-                />
-              </div>
+              <HiddenColumnsSection
+                hiddenColumnStatuses={hiddenColumnStatuses}
+                issues={issues}
+              />
             )}
           </div>
         </div>

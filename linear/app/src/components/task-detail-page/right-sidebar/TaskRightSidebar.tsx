@@ -25,13 +25,6 @@ import {
 import { useCallback, useMemo } from "react";
 import { PiUserCircleDashed } from "react-icons/pi";
 
-const STATUS_LABELS: Record<IssueStatus, string> = {
-  queued: "Queued",
-  in_progress: "In Progress",
-  blocked: "Blocked",
-  in_review: "In Review",
-};
-
 const PRIORITY_LABELS: Record<Priority, string> = {
   urgent: "Urgent",
   high: "High",
@@ -41,7 +34,7 @@ const PRIORITY_LABELS: Record<Priority, string> = {
 };
 
 export default function TaskRightSidebar({ issue }: { issue: Issue }) {
-  const { users, labels, cycles, projects, milestones, updateIssue } =
+  const { users, labels, cycles, projects, milestones, updateIssue, columns } =
     useLinearState();
   const assignee = users.find((user) => user.id === issue.assigneeId);
   const project = projects.find(
@@ -51,7 +44,9 @@ export default function TaskRightSidebar({ issue }: { issue: Issue }) {
   const milestone = milestones.find((m) => m.id === issue.milestoneId);
 
   const StatusIcon = STATUS_CONFIG[issue.status]?.Icon;
-  const statusLabel = STATUS_LABELS[issue.status];
+  const statusLabel = columns?.find(
+    (column) => column.status === issue.status
+  )?.title;
   const priorityLabel = PRIORITY_LABELS[issue.priority];
   const showPriorityPlaceholder = issue.priority === "none";
 

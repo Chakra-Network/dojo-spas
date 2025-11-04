@@ -29,6 +29,7 @@ import {
   projects as initialProjects,
   milestones as initialMilestones,
   TEAM_IDENTIFIER,
+  COLUMN_STATUSES,
 } from "../lib/mocks";
 import { generateAssigneeProgress } from "../lib/utils";
 
@@ -40,6 +41,7 @@ interface LinearStateContextType {
   projects: Project[];
   milestones: Milestone[];
   teamIdentifier: string;
+  columns: { status: IssueStatus; title: string }[];
   handleReorderIssues: (reorderedIssues: Issue[]) => void;
   updateIssue: (issueId: string, updates: Partial<Issue>) => void;
   assigneeProgress: AssigneeProgress[];
@@ -66,6 +68,7 @@ interface LinearState {
   projects: Project[];
   milestones: Milestone[];
   teamIdentifier: string;
+  columns: { status: IssueStatus; title: string }[];
   taskId?: string;
   isNewIssueModalOpen: boolean;
   hiddenUserIds: string[];
@@ -91,6 +94,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     projects: initialProjects,
     milestones: initialMilestones,
     teamIdentifier: TEAM_IDENTIFIER,
+    columns: COLUMN_STATUSES,
     taskId: undefined,
     isNewIssueModalOpen: false,
     hiddenUserIds: [],
@@ -259,6 +263,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       projects: state.projects,
       milestones: state.milestones,
       teamIdentifier: state.teamIdentifier,
+      columns: state.columns,
       assigneeProgress,
       addIssue,
       handleReorderIssues,
@@ -284,6 +289,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       state.projects,
       state.milestones,
       state.teamIdentifier,
+      state.columns,
       state.taskId,
       assigneeProgress,
       addIssue,

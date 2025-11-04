@@ -1,6 +1,6 @@
 import type { SystemActivityEntry } from "./task-detail";
 
-export type IssueStatus = "queued" | "in_progress" | "blocked" | "in_review";
+export type IssueStatus = "queued" | "in_progress" | "blocked" | "in_review" | "staging" | "done";
 
 export type Priority = "urgent" | "high" | "medium" | "low" | "none";
 

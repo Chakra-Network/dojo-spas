@@ -12,7 +12,7 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import type { Issue, IssueStatus } from "@/lib/types";
 import IssueCard from "./IssueCard";
-import { COLUMNS, VALID_STATUSES, STATUS_CONFIG } from "@/lib/consts";
+import { STATUS_CONFIG, VALID_STATUSES } from "@/lib/consts";
 import UserRow from "./UserRow";
 import HiddenRowsSection from "./HiddenRowsSection";
 import { useLinearState } from "@/context/LinearStateContext";
@@ -32,6 +32,7 @@ export default function KanbanBoard() {
   const {
     issues,
     users,
+    columns,
     handleReorderIssues: onReorderIssues,
     hiddenUserIds,
     hiddenColumnStatuses,
@@ -50,7 +51,7 @@ export default function KanbanBoard() {
       const issuesByStatus = new Map<IssueStatus, Issue[]>();
       let maxCount = 0;
 
-      COLUMNS.forEach((column) => {
+      columns.forEach((column) => {
         const userIssues = issues.filter(
           (issue) =>
             issue.status === column.status &&
@@ -66,7 +67,7 @@ export default function KanbanBoard() {
     });
 
     return data;
-  }, [issues, users]);
+  }, [issues, users, columns]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -198,58 +199,60 @@ export default function KanbanBoard() {
       <div className="flex flex-col min-h-full min-w-fit">
         {/* Column headers */}
         <div className="flex sticky top-0 z-20 h-[50px] min-w-fit pr-1 bg-background-3">
-          {COLUMNS.filter(
-            (column) => !hiddenColumnStatuses.includes(column.status)
-          ).map((column) => {
-            const config = STATUS_CONFIG[column.status];
-            const columnIssues = issues.filter(
-              (issue) => issue.status === column.status
-            );
+          {columns
+            .filter((column) => !hiddenColumnStatuses.includes(column.status))
+            .map((column) => {
+              const config = STATUS_CONFIG[column.status];
+              const columnIssues = issues.filter(
+                (issue) => issue.status === column.status
+              );
 
-            return (
-              <div
-                key={column.status}
-                className="w-[348px] flex-shrink-0 pl-2 pt-1.5 "
-              >
-                <div className="bg-background-2 rounded-t-lg flex items-center justify-between w-full pl-3 pr-3 h-full">
-                  <div className="flex items-center gap-2">
-                    <span className="flex-shrink-0">
-                      <config.Icon className="w-[14px] h-[14px]" />
-                    </span>
-                    <span className="text-sm font-medium text-neutral-1">
-                      {column.title}
-                    </span>
-                    <span className="text-xs text-neutral-5">
-                      {columnIssues.length}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-[2px]">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <Ellipsis className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="end"
-                        className="w-[174px] min-w-[174px]"
-                        onCloseAutoFocus={(e) => e.preventDefault()}
-                      >
-                        <DropdownMenuItem
-                          onClick={() => toggleColumnVisibility(column.status)}
+              return (
+                <div
+                  key={column.status}
+                  className="w-[348px] flex-shrink-0 pl-2 pt-1.5 "
+                >
+                  <div className="bg-background-2 rounded-t-lg flex items-center justify-between w-full pl-3 pr-3 h-full">
+                    <div className="flex items-center gap-2">
+                      <span className="flex-shrink-0">
+                        <config.Icon className="w-[14px] h-[14px]" />
+                      </span>
+                      <span className="text-sm font-medium text-neutral-1">
+                        {column.title}
+                      </span>
+                      <span className="text-xs text-neutral-5">
+                        {columnIssues.length}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-[2px]">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Ellipsis className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-[174px] min-w-[174px]"
+                          onCloseAutoFocus={(e) => e.preventDefault()}
                         >
-                          Hide column
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button variant="ghost" size="icon">
-                      <Plus className="w-4 h-4" />
-                    </Button>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              toggleColumnVisibility(column.status)
+                            }
+                          >
+                            Hide column
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <Button variant="ghost" size="icon">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
 
         {/* User rows */}
