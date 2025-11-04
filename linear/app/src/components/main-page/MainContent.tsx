@@ -30,7 +30,7 @@ export default function MainContent() {
           ref={kanbanContainerRef}
         >
           <div className="flex min-w-fit justify-between h-fit min-h-full">
-            <div>
+            <div className="w-full">
               <KanbanBoard />
             </div>
             {hiddenColumnStatuses.length > 0 && (

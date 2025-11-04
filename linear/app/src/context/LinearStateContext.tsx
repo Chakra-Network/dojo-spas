@@ -58,6 +58,8 @@ interface LinearStateContextType {
   kanbanContainerRef: React.RefObject<HTMLDivElement | null>;
   showRightSidebar: boolean;
   toggleRightSidebar: () => void;
+  autoHideRows: boolean;
+  autoHideColumns: boolean;
 }
 
 interface LinearState {
@@ -74,6 +76,8 @@ interface LinearState {
   hiddenUserIds: string[];
   hiddenColumnStatuses: IssueStatus[];
   showRightSidebar: boolean;
+  autoHideRows: boolean;
+  autoHideColumns: boolean;
 }
 
 const LinearStateContext = createContext<LinearStateContextType | undefined>(
@@ -100,12 +104,52 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     hiddenUserIds: [],
     hiddenColumnStatuses: [],
     showRightSidebar: true,
+    autoHideRows: false,
+    autoHideColumns: false,
   });
 
   // Update users context whenever state.users changes
   useEffect(() => {
     setAssigneeProgress(generateAssigneeProgress(state.users));
   }, [state.users]);
+
+  // Auto-hide rows when all columns hidden
+  useEffect(() => {
+    const allColumnsHidden =
+      state.hiddenColumnStatuses.length === state.columns.length;
+    if (allColumnsHidden && !state.autoHideRows) {
+      setState((prev) => ({ ...prev, autoHideRows: true }));
+    } else if (!allColumnsHidden && state.autoHideRows) {
+      setState((prev) => ({ ...prev, autoHideRows: false }));
+    }
+  }, [
+    state.hiddenColumnStatuses.length,
+    state.columns.length,
+    state.autoHideRows,
+    setState,
+  ]);
+
+  // Auto-hide columns when all rows hidden AND at least one column manually hidden
+  useEffect(() => {
+    const totalPossibleUsers = state.users.length + 1; // +1 for unassigned
+    const allRowsHidden = state.hiddenUserIds.length === totalPossibleUsers;
+    const hasManuallyHiddenColumns = state.hiddenColumnStatuses.length > 0;
+
+    if (allRowsHidden && hasManuallyHiddenColumns && !state.autoHideColumns) {
+      setState((prev) => ({ ...prev, autoHideColumns: true }));
+    } else if (
+      (!allRowsHidden || !hasManuallyHiddenColumns) &&
+      state.autoHideColumns
+    ) {
+      setState((prev) => ({ ...prev, autoHideColumns: false }));
+    }
+  }, [
+    state.hiddenUserIds.length,
+    state.users.length,
+    state.hiddenColumnStatuses.length,
+    state.autoHideColumns,
+    setState,
+  ]);
 
   const handleReorderIssues = useCallback(
     (reorderedIssues: Issue[]) => {
@@ -280,6 +324,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       kanbanContainerRef,
       showRightSidebar: state.showRightSidebar,
       toggleRightSidebar,
+      autoHideRows: state.autoHideRows,
+      autoHideColumns: state.autoHideColumns,
     }),
     [
       state.users,
@@ -306,6 +352,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       kanbanContainerRef,
       state.showRightSidebar,
       toggleRightSidebar,
+      state.autoHideRows,
+      state.autoHideColumns,
     ]
   );
 

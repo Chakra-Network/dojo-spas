@@ -23,19 +23,28 @@ export default function HiddenRowsSection({
 }: HiddenRowsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [containerWidth, setContainerWidth] = useState(0);
-  const { toggleUserRowVisibility, kanbanContainerRef } = useLinearState();
+  const { toggleUserRowVisibility, kanbanContainerRef, hiddenColumnStatuses } =
+    useLinearState();
 
   useEffect(() => {
     const container = kanbanContainerRef.current;
     if (!container) return;
 
     // Set initial width
-    setContainerWidth(container.clientWidth);
+    setContainerWidth(
+      hiddenColumnStatuses.length > 0
+        ? container.clientWidth - 348
+        : container.clientWidth
+    );
 
     // Create ResizeObserver to watch for width changes
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
+        setContainerWidth(
+          hiddenColumnStatuses.length > 0
+            ? entry.contentRect.width - 348
+            : entry.contentRect.width
+        );
       }
     });
 
@@ -44,7 +53,7 @@ export default function HiddenRowsSection({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [kanbanContainerRef]);
+  }, [kanbanContainerRef, hiddenColumnStatuses]);
 
   if (hiddenUsers.length === 0) return null;
 
