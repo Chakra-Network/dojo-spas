@@ -14,6 +14,7 @@ import type { Issue, IssueStatus } from "@/lib/types";
 import IssueCard from "./IssueCard";
 import { COLUMNS, VALID_STATUSES, STATUS_CONFIG } from "@/lib/consts";
 import UserRow from "./UserRow";
+import HiddenRowsSection from "./HiddenRowsSection";
 import { useLinearState } from "@/context/LinearStateContext";
 import { Ellipsis, Plus } from "lucide-react";
 import Button from "@/components/common/Button";
@@ -26,6 +27,7 @@ export default function KanbanBoard() {
     issues,
     users,
     handleReorderIssues: onReorderIssues,
+    hiddenUserIds,
   } = useLinearState();
 
   // Group issues by user and status
@@ -229,7 +231,7 @@ export default function KanbanBoard() {
         <div className="flex flex-col min-w-fit">
           {users.map((user) => {
             const userData = userIssuesData.get(user.id);
-            if (!userData) return null;
+            if (!userData || hiddenUserIds.includes(user.id)) return null;
 
             return (
               <UserRow
@@ -246,7 +248,8 @@ export default function KanbanBoard() {
           {/* Unassigned row */}
           {(() => {
             const unassignedData = userIssuesData.get("unassigned");
-            if (!unassignedData) return null;
+            if (!unassignedData || hiddenUserIds.includes("unassigned"))
+              return null;
 
             return (
               <UserRow
@@ -260,6 +263,19 @@ export default function KanbanBoard() {
             );
           })()}
         </div>
+
+        {/* Hidden rows section */}
+        <HiddenRowsSection
+          hiddenUsers={[
+            ...users
+              .filter((user) => hiddenUserIds.includes(user.id))
+              .map((user) => ({ user, userId: user.id })),
+            ...(hiddenUserIds.includes("unassigned")
+              ? [{ user: null, userId: "unassigned" }]
+              : []),
+          ]}
+          issues={issues}
+        />
       </div>
 
       <DragOverlay>

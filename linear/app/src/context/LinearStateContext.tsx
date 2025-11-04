@@ -6,6 +6,7 @@ import {
   useCallback,
   useMemo,
   useState,
+  useRef,
   type ReactNode,
 } from "react";
 import type {
@@ -47,6 +48,11 @@ interface LinearStateContextType {
   addIssue: (issue: Issue) => void;
   isNewIssueModalOpen: boolean;
   setIsNewIssueModalOpen: (isNewIssueModalOpen: boolean) => void;
+  hiddenUserIds: string[];
+  toggleUserRowVisibility: (userId: string) => void;
+  kanbanContainerRef: React.RefObject<HTMLDivElement | null>;
+  showRightSidebar: boolean;
+  toggleRightSidebar: () => void;
 }
 
 interface LinearState {
@@ -59,6 +65,8 @@ interface LinearState {
   teamIdentifier: string;
   taskId?: string;
   isNewIssueModalOpen: boolean;
+  hiddenUserIds: string[];
+  showRightSidebar: boolean;
 }
 
 const LinearStateContext = createContext<LinearStateContextType | undefined>(
@@ -69,6 +77,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
   const [assigneeProgress, setAssigneeProgress] = useState<AssigneeProgress[]>(
     []
   );
+  const kanbanContainerRef = useRef<HTMLDivElement>(null);
 
   const [state, setState] = useDojoState<LinearState>({
     issues: initialIssues,
@@ -80,6 +89,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     teamIdentifier: TEAM_IDENTIFIER,
     taskId: undefined,
     isNewIssueModalOpen: false,
+    hiddenUserIds: [],
+    showRightSidebar: true,
   });
 
   // Update users context whenever state.users changes
@@ -201,6 +212,26 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     [setState]
   );
 
+  const toggleUserRowVisibility = useCallback(
+    (userId: string) => {
+      setState((prevState) => {
+        const isHidden = prevState.hiddenUserIds.includes(userId);
+        const hiddenUserIds = isHidden
+          ? prevState.hiddenUserIds.filter((id) => id !== userId)
+          : [...prevState.hiddenUserIds, userId];
+        return { ...prevState, hiddenUserIds };
+      });
+    },
+    [setState]
+  );
+
+  const toggleRightSidebar = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      showRightSidebar: !prevState.showRightSidebar,
+    }));
+  }, [setState]);
+
   const value = useMemo(
     () => ({
       users: state.users,
@@ -219,6 +250,11 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       addComment,
       isNewIssueModalOpen: state.isNewIssueModalOpen,
       setIsNewIssueModalOpen,
+      hiddenUserIds: state.hiddenUserIds,
+      toggleUserRowVisibility,
+      kanbanContainerRef,
+      showRightSidebar: state.showRightSidebar,
+      toggleRightSidebar,
     }),
     [
       state.users,
@@ -237,6 +273,11 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       addComment,
       state.isNewIssueModalOpen,
       setIsNewIssueModalOpen,
+      state.hiddenUserIds,
+      toggleUserRowVisibility,
+      kanbanContainerRef,
+      state.showRightSidebar,
+      toggleRightSidebar,
     ]
   );
 

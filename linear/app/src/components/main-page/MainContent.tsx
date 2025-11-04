@@ -1,15 +1,12 @@
-import { useState } from "react";
 import KanbanBoard from "./board/KanbanBoard";
 import KanbanRightSidebar from "./right-sidebar/KanbanRightSidebar";
 import MainHeader from "./MainHeader";
 import { cn } from "@/lib/utils";
+import { useLinearState } from "@/context/LinearStateContext";
 
 export default function MainContent() {
-  const [showRightSidebar, setShowRightSidebar] = useState(true);
-
-  const toggleRightSidebar = () => {
-    setShowRightSidebar((prev) => !prev);
-  };
+  const { kanbanContainerRef, showRightSidebar, toggleRightSidebar } =
+    useLinearState();
 
   return (
     <main className="flex flex-col flex-1 overflow-hidden  my-2 mr-2 bg-background-3 border border-border rounded-md w-full">
@@ -20,8 +17,9 @@ export default function MainContent() {
 
       <div className="flex h-full overflow-hidden relative">
         <div
+          ref={kanbanContainerRef}
           className={cn(
-            "overflow-auto h-full transition-all duration-200 ease-in-out",
+            "overflow-auto h-full transition-all duration-200 ease-in-out relative",
             showRightSidebar ? "w-[calc(100%-360px)]" : "w-full"
           )}
         >

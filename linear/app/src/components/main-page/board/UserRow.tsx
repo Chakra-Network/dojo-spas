@@ -5,6 +5,13 @@ import Avatar from "@/components/common/Avatar";
 import { Ellipsis } from "lucide-react";
 import Button from "@/components/common/Button";
 import { TriangleDown } from "@/components/icons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useLinearState } from "@/context/LinearStateContext";
 
 interface UserRowProps {
   user: User | null; // null for unassigned
@@ -21,10 +28,17 @@ export default function UserRow({
   hoveredSectionId,
   activeSectionId,
 }: UserRowProps) {
+  const { toggleUserRowVisibility } = useLinearState();
   const totalIssues = Array.from(issuesByStatus.values()).reduce(
     (sum, issues) => sum + issues.length,
     0
   );
+
+  const userId = user ? user.id : "unassigned";
+
+  const handleHideRow = () => {
+    toggleUserRowVisibility(userId);
+  };
 
   return (
     <div className="flex flex-col relative min-w-fit">
@@ -53,9 +67,22 @@ export default function UserRow({
         </div>
         {/* Scrollable spacer to fill the rest */}
         <div className="sticky right-0 pr-[3px]">
-          <button className="text-xs text-gray-400 font-medium whitespace-nowrap w-6 h-6 hover:bg-neutral-800 rounded-md flex items-center justify-center cursor-pointer">
-            <Ellipsis className="w-4 h-4" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="text-xs text-gray-400 font-medium whitespace-nowrap w-6 h-6 hover:bg-neutral-800 rounded-md flex items-center justify-center cursor-pointer">
+                <Ellipsis className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              onCloseAutoFocus={(e) => e.preventDefault()}
+              className="w-[174px] min-w-[174px]"
+            >
+              <DropdownMenuItem onClick={handleHideRow}>
+                Hide row
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

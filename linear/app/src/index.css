@@ -71,6 +71,12 @@
   --color-card-border: hsl(226.7 12% 15%);
   --color-card-text-secondary: hsl(225 2% 61.2%);
 
+  --color-dropdown-menu-bg: hsl(220 5% 12%);
+  --color-dropdown-menu-hover: hsl(230 7% 18%);
+  --color-dropdown-menu-border: hsl(227 7% 24%);
+  --color-dropdown-menu-foreground: hsl(228 11% 91%);
+  --color-dropdown-menu-foreground-hover: hsl(0 0% 100%);
+
   --color-user-row-header: hsl(228 8% 12%);
 
   --color-empty-progress: hsl(230 8% 15%);
