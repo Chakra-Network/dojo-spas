@@ -22,7 +22,7 @@ export function MediumPriority({ className }: { className?: string }) {
         width="3"
         height="12"
         rx="1"
-        fill-opacity="0.4"
+        fillOpacity="0.4"
       ></rect>
     </svg>
   );

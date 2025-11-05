@@ -122,7 +122,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
               description: `set priority to ${
                 priorityLabels[updates.priority]
               }`,
-              createdAt: new Date(),
+              createdAt: new Date().toISOString(),
               icon: "edit" as const,
             };
 
@@ -173,7 +173,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
               id: `${issue.id}-created`,
               actor: currentUser.name,
               description: "created the issue",
-              createdAt: new Date(),
+              createdAt: new Date().toISOString(),
               icon: "avatar" as const,
             },
           ],

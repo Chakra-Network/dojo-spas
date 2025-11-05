@@ -10,7 +10,7 @@ export default function SystemActivityRow({
 }: {
   actor: string;
   description: string;
-  createdAt: Date;
+  createdAt: string;
   icon: "avatar" | "cycle" | "edit";
   assigneeAvatar?: string;
 }) {

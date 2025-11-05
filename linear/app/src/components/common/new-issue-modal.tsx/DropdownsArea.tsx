@@ -16,13 +16,14 @@ import { MilestoneDropdown } from "@/components/common/dropdowns/MilestoneDropdo
 import { LabelsDropdown } from "@/components/common/dropdowns/LabelsDropdown";
 import { CycleDropdown } from "@/components/common/dropdowns/CycleDropdown";
 import { STATUS_CONFIG } from "@/lib/consts";
-import { getPriorityIcon, getCycleIcon } from "@/lib/utils/dropdowns";
+import { getCycleIcon } from "@/lib/utils/dropdowns";
 import { getAssigneeName } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import Avatar from "@/components/common/Avatar";
 import { UpcomingCycle } from "@/components/icons";
 import { useMemo } from "react";
 import { PiUserCircleDashed } from "react-icons/pi";
+import { PriorityIcon } from "@/components/common/DynamicIcons";
 
 interface DropdownsAreaProps {
   status: IssueStatus;
@@ -135,7 +136,9 @@ export default function DropdownsArea({
         onChange={onPriorityChange}
         trigger={
           <button type="button" className={buttonClassName}>
-            <div className="w-4 h-4 shrink-0">{getPriorityIcon(priority)}</div>
+            <div className="w-4 h-4 shrink-0">
+              <PriorityIcon priority={priority} isColored={false} />
+            </div>
             {!isCollapsed && (
               <span>{priority === "none" ? "Priority" : priority}</span>
             )}

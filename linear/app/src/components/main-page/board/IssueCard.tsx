@@ -8,8 +8,7 @@ import { STATUS_CONFIG } from "@/lib/consts";
 import { useLinearState } from "@/context/LinearStateContext";
 import { useCallback } from "react";
 import { PriorityDropdown } from "@/components/common/dropdowns/PriorityDropdown";
-import { getPriorityIcon } from "@/lib/utils/dropdowns";
-import { Box } from "lucide-react";
+import { ProjectIcon, PriorityIcon } from "@/components/common/DynamicIcons";
 
 interface IssueCardProps {
   issue: Issue;
@@ -108,20 +107,19 @@ export default function IssueCard({ issue }: IssueCardProps) {
                 className="flex items-center justify-center h-5 px-1.5 rounded bg-badge-bg border border-badge-border hover:bg-badge-hover transition-colors"
               >
                 <div className="w-[14px] h-[14px] flex items-center justify-center">
-                  {getPriorityIcon(issue.priority, true, "w-[14px] h-[14px]")}
+                  <PriorityIcon
+                    priority={issue.priority}
+                    className="w-[14px] h-[14px]"
+                  />
                 </div>
               </button>
             }
           />
           {project && (
             <Badge key={issue.projectId} className="gap-1 group">
-              {project && project.Icon ? (
-                <project.Icon className="w-[14px] h-[14px] shrink-0" />
-              ) : (
-                <Box className="w-[14px] h-[14px] shrink-0 text-neutral-5" />
-              )}
+              <ProjectIcon project={project} />
               <span className="text-badge-text group-hover:text-neutral-1! transition-colors whitespace-nowrap max-w-[110px] truncate">
-                {project ? project.name : "Assign"}
+                {project.name}
               </span>
             </Badge>
           )}
