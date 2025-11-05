@@ -40,6 +40,8 @@ export default function KanbanBoard() {
     toggleColumnVisibility,
     autoHideRows,
     autoHideColumns,
+    setInitialIssueValues,
+    setIsNewIssueModalOpen,
   } = useLinearState();
 
   // Group issues by user and status
@@ -272,7 +274,16 @@ export default function KanbanBoard() {
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
-                              <Button variant="ghost" size="icon">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setInitialIssueValues({
+                                    status: column.status,
+                                  });
+                                  setIsNewIssueModalOpen(true);
+                                }}
+                              >
                                 <Plus className="w-4 h-4" />
                               </Button>
                             </div>

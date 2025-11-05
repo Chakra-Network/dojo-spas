@@ -20,16 +20,6 @@ interface NewIssueModalProps {
 }
 
 export default function NewIssueModal({ open, onClose }: NewIssueModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<IssueStatus>("queued");
-  const [priority, setPriority] = useState<Priority>("none");
-  const [assigneeId, setAssigneeId] = useState<string | undefined>("8");
-  const [projectId, setProjectId] = useState<string | undefined>(undefined);
-  const [milestoneId, setMilestoneId] = useState<string | undefined>(undefined);
-  const [labelIds, setLabelIds] = useState<string[]>([]);
-  const [cycleId, setCycleId] = useState<string | undefined>(undefined);
-  const [shouldCreateMore, setShouldCreateMore] = useState(false);
   const {
     addIssue,
     users,
@@ -38,25 +28,55 @@ export default function NewIssueModal({ open, onClose }: NewIssueModalProps) {
     projects,
     milestones,
     teamIdentifier,
+    initialIssueValues,
+    clearInitialIssueValues,
   } = useLinearState();
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<IssueStatus>(
+    initialIssueValues?.status ?? "queued"
+  );
+  const [priority, setPriority] = useState<Priority>("none");
+  const [assigneeId, setAssigneeId] = useState<string | undefined>(
+    initialIssueValues?.assigneeId ?? "8"
+  );
+  const [projectId, setProjectId] = useState<string | undefined>(undefined);
+  const [milestoneId, setMilestoneId] = useState<string | undefined>(undefined);
+  const [labelIds, setLabelIds] = useState<string[]>([]);
+  const [cycleId, setCycleId] = useState<string | undefined>(undefined);
+  const [shouldCreateMore, setShouldCreateMore] = useState(false);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sync state with initial values when they change
+  useEffect(() => {
+    if (open && initialIssueValues) {
+      if (initialIssueValues.status) {
+        setStatus(initialIssueValues.status);
+      }
+      if (initialIssueValues.assigneeId !== undefined) {
+        setAssigneeId(initialIssueValues.assigneeId);
+      }
+    }
+  }, [open, initialIssueValues]);
 
   useEffect(() => {
     if (!open) {
       setTimeout(() => {
         setTitle("");
         setDescription("");
-        setStatus("queued");
+        setStatus(initialIssueValues?.status ?? "queued");
         setPriority("none");
-        setAssigneeId("8");
+        setAssigneeId(initialIssueValues?.assigneeId ?? "8");
         setProjectId(undefined);
         setMilestoneId(undefined);
         setLabelIds([]);
         setCycleId(undefined);
         setShouldCreateMore(false);
+        clearInitialIssueValues();
       }, 500);
     }
-  }, [open]);
+  }, [open, initialIssueValues, clearInitialIssueValues]);
 
   const handleTitleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -90,9 +110,9 @@ export default function NewIssueModal({ open, onClose }: NewIssueModalProps) {
     });
     setTitle("");
     setDescription("");
-    setStatus("queued");
+    setStatus(initialIssueValues?.status ?? "queued");
     setPriority("none");
-    setAssigneeId("8");
+    setAssigneeId(initialIssueValues?.assigneeId ?? "8");
     setProjectId(undefined);
     setMilestoneId(undefined);
     setLabelIds([]);
@@ -114,6 +134,7 @@ export default function NewIssueModal({ open, onClose }: NewIssueModalProps) {
     addIssue,
     onClose,
     shouldCreateMore,
+    initialIssueValues,
   ]);
 
   return (

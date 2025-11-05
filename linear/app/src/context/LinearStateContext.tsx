@@ -60,6 +60,9 @@ interface LinearStateContextType {
   toggleRightSidebar: () => void;
   autoHideRows: boolean;
   autoHideColumns: boolean;
+  initialIssueValues: { status?: IssueStatus; assigneeId?: string } | null;
+  setInitialIssueValues: (values: { status?: IssueStatus; assigneeId?: string }) => void;
+  clearInitialIssueValues: () => void;
 }
 
 interface LinearState {
@@ -78,6 +81,7 @@ interface LinearState {
   showRightSidebar: boolean;
   autoHideRows: boolean;
   autoHideColumns: boolean;
+  initialIssueValues: { status?: IssueStatus; assigneeId?: string } | null;
 }
 
 const LinearStateContext = createContext<LinearStateContextType | undefined>(
@@ -107,6 +111,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     showRightSidebar: true,
     autoHideRows: false,
     autoHideColumns: false,
+    initialIssueValues: null,
   });
 
   // Update users context whenever state.users changes
@@ -299,6 +304,17 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     }));
   }, [setState]);
 
+  const setInitialIssueValues = useCallback(
+    (values: { status?: IssueStatus; assigneeId?: string }) => {
+      setState((prevState) => ({ ...prevState, initialIssueValues: values }));
+    },
+    [setState]
+  );
+
+  const clearInitialIssueValues = useCallback(() => {
+    setState((prevState) => ({ ...prevState, initialIssueValues: null }));
+  }, [setState]);
+
   const value = useMemo(
     () => ({
       users: state.users,
@@ -327,6 +343,9 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       toggleRightSidebar,
       autoHideRows: state.autoHideRows,
       autoHideColumns: state.autoHideColumns,
+      initialIssueValues: state.initialIssueValues,
+      setInitialIssueValues,
+      clearInitialIssueValues,
     }),
     [
       state.users,
@@ -355,6 +374,9 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       toggleRightSidebar,
       state.autoHideRows,
       state.autoHideColumns,
+      state.initialIssueValues,
+      setInitialIssueValues,
+      clearInitialIssueValues,
     ]
   );
 

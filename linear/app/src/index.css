@@ -77,6 +77,12 @@
   --color-dropdown-menu-foreground: hsl(228 11% 91%);
   --color-dropdown-menu-foreground-hover: hsl(0 0% 100%);
 
+  --color-plus-button-bg: hsl(240 3% 8%);
+  --color-plus-button-bg-hover: hsl(216 9% 11%);
+  --color-plus-button-border: hsl(228 8% 12%);
+  --color-plus-button-foreground: hsl(225 2% 61%);
+  --color-plus-button-foreground-hover: hsl(0 0% 100%);
+
   --color-user-row-header: hsl(228 8% 12%);
 
   --color-empty-progress: hsl(230 8% 15%);
