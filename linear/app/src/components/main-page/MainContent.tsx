@@ -7,7 +7,7 @@ import { useLinearState } from "@/context/LinearStateContext";
 
 export default function MainContent() {
   const {
-    kanbanContainerRef,
+    overallContainerRef,
     showRightSidebar,
     toggleRightSidebar,
     hiddenColumnStatuses,
@@ -27,7 +27,7 @@ export default function MainContent() {
             "overflow-auto h-full transition-all duration-200 ease-in-out relative",
             showRightSidebar ? "w-[calc(100%-360px)]" : "w-full"
           )}
-          ref={kanbanContainerRef}
+          ref={overallContainerRef}
         >
           <div className="flex min-w-fit justify-between h-fit min-h-full">
             <div className="w-full">

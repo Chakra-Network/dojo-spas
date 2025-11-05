@@ -55,7 +55,7 @@ interface LinearStateContextType {
   toggleUserRowVisibility: (userId: string) => void;
   hiddenColumnStatuses: IssueStatus[];
   toggleColumnVisibility: (status: IssueStatus) => void;
-  kanbanContainerRef: React.RefObject<HTMLDivElement | null>;
+  overallContainerRef: React.RefObject<HTMLDivElement | null>;
   showRightSidebar: boolean;
   toggleRightSidebar: () => void;
   autoHideRows: boolean;
@@ -88,7 +88,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
   const [assigneeProgress, setAssigneeProgress] = useState<AssigneeProgress[]>(
     []
   );
-  const kanbanContainerRef = useRef<HTMLDivElement>(null);
+
+  const overallContainerRef = useRef<HTMLDivElement>(null);
 
   const [state, setState] = useDojoState<LinearState>({
     issues: initialIssues,
@@ -321,7 +322,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       toggleUserRowVisibility,
       hiddenColumnStatuses: state.hiddenColumnStatuses,
       toggleColumnVisibility,
-      kanbanContainerRef,
+      overallContainerRef,
       showRightSidebar: state.showRightSidebar,
       toggleRightSidebar,
       autoHideRows: state.autoHideRows,
@@ -349,7 +350,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       toggleUserRowVisibility,
       state.hiddenColumnStatuses,
       toggleColumnVisibility,
-      kanbanContainerRef,
+      overallContainerRef,
       state.showRightSidebar,
       toggleRightSidebar,
       state.autoHideRows,

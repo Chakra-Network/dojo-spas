@@ -23,17 +23,17 @@ export default function HiddenRowsSection({
 }: HiddenRowsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [containerWidth, setContainerWidth] = useState(0);
-  const { toggleUserRowVisibility, kanbanContainerRef, hiddenColumnStatuses } =
+  const { toggleUserRowVisibility, overallContainerRef, hiddenColumnStatuses } =
     useLinearState();
 
   useEffect(() => {
-    const container = kanbanContainerRef.current;
+    const container = overallContainerRef.current;
     if (!container) return;
 
     // Set initial width
     setContainerWidth(
       hiddenColumnStatuses.length > 0
-        ? container.clientWidth - 348
+        ? container.clientWidth
         : container.clientWidth
     );
 
@@ -42,7 +42,7 @@ export default function HiddenRowsSection({
       for (const entry of entries) {
         setContainerWidth(
           hiddenColumnStatuses.length > 0
-            ? entry.contentRect.width - 348
+            ? entry.contentRect.width
             : entry.contentRect.width
         );
       }
@@ -53,7 +53,7 @@ export default function HiddenRowsSection({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [kanbanContainerRef, hiddenColumnStatuses]);
+  }, [overallContainerRef, hiddenColumnStatuses]);
 
   if (hiddenUsers.length === 0) return null;
 
@@ -65,8 +65,10 @@ export default function HiddenRowsSection({
 
   return (
     <div
-      className="mt-2 flex flex-col sticky left-0 z-10  pt-[10px] pb-5"
-      style={{ width: containerWidth > 0 ? `${containerWidth}px` : "100%" }}
+      className="mt-2 flex flex-col sticky left-0 z-10  pt-[10px] pb-5 w-full"
+      style={{
+        maxWidth: containerWidth > 0 ? `${containerWidth}px` : undefined,
+      }}
     >
       {/* Section header */}
       <div className="sticky left-2 w-fit">

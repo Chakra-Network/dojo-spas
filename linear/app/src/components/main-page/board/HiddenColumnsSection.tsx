@@ -23,27 +23,27 @@ export default function HiddenColumnsSection({
 }: HiddenColumnsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [containerHeight, setContainerHeight] = useState<number>(0);
-  const { columns, toggleColumnVisibility, kanbanContainerRef } =
+  const { columns, toggleColumnVisibility, overallContainerRef } =
     useLinearState();
 
   useEffect(() => {
     const updateHeight = () => {
-      if (kanbanContainerRef.current) {
-        setContainerHeight(kanbanContainerRef.current.clientHeight);
+      if (overallContainerRef.current) {
+        setContainerHeight(overallContainerRef.current.clientHeight);
       }
     };
 
     updateHeight();
 
     const resizeObserver = new ResizeObserver(updateHeight);
-    if (kanbanContainerRef.current) {
-      resizeObserver.observe(kanbanContainerRef.current);
+    if (overallContainerRef.current) {
+      resizeObserver.observe(overallContainerRef.current);
     }
 
     return () => {
       resizeObserver.disconnect();
     };
-  }, [kanbanContainerRef]);
+  }, [overallContainerRef]);
 
   if (hiddenColumnStatuses.length === 0) return null;
 
