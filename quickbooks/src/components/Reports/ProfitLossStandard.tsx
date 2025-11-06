@@ -8,8 +8,8 @@ interface ProfitLossStandardProps {
 }
 
 export const ProfitLossStandard: React.FC<ProfitLossStandardProps> = ({ onViewDetailedReport }) => {
-  const invoices = useDojoState<Invoice[]>('invoices');
-  const expenses = useDojoState<Expense[]>('expenses');
+  const invoices = useDojoState('invoices');
+  const expenses = useDojoState('expenses');
 
   // Calculate totals dynamically
   const calculateTotals = () => {
@@ -17,13 +17,13 @@ export const ProfitLossStandard: React.FC<ProfitLossStandardProps> = ({ onViewDe
     let totalCOGS = 0;
     let totalExpenses = 0;
 
-    invoices.forEach(invoice => {
+    invoices.forEach((invoice: Invoice) => {
       if (invoice.status === 'paid') {
         totalIncome += invoice.amount;
       }
     });
 
-    expenses.forEach(expense => {
+    expenses.forEach((expense: Expense) => {
       // For simplicity, categorizing all expenses as general for now.
       // In a real scenario, this would involve more detailed categorization.
       totalExpenses += expense.amount;

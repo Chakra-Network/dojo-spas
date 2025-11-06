@@ -14,6 +14,7 @@ import {
   Box,
   Text,
   useToast,
+  ToastPosition,
 } from '@chakra-ui/react';
 import { useDojoState, dojo, Expense } from '../../dojo/state';
 
@@ -21,6 +22,8 @@ interface AddExpenseModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+// type ValidToastPosition = ToastPosition | 'top-end';
 
 export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
   const expenses = useDojoState('expenses');
@@ -52,7 +55,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
         status: 'error',
         duration: 3000,
         isClosable: true,
-        position: 'top-end',
+        position: 'top-end' as ToastPosition,
       });
       return;
     }
@@ -79,7 +82,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
       status: 'success',
       duration: 3000,
       isClosable: true,
-      position: 'top-end',
+      position: 'top-end' as ToastPosition,
     });
 
     setFormData({

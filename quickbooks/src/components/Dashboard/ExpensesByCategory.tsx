@@ -1,8 +1,13 @@
 import { Box, Heading } from '@chakra-ui/react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, PieLabelRenderProps } from 'recharts';
 import { useDojoState } from '../../dojo/state';
 
 const COLORS = ['#4299E1', '#48BB78', '#ED8936', '#9F7AEA', '#F56565', '#38B2AC'];
+
+interface ChartData extends Record<string, any> {
+  name: string;
+  value: number;
+}
 
 export function ExpensesByCategory() {
   const expenses = useDojoState('expenses');
@@ -13,7 +18,7 @@ export function ExpensesByCategory() {
     return acc;
   }, {} as Record<string, number>);
 
-  const chartData = Object.entries(categoryTotals).map(([name, value]) => ({
+  const chartData: ChartData[] = Object.entries(categoryTotals).map(([name, value]) => ({
     name,
     value: Number(value.toFixed(2)),
   }));
@@ -30,7 +35,10 @@ export function ExpensesByCategory() {
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            label={({ name, percent }: PieLabelRenderProps) => {
+              const displayPercent = typeof percent === 'number' ? percent : 0;
+              return `${name} ${(displayPercent * 100).toFixed(0)}%`;
+            }}
             outerRadius={80}
             fill="#8884d8"
             dataKey="value"

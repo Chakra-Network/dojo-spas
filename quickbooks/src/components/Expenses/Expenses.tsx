@@ -7,7 +7,7 @@
     Flex,
     Text,
   } from '@chakra-ui/react';
-  import { useDojoState, dojo, Invoice, Expense, Customer } from '../../dojo/state';
+  import { useDojoState, dojo, Invoice, Expense } from '../../dojo/state';
   import { InvoiceDetailModal } from '../Invoices/InvoiceDetailModal';
   import { AddExpenseModal } from './AddExpenseModal';
   import { ExpenseDetailModal } from './ExpenseDetailModal';
@@ -28,7 +28,6 @@
   export function Expenses() {
     const invoices: Invoice[] = useDojoState('invoices');
     const allExpenses: Expense[] = useDojoState('expenses'); // Renamed to avoid conflict
-    const customers: Customer[] = useDojoState('customers');
 
     const [filterVendor, setFilterVendor] = useState<'all' | string>('all');
     const [filterType, setFilterType] = useState<'all' | string>('all');
@@ -64,14 +63,14 @@
     allExpenses.forEach((expense: Expense) => {
       vendorBills.push({
         id: expense.id,
-        vendor: expense.vendorName || 'Unknown Vendor', // Assuming expense has a vendorName
-        type: expense.type === 'expense' ? 'Bill' : 'Credit', // Differentiate based on expense type
-        number: expense.referenceNumber || '', // Use a reference number if available
+        vendor: expense.description || 'Unknown Vendor', // Using description as vendor for expenses
+        type: 'Bill', // Defaulting type to 'Bill' for expenses
+        number: expense.id, // Using expense ID as number
         date: new Date(expense.date).toLocaleDateString('en-US'),
-        dueDate: expense.dueDate ? new Date(expense.dueDate).toLocaleDateString('en-US') : '', // If expenses have a dueDate
-        status: expense.status === 'unpaid' ? 'Open' : 'Paid', // Assuming expenses can have status
+        dueDate: new Date(expense.date).toLocaleDateString('en-US'), // Using expense date as due date
+        status: expense.status === 'unpaid' ? 'Open' : 'Paid',
         amount: expense.amount,
-        openBalance: expense.status === 'unpaid' ? expense.amount : 0, // Assuming expenses have open balance
+        openBalance: expense.status === 'unpaid' ? expense.amount : 0,
         originalData: expense,
       });
     });
@@ -348,8 +347,8 @@
             isOpen={isModalOpen} 
             onClose={handleCloseModal} 
             onMarkAsPaid={handleMarkAsPaid}
-            // onSendReminder={handleSendReminder} // Re-enable if needed for invoices
-            // onEditLineItems={handleEditLineItems} // Re-enable if needed for invoices
+            onSendReminder={() => {}} // Placeholder for onSendReminder
+            onEditLineItems={() => {}} // Placeholder for onEditLineItems
           />  
         )}
 

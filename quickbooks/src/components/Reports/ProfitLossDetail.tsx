@@ -3,7 +3,11 @@ import { Box, Text, Flex, Button, Menu, MenuButton, MenuList, MenuItem, IconButt
 import { ChevronDown, RefreshCcw, FileText, Heart, HelpCircle } from 'lucide-react';
 import { useDojoState, Invoice, Expense } from '../../dojo/state';
 
-export const ProfitLossDetail: React.FC = () => {
+interface ProfitLossDetailProps {
+  onViewDetailedReport: () => void;
+}
+
+export const ProfitLossDetail: React.FC<ProfitLossDetailProps> = ({ onViewDetailedReport }) => {
   const invoices: Invoice[] = useDojoState('invoices');
   const expenses: Expense[] = useDojoState('expenses');
 
@@ -193,7 +197,7 @@ export const ProfitLossDetail: React.FC = () => {
       </Flex>
       <Flex gap={2}>
         <IconButton aria-label="Refresh" icon={<RefreshCcw size={16} />} size="sm" variant="ghost" />
-        <IconButton aria-label="Document" icon={<FileText size={16} />} size="sm" variant="ghost" />
+        <IconButton aria-label="Document" icon={<FileText size={16} />} size="sm" variant="ghost" onClick={onViewDetailedReport} />
         <IconButton aria-label="Favorite" icon={<Heart size={16} />} size="sm" variant="ghost" />
         <IconButton aria-label="Help" icon={<HelpCircle size={16} />} size="sm" variant="ghost" />
       </Flex>

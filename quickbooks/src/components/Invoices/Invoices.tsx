@@ -88,7 +88,11 @@ export function Invoices() {
       }
       return false;
     })
-    .filter((row: TableRowData) => filterCustomer === 'all' ? true : row.customerName === filterCustomer)
+    .filter((row: TableRowData) => {
+      if (filterCustomer === 'all') return true;
+      if (row.type === 'Time & Expense') return true; // Always show expenses
+      return row.customerName === filterCustomer;
+    })
     .filter((row: TableRowData) => filterType === 'all' ? true : row.type === filterType);
 
   const handleMarkAsPaid = (invoice: Invoice) => {
