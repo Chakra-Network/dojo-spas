@@ -12,7 +12,7 @@ import { useLinearState } from "@/context/LinearStateContext";
 import { cn } from "@/lib/utils";
 import { SidebarIconButton, SectionLayout } from "./SidebarItems";
 import { SidebarTriggerButton } from "./SidebarTriggerButton";
-import { getPriorityIcon, getCycleIcon } from "@/lib/utils/dropdowns";
+import { getCycleIcon } from "@/lib/utils/dropdowns";
 import {
   AssigneeDropdown,
   CycleDropdown,
@@ -24,6 +24,7 @@ import {
 } from "@/components/common/dropdowns";
 import { useCallback, useMemo } from "react";
 import { PiUserCircleDashed } from "react-icons/pi";
+import { PriorityIcon, ProjectIcon } from "@/components/common/DynamicIcons";
 
 const STATUS_LABELS: Record<IssueStatus, string> = {
   queued: "Queued",
@@ -162,7 +163,7 @@ export default function TaskRightSidebar({ issue }: { issue: Issue }) {
                 showPriorityPlaceholder ? "text-neutral-4" : "text-neutral-1"
               )}
             >
-              {getPriorityIcon(issue.priority)}
+              <PriorityIcon priority={issue.priority} />
               <span
                 className={cn(
                   "font-medium",
@@ -314,7 +315,7 @@ export default function TaskRightSidebar({ issue }: { issue: Issue }) {
                   )}
                 >
                   {project && project.Icon ? (
-                    <project.Icon className="w-4 h-4 shrink-0" />
+                    <ProjectIcon project={project} />
                   ) : (
                     <Box className="w-4 h-4 shrink-0 text-neutral-5" />
                   )}

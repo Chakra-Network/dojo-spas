@@ -13,7 +13,7 @@ export interface Label {
 export interface Comment {
   id: string;
   content: string;
-  createdAt: Date;
+  createdAt: string;
   authorId: string;
 }
 

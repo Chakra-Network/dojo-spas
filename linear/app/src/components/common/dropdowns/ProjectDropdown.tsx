@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { SingleSelectDropdown } from "./base/SingleSelectDropdown";
 import type { DropdownItem, Project } from "@/lib/types";
-import { Box, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { PiCircleDashedBold } from "react-icons/pi";
+import { ProjectIcon } from "../DynamicIcons";
 
 interface ProjectDropdownProps {
   projects: Project[];
@@ -38,12 +39,11 @@ export function ProjectDropdown({
 
   // All projects
   projects.forEach((project) => {
-    const IconComponent = project.Icon || Box;
     items.push({
       type: "option" as const,
       value: project.id,
       label: project.name,
-      icon: <IconComponent className="w-3.5 h-3.5" />,
+      icon: <ProjectIcon project={project} className="w-3.5 h-3.5" />,
       searchableText: project.name,
     });
   });
