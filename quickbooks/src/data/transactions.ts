@@ -1,0 +1,141 @@
+import { Customer } from '../dojo/state';
+
+export const TRANSACTIONS_DATA: Customer[] = [
+  {
+    name: "Aaron's Photography Studio",
+    balance: 85.0,
+    id: "cust-aaron-photo",
+    transactions: [
+      { type: "Invoice", num: "INV-001", date: "2023-02-10", account: "Accounts Receivable", amount: 250.00 },
+      { type: "Payment", num: "PMT-101", date: "2023-02-15", account: "Checking", amount: -165.00 },
+      { type: "Credit Memo", num: "CM-001", date: "2023-03-01", account: "Sales Returns", amount: -50.00 },
+      { type: "Invoice", num: "INV-711", date: "2023-09-01", account: "Accounts Receivable", amount: 1350.00 },
+      { type: "Payment", num: "PMT-712", date: "2023-09-10", account: "Checking", amount: -600.00 },
+      { type: "Credit Memo", num: "CM-007", date: "2023-10-20", account: "Sales Returns", amount: -150.00 },
+      { type: "Invoice", num: "INV-713", date: "2024-01-05", account: "Accounts Receivable", amount: 1900.00 }
+    ]
+  },
+  {
+    name: "Alamo Foundation",
+    balance: 16295.0,
+    id: "cust-alamo-foundation",
+    transactions: [
+      { type: "Invoice", num: "INV-203", date: "2023-03-05", account: "Accounts Receivable", amount: 15000.00 },
+      { type: "Payment", num: "PMT-305", date: "2023-03-12", account: "Checking", amount: -5000.00 },
+      { type: "Estimate", num: "EST-030", date: "2023-04-01", account: "Sales Pipeline", amount: 20000.00 },
+      { type: "Estimate", num: "EST-190", date: "2023-07-05", account: "Sales Pipeline", amount: 15000.00 },
+      { type: "Invoice", num: "INV-900", date: "2023-08-10", account: "Accounts Receivable", amount: 12000.00 },
+      { type: "Payment", num: "PMT-901", date: "2023-08-20", account: "Checking", amount: -6000.00 }
+    ]
+  },
+  {
+    name: "Amy's Bird Sanctuary",
+    balance: 750.0,
+    id: "cust-amy-bird",
+    transactions: [
+      { type: "Invoice", num: "INV-450", date: "2023-05-01", account: "Accounts Receivable", amount: 750.00 },
+      { type: "Payment", num: "PMT-470", date: "2023-05-10", account: "Checking", amount: -500.00 },
+      { type: "Credit Memo", num: "CM-005", date: "2023-05-12", account: "Sales Returns", amount: -250.00 }
+    ]
+  },
+  {
+    name: "Bill's Windsurf Shop",
+    balance: 27320.34,
+    id: "cust-bill-windsurf",
+    transactions: [
+      { type: "Invoice", num: "INV-900", date: "2023-06-20", account: "Accounts Receivable", amount: 33625.00 },
+      { type: "Payment", num: "PMT-920", date: "2023-07-01", account: "Checking", amount: -10304.66 }
+    ]
+  },
+  {
+    name: "Cassie's Dog Grooming",
+    balance: 1125.0,
+    id: "cust-cassie-dog",
+    transactions: [
+      { type: "Invoice", num: "INV-710", date: "2023-06-10", account: "Accounts Receivable", amount: 1125.00 },
+      { type: "Payment", num: "PMT-711", date: "2023-06-20", account: "Checking", amount: -500.00 },
+      { type: "Estimate", num: "EST-040", date: "2023-07-05", account: "Sales Pipeline", amount: 2000.00 }
+    ]
+  },
+  {
+    name: "Tenant - Smith",
+    balance: 0.0,
+    id: "cust-tenant-smith",
+    transactions: [
+      { type: "Estimate", num: "EST-190", date: "2023-07-05", account: "Sales Pipeline", amount: 15000.00 },
+      { type: "Invoice", num: "INV-900", date: "2023-08-10", account: "Accounts Receivable", amount: 12000.00 },
+      { type: "Estimate", num: "EST-190", date: "2023-07-05", account: "Sales Pipeline", amount: 15000.00 },
+      { type: "Invoice", num: "INV-900", date: "2023-08-10", account: "Accounts Receivable", amount: 12000.00 },
+      { type: "Payment", num: "PMT-901", date: "2023-08-20", account: "Checking", amount: -6000.00 }
+    ]
+  },
+  {
+    name: "Tenant - Jones",
+    balance: 53472.0,
+    id: "cust-tenant-jones",
+    transactions: [
+      { type: "Invoice", num: "INV-750", date: "2023-02-28", account: "Accounts Receivable", amount: 52000.00 },
+      { type: "Payment", num: "PMT-751", date: "2023-03-10", account: "Checking", amount: -30000.00 },
+      { type: "Credit Memo", num: "CM-011", date: "2023-03-12", account: "Sales Returns", amount: -527.00 },
+      { type: "Payment", num: "PMT-306", date: "2023-06-18", account: "Checking", amount: -8000.00 },
+      { type: "Credit Memo", num: "CM-021", date: "2023-07-01", account: "Sales Returns", amount: -500.00 },
+      { type: "Invoice", num: "INV-205", date: "2023-09-15", account: "Accounts Receivable", amount: 9500.00 },
+      { type: "Payment", num: "PMT-307", date: "2023-09-20", account: "Checking", amount: -2500.00 },
+      { type: "Estimate", num: "EST-031", date: "2024-02-01", account: "Sales Pipeline", amount: 23000.00 }
+    ]
+  },
+  {
+    name: "Tenant - Johnson",
+    balance: 18000.0,
+    id: "cust-tenant-johnson",
+    transactions: [
+      { type: "Estimate", num: "EST-500", date: "2023-06-05", account: "Sales Pipeline", amount: 18000.00 },
+      { type: "Invoice", num: "INV-555", date: "2023-06-25", account: "Accounts Receivable", amount: 16500.00 }
+    ]
+  },
+  {
+    name: "Seattle School",
+    balance: 9245.0,
+    id: "cust-seattle-school",
+    transactions: [
+      { type: "Invoice", num: "INV-611", date: "2023-03-10", account: "Accounts Receivable", amount: 12000.00 },
+      { type: "Payment", num: "PMT-612", date: "2023-03-15", account: "Checking", amount: -2755.00 },
+      { type: "Invoice", num: "INV-711", date: "2023-09-01", account: "Accounts Receivable", amount: 1350.00 },
+      { type: "Payment", num: "PMT-712", date: "2023-09-10", account: "Checking", amount: -600.00 },
+      { type: "Credit Memo", num: "CM-007", date: "2023-10-20", account: "Sales Returns", amount: -150.00 },
+      { type: "Invoice", num: "INV-713", date: "2024-01-05", account: "Accounts Receivable", amount: 1900.00 }
+    ]
+  },
+  {
+    name: "Spokane Civic Center",
+    balance: 30250.5,
+    id: "cust-spokane-civic",
+    transactions: [
+      { type: "Invoice", num: "INV-810", date: "2023-05-01", account: "Accounts Receivable", amount: 32000.00 },
+      { type: "Payment", num: "PMT-811", date: "2023-05-05", account: "Checking", amount: -1749.50 },
+      { type: "Invoice", num: "INV-001", date: "2023-02-10", account: "Accounts Receivable", amount: 250.00 },
+      { type: "Payment", num: "PMT-101", date: "2023-02-15", account: "Checking", amount: -165.00 },
+      { type: "Credit Memo", num: "CM-001", date: "2023-03-01", account: "Sales Returns", amount: -50.00 },
+      { type: "Invoice", num: "INV-002", date: "2023-05-05", account: "Accounts Receivable", amount: 400.00 },
+      { type: "Payment", num: "PMT-102", date: "2023-05-12", account: "Checking", amount: -200.00 }
+    ]
+  },
+  {
+    name: "Cool Cars",
+    balance: 12000.0,
+    id: "cust-cool-cars",
+    transactions: [
+      { type: "Invoice", num: "INV-901", date: "2023-08-10", account: "Accounts Receivable", amount: 18000.00 },
+      { type: "Payment", num: "PMT-902", date: "2023-08-15", account: "Checking", amount: -6000.00 }
+    ]
+  },
+  {
+    name: "Cheyenne 1 ",
+    balance: 6400.0,
+    id: "cust-cheyenne-1",
+    transactions: [
+      { type: "Invoice", num: "INV-710", date: "2023-04-01", account: "Accounts Receivable", amount: 7200.00 },
+      { type: "Credit Memo", num: "CM-101", date: "2023-04-03", account: "Sales Returns", amount: -800.00 }
+    ]
+  }
+];

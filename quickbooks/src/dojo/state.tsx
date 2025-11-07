@@ -1,4 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { BANK_DATA } from '../data/bank';
+import { EXPENSES_DATA } from '../data/expenses';
+import { INVOICES_DATA } from '../data/invoices';
+import { TRANSACTIONS_DATA } from '../data/transactions';
+import { VENDORS_DATA } from '../data/vendors';
 
 // ---------- Types ----------
 export interface Invoice {
@@ -94,12 +99,12 @@ export interface DojoState {
 
 // ---------- Global Store ----------
 let globalState: DojoState = {
-  invoices: [],
-  expenses: [],
-  bankTransactions: [],
+  invoices: INVOICES_DATA,
+  expenses: EXPENSES_DATA,
+  bankTransactions: BANK_DATA,
   auditLog: [],
-  customers: [],
-  vendors: [],
+  customers: TRANSACTIONS_DATA,
+  vendors: VENDORS_DATA,
 };
 
 const listeners = new Set<() => void>();
@@ -184,12 +189,12 @@ export function useDojoState<K extends keyof DojoState>(key: K): DojoState[K] {
 // ---------- Initialize ----------
 export function initializeDojoState(initialData: Partial<DojoState>) {
   globalState = {
-    invoices: initialData.invoices || [],
-    expenses: initialData.expenses || [],
-    bankTransactions: initialData.bankTransactions || [],
+    invoices: initialData.invoices || INVOICES_DATA,
+    expenses: initialData.expenses || EXPENSES_DATA,
+    bankTransactions: initialData.bankTransactions || BANK_DATA,
     auditLog: initialData.auditLog || [],
-    customers: initialData.customers || [],
-    vendors: initialData.vendors || [],
+    customers: initialData.customers || TRANSACTIONS_DATA,
+    vendors: initialData.vendors || VENDORS_DATA,
   };
   listeners.forEach((l) => l());
 }

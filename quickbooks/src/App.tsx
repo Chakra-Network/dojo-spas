@@ -17,7 +17,7 @@ import {
   BarChart,
   Users,
 } from "lucide-react";
-import { initializeDojoState, dojo } from "./dojo/state";
+import { initializeDojoState } from "./dojo/state";
 import { Dashboard } from "./components/Dashboard/Dashboard";
 import { MenuBar } from "./components/MenuBar";
 import { Invoices } from "./components/Invoices/Invoices";
@@ -42,48 +42,10 @@ function App() {
 
   useEffect(() => {
     const loadDojoData = async () => {
-      // Initialize with empty arrays first
-      initializeDojoState({
-        invoices: [],
-        expenses: [],
-        bankTransactions: [],
-        auditLog: [
-          {
-            id: "audit-init",
-            timestamp: new Date().toISOString(),
-            action: "SYSTEM_INIT",
-            description: "Application initialized with seed data",
-          },
-        ],
-      });
+      initializeDojoState({}); // Initialize without passing empty arrays
 
-      // Fetch JSON data
-      const invoices = await fetch("/src/data/invoices.json").then((res) =>
-        res.json()
-      );
-      const expenses = await fetch("/src/data/expenses.json").then((res) =>
-        res.json()
-      );
-      const bankTransactions = await fetch("/src/data/bank.json").then((res) =>
-        res.json()
-      );
-      const customers = await fetch("/src/data/transactions.json").then((res) =>
-        res.json()
-      );
-      const vendors = await fetch("/src/data/vendors.json").then((res) =>
-        res.json()
-      );
-
-      // Set data in Dojo state
-      dojo.setState("invoices", invoices, "Loaded initial invoices data");
-      dojo.setState("expenses", expenses, "Loaded initial expenses data");
-      dojo.setState(
-        "bankTransactions",
-        bankTransactions,
-        "Loaded initial bank transactions data"
-      );
-      dojo.setState("customers", customers, "Loaded initial customer data");
-      dojo.setState("vendors", vendors, "Loaded initial vendor data");
+      // No longer fetching JSON data, as it's directly imported in dojo/state.tsx
+      // The initial state is already set by globalState in dojo/state.tsx
 
       setIsInitialized(true);
     };
