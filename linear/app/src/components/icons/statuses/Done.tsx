@@ -17,9 +17,9 @@ export function Done({ className }: DoneProps) {
         r="6"
         fill="none"
         stroke="lch(48% 59.31 288.43)"
-        stroke-width="1.5"
-        stroke-dasharray="3.14 0"
-        stroke-dashoffset="-0.7"
+        strokeWidth="1.5"
+        strokeDasharray="3.14 0"
+        strokeDashoffset="-0.7"
       ></circle>
       <circle
         className="progress"
@@ -28,9 +28,9 @@ export function Done({ className }: DoneProps) {
         r="3"
         fill="none"
         stroke="lch(48% 59.31 288.43)"
-        stroke-width="6"
-        stroke-dasharray="18.84955592153876 37.69911184307752"
-        stroke-dashoffset="0"
+        strokeWidth="6"
+        strokeDasharray="18.84955592153876 37.69911184307752"
+        strokeDashoffset="0"
         transform="rotate(-90 7 7)"
       ></circle>
       <path
