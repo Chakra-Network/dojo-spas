@@ -2,13 +2,13 @@ export interface CommentEntry {
   id: string;
   authorId: string;
   content: string;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export interface SystemActivityEntry {
   id: string;
   actor: string;
   description: string;
-  createdAt: Date;
+  createdAt: string;
   icon: "avatar" | "cycle" | "edit";
 }

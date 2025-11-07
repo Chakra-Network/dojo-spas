@@ -44,7 +44,8 @@ export default function Detail({ issue }: { issue: Issue }) {
       type: "comment" as const,
     })) as Comment[];
     return [...issueActivities, ...commentItems].sort(
-      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
   }, [issue.activities, issue.comments]);
 
@@ -58,7 +59,7 @@ export default function Detail({ issue }: { issue: Issue }) {
         id: `${issue.id}-comment-${Date.now()}`,
         authorId: currentUser?.id ?? "anonymous",
         content: commentInput.trim(),
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       };
 
       addComment(issue.id, newComment as Comment);

@@ -1,9 +1,8 @@
-import type { Priority } from "@/lib/types";
+import type { Priority, DropdownItem } from "@/lib/types";
 import type { ReactNode } from "react";
 import { PRIORITY_CONFIG } from "@/lib/consts";
-import { getPriorityIcon } from "@/lib/utils/dropdowns";
 import { SingleSelectDropdown } from "./base/SingleSelectDropdown";
-import type { DropdownItem } from "@/lib/types";
+import { PriorityIcon } from "@/components/common/DynamicIcons";
 
 interface PriorityDropdownProps {
   value: Priority;
@@ -28,7 +27,13 @@ export function PriorityDropdown({
     type: "option" as const,
     value: option.value,
     label: option.label,
-    icon: getPriorityIcon(option.value as Priority, false),
+    icon: (
+      <PriorityIcon
+        priority={option.value as Priority}
+        isColored={false}
+        className="w-[14px] h-[14px]"
+      />
+    ),
     shortcut: option.shortcut,
   }));
 
