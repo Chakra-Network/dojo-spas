@@ -12,11 +12,19 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import type { Issue, IssueStatus } from "@/lib/types";
 import IssueCard from "./IssueCard";
-import { COLUMNS, VALID_STATUSES, STATUS_CONFIG } from "@/lib/consts";
+import { STATUS_CONFIG, VALID_STATUSES } from "@/lib/consts";
 import UserRow from "./UserRow";
+import HiddenRowsSection from "./HiddenRowsSection";
 import { useLinearState } from "@/context/LinearStateContext";
 import { Ellipsis, Plus } from "lucide-react";
 import Button from "@/components/common/Button";
+import AllHiddenStates from "./AllHIddenState";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function KanbanBoard() {
   const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
@@ -25,7 +33,15 @@ export default function KanbanBoard() {
   const {
     issues,
     users,
+    columns,
     handleReorderIssues: onReorderIssues,
+    hiddenUserIds,
+    hiddenColumnStatuses,
+    toggleColumnVisibility,
+    autoHideRows,
+    autoHideColumns,
+    setInitialIssueValues,
+    setIsNewIssueModalOpen,
   } = useLinearState();
 
   // Group issues by user and status
@@ -40,7 +56,7 @@ export default function KanbanBoard() {
       const issuesByStatus = new Map<IssueStatus, Issue[]>();
       let maxCount = 0;
 
-      COLUMNS.forEach((column) => {
+      columns.forEach((column) => {
         const userIssues = issues.filter(
           (issue) =>
             issue.status === column.status &&
@@ -56,7 +72,7 @@ export default function KanbanBoard() {
     });
 
     return data;
-  }, [issues, users]);
+  }, [issues, users, columns]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -178,93 +194,167 @@ export default function KanbanBoard() {
     }
   };
 
+  // Determine empty state
+  const totalPossibleUsers = users.length + 1; // +1 for unassigned
+  const allVisibleRowsHidden = hiddenUserIds.length === totalPossibleUsers;
+
+  let emptyState: "columns" | "rows" | "all" | null = null;
+
+  if (autoHideRows && hiddenUserIds.length > 0) {
+    emptyState = "all"; // All columns hidden + some rows were manually hidden
+  } else if (autoHideRows) {
+    emptyState = "columns"; // All columns hidden, no manually hidden rows
+  } else if (autoHideColumns) {
+    emptyState = "all"; // All rows hidden + columns hidden
+  } else if (allVisibleRowsHidden) {
+    emptyState = "rows"; // All rows hidden
+  }
+
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex flex-col min-h-full min-w-fit">
-        {/* Column headers */}
-        <div className="flex sticky top-0 z-20 h-[50px] min-w-fit pr-1 bg-background-3">
-          {COLUMNS.map((column) => {
-            const config = STATUS_CONFIG[column.status];
-            const columnIssues = issues.filter(
-              (issue) => issue.status === column.status
-            );
+    <div className="flex flex-col flex-1 w-full h-full">
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex flex-col min-h-full min-w-fit">
+          {emptyState ? (
+            <AllHiddenStates state={emptyState} />
+          ) : (
+            <>
+              {/* Column headers */}
+              <div className="flex sticky top-0 z-20 h-[50px] min-w-fit pr-1 bg-background-3">
+                {!autoHideColumns &&
+                  columns
+                    .filter(
+                      (column) => !hiddenColumnStatuses.includes(column.status)
+                    )
+                    .map((column) => {
+                      const config = STATUS_CONFIG[column.status];
+                      const columnIssues = issues.filter(
+                        (issue) => issue.status === column.status
+                      );
 
-            return (
-              <div
-                key={column.status}
-                className="w-[348px] flex-shrink-0 pl-2 pt-1.5 "
-              >
-                <div className="bg-background-2 rounded-t-lg flex items-center justify-between w-full pl-3 pr-3 h-full">
-                  <div className="flex items-center gap-2">
-                    <span className="flex-shrink-0">
-                      <config.Icon className="w-[14px] h-[14px]" />
-                    </span>
-                    <span className="text-sm font-medium text-neutral-1">
-                      {column.title}
-                    </span>
-                    <span className="text-xs text-neutral-5">
-                      {columnIssues.length}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-[2px]">
-                    <Button variant="ghost" size="icon">
-                      <Ellipsis className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                      return (
+                        <div
+                          key={column.status}
+                          className="w-[348px] flex-shrink-0 pl-2 pt-1.5 "
+                        >
+                          <div className="bg-background-2 rounded-t-lg flex items-center justify-between w-full pl-3 pr-3 h-full">
+                            <div className="flex items-center gap-2">
+                              <span className="flex-shrink-0">
+                                <config.Icon className="w-[14px] h-[14px]" />
+                              </span>
+                              <span className="text-sm font-medium text-neutral-1">
+                                {column.title}
+                              </span>
+                              <span className="text-xs text-neutral-5">
+                                {columnIssues.length}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-[2px]">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <Ellipsis className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="w-[174px] min-w-[174px]"
+                                  onCloseAutoFocus={(e) => e.preventDefault()}
+                                >
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      toggleColumnVisibility(column.status)
+                                    }
+                                  >
+                                    Hide column
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setInitialIssueValues({
+                                    status: column.status,
+                                  });
+                                  setIsNewIssueModalOpen(true);
+                                }}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
               </div>
-            );
-          })}
+
+              {/* User rows */}
+              <div className="flex flex-col min-w-fit">
+                {!autoHideRows &&
+                  users.map((user) => {
+                    const userData = userIssuesData.get(user.id);
+                    if (!userData || hiddenUserIds.includes(user.id))
+                      return null;
+
+                    return (
+                      <UserRow
+                        key={user.id}
+                        user={user}
+                        issuesByStatus={userData.issuesByStatus}
+                        maxCount={userData.maxCount}
+                        hoveredSectionId={hoveredSectionId}
+                        activeSectionId={activeSectionId}
+                      />
+                    );
+                  })}
+
+                {/* Unassigned row */}
+                {!autoHideRows &&
+                  (() => {
+                    const unassignedData = userIssuesData.get("unassigned");
+                    if (!unassignedData || hiddenUserIds.includes("unassigned"))
+                      return null;
+
+                    return (
+                      <UserRow
+                        key="unassigned"
+                        user={null}
+                        issuesByStatus={unassignedData.issuesByStatus}
+                        maxCount={unassignedData.maxCount}
+                        hoveredSectionId={hoveredSectionId}
+                        activeSectionId={activeSectionId}
+                      />
+                    );
+                  })()}
+              </div>
+            </>
+          )}
+
+          {/* Hidden rows section */}
+          {hiddenUserIds.length > 0 && (
+            <HiddenRowsSection
+              hiddenUsers={[
+                ...users
+                  .filter((user) => hiddenUserIds.includes(user.id))
+                  .map((user) => ({ user, userId: user.id })),
+                ...(hiddenUserIds.includes("unassigned")
+                  ? [{ user: null, userId: "unassigned" }]
+                  : []),
+              ]}
+              issues={issues}
+            />
+          )}
         </div>
 
-        {/* User rows */}
-        <div className="flex flex-col min-w-fit">
-          {users.map((user) => {
-            const userData = userIssuesData.get(user.id);
-            if (!userData) return null;
-
-            return (
-              <UserRow
-                key={user.id}
-                user={user}
-                issuesByStatus={userData.issuesByStatus}
-                maxCount={userData.maxCount}
-                hoveredSectionId={hoveredSectionId}
-                activeSectionId={activeSectionId}
-              />
-            );
-          })}
-
-          {/* Unassigned row */}
-          {(() => {
-            const unassignedData = userIssuesData.get("unassigned");
-            if (!unassignedData) return null;
-
-            return (
-              <UserRow
-                key="unassigned"
-                user={null}
-                issuesByStatus={unassignedData.issuesByStatus}
-                maxCount={unassignedData.maxCount}
-                hoveredSectionId={hoveredSectionId}
-                activeSectionId={activeSectionId}
-              />
-            );
-          })()}
-        </div>
-      </div>
-
-      <DragOverlay>
-        {activeIssue ? <IssueCard issue={activeIssue} /> : null}
-      </DragOverlay>
-    </DndContext>
+        <DragOverlay>
+          {activeIssue ? <IssueCard issue={activeIssue} /> : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }

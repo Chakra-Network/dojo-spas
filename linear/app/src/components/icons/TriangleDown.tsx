@@ -8,7 +8,7 @@ export function TriangleDown({ className }: TriangleDownProps) {
       width="16"
       height="16"
       viewBox="0 0 16 16"
-      fill="lch(61.683% 1 272 / 1)"
+      fill="currentColor"
       role="img"
       focusable="false"
       aria-hidden="true"

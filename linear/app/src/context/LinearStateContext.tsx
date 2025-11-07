@@ -6,6 +6,7 @@ import {
   useCallback,
   useMemo,
   useState,
+  useRef,
   type ReactNode,
 } from "react";
 import type {
@@ -17,6 +18,7 @@ import type {
   Cycle,
   Project,
   Milestone,
+  IssueStatus,
 } from "@/lib/types";
 import { useDojoState } from "@chakra-dev/dojo-hooks";
 import {
@@ -27,6 +29,7 @@ import {
   projects as initialProjects,
   milestones as initialMilestones,
   TEAM_IDENTIFIER,
+  COLUMN_STATUSES,
 } from "../lib/mocks";
 import { generateAssigneeProgress } from "../lib/utils";
 
@@ -38,6 +41,7 @@ interface LinearStateContextType {
   projects: Project[];
   milestones: Milestone[];
   teamIdentifier: string;
+  columns: { status: IssueStatus; title: string }[];
   handleReorderIssues: (reorderedIssues: Issue[]) => void;
   updateIssue: (issueId: string, updates: Partial<Issue>) => void;
   assigneeProgress: AssigneeProgress[];
@@ -47,6 +51,18 @@ interface LinearStateContextType {
   addIssue: (issue: Issue) => void;
   isNewIssueModalOpen: boolean;
   setIsNewIssueModalOpen: (isNewIssueModalOpen: boolean) => void;
+  hiddenUserIds: string[];
+  toggleUserRowVisibility: (userId: string) => void;
+  hiddenColumnStatuses: IssueStatus[];
+  toggleColumnVisibility: (status: IssueStatus) => void;
+  overallContainerRef: React.RefObject<HTMLDivElement | null>;
+  showRightSidebar: boolean;
+  toggleRightSidebar: () => void;
+  autoHideRows: boolean;
+  autoHideColumns: boolean;
+  initialIssueValues: { status?: IssueStatus; assigneeId?: string } | null;
+  setInitialIssueValues: (values: { status?: IssueStatus; assigneeId?: string }) => void;
+  clearInitialIssueValues: () => void;
 }
 
 interface LinearState {
@@ -57,8 +73,15 @@ interface LinearState {
   projects: Project[];
   milestones: Milestone[];
   teamIdentifier: string;
+  columns: { status: IssueStatus; title: string }[];
   taskId?: string;
   isNewIssueModalOpen: boolean;
+  hiddenUserIds: string[];
+  hiddenColumnStatuses: IssueStatus[];
+  showRightSidebar: boolean;
+  autoHideRows: boolean;
+  autoHideColumns: boolean;
+  initialIssueValues: { status?: IssueStatus; assigneeId?: string } | null;
 }
 
 const LinearStateContext = createContext<LinearStateContextType | undefined>(
@@ -70,6 +93,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const overallContainerRef = useRef<HTMLDivElement>(null);
+
   const [state, setState] = useDojoState<LinearState>({
     issues: initialIssues,
     users: initialUsers,
@@ -78,14 +103,59 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     projects: initialProjects,
     milestones: initialMilestones,
     teamIdentifier: TEAM_IDENTIFIER,
+    columns: COLUMN_STATUSES,
     taskId: undefined,
     isNewIssueModalOpen: false,
+    hiddenUserIds: [],
+    hiddenColumnStatuses: [],
+    showRightSidebar: true,
+    autoHideRows: false,
+    autoHideColumns: false,
+    initialIssueValues: null,
   });
 
   // Update users context whenever state.users changes
   useEffect(() => {
     setAssigneeProgress(generateAssigneeProgress(state.users));
   }, [state.users]);
+
+  // Auto-hide rows when all columns hidden
+  useEffect(() => {
+    const allColumnsHidden =
+      state.hiddenColumnStatuses.length === state.columns.length;
+    if (allColumnsHidden && !state.autoHideRows) {
+      setState((prev) => ({ ...prev, autoHideRows: true }));
+    } else if (!allColumnsHidden && state.autoHideRows) {
+      setState((prev) => ({ ...prev, autoHideRows: false }));
+    }
+  }, [
+    state.hiddenColumnStatuses.length,
+    state.columns.length,
+    state.autoHideRows,
+    setState,
+  ]);
+
+  // Auto-hide columns when all rows hidden AND at least one column manually hidden
+  useEffect(() => {
+    const totalPossibleUsers = state.users.length + 1; // +1 for unassigned
+    const allRowsHidden = state.hiddenUserIds.length === totalPossibleUsers;
+    const hasManuallyHiddenColumns = state.hiddenColumnStatuses.length > 0;
+
+    if (allRowsHidden && hasManuallyHiddenColumns && !state.autoHideColumns) {
+      setState((prev) => ({ ...prev, autoHideColumns: true }));
+    } else if (
+      (!allRowsHidden || !hasManuallyHiddenColumns) &&
+      state.autoHideColumns
+    ) {
+      setState((prev) => ({ ...prev, autoHideColumns: false }));
+    }
+  }, [
+    state.hiddenUserIds.length,
+    state.users.length,
+    state.hiddenColumnStatuses.length,
+    state.autoHideColumns,
+    setState,
+  ]);
 
   const handleReorderIssues = useCallback(
     (reorderedIssues: Issue[]) => {
@@ -201,6 +271,50 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     [setState]
   );
 
+  const toggleUserRowVisibility = useCallback(
+    (userId: string) => {
+      setState((prevState) => {
+        const isHidden = prevState.hiddenUserIds.includes(userId);
+        const hiddenUserIds = isHidden
+          ? prevState.hiddenUserIds.filter((id) => id !== userId)
+          : [...prevState.hiddenUserIds, userId];
+        return { ...prevState, hiddenUserIds };
+      });
+    },
+    [setState]
+  );
+
+  const toggleColumnVisibility = useCallback(
+    (status: IssueStatus) => {
+      setState((prevState) => {
+        const isHidden = prevState.hiddenColumnStatuses.includes(status);
+        const hiddenColumnStatuses = isHidden
+          ? prevState.hiddenColumnStatuses.filter((s) => s !== status)
+          : [...prevState.hiddenColumnStatuses, status];
+        return { ...prevState, hiddenColumnStatuses };
+      });
+    },
+    [setState]
+  );
+
+  const toggleRightSidebar = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      showRightSidebar: !prevState.showRightSidebar,
+    }));
+  }, [setState]);
+
+  const setInitialIssueValues = useCallback(
+    (values: { status?: IssueStatus; assigneeId?: string }) => {
+      setState((prevState) => ({ ...prevState, initialIssueValues: values }));
+    },
+    [setState]
+  );
+
+  const clearInitialIssueValues = useCallback(() => {
+    setState((prevState) => ({ ...prevState, initialIssueValues: null }));
+  }, [setState]);
+
   const value = useMemo(
     () => ({
       users: state.users,
@@ -210,6 +324,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       projects: state.projects,
       milestones: state.milestones,
       teamIdentifier: state.teamIdentifier,
+      columns: state.columns,
       assigneeProgress,
       addIssue,
       handleReorderIssues,
@@ -219,6 +334,18 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       addComment,
       isNewIssueModalOpen: state.isNewIssueModalOpen,
       setIsNewIssueModalOpen,
+      hiddenUserIds: state.hiddenUserIds,
+      toggleUserRowVisibility,
+      hiddenColumnStatuses: state.hiddenColumnStatuses,
+      toggleColumnVisibility,
+      overallContainerRef,
+      showRightSidebar: state.showRightSidebar,
+      toggleRightSidebar,
+      autoHideRows: state.autoHideRows,
+      autoHideColumns: state.autoHideColumns,
+      initialIssueValues: state.initialIssueValues,
+      setInitialIssueValues,
+      clearInitialIssueValues,
     }),
     [
       state.users,
@@ -228,6 +355,7 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       state.projects,
       state.milestones,
       state.teamIdentifier,
+      state.columns,
       state.taskId,
       assigneeProgress,
       addIssue,
@@ -237,6 +365,18 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       addComment,
       state.isNewIssueModalOpen,
       setIsNewIssueModalOpen,
+      state.hiddenUserIds,
+      toggleUserRowVisibility,
+      state.hiddenColumnStatuses,
+      toggleColumnVisibility,
+      overallContainerRef,
+      state.showRightSidebar,
+      toggleRightSidebar,
+      state.autoHideRows,
+      state.autoHideColumns,
+      state.initialIssueValues,
+      setInitialIssueValues,
+      clearInitialIssueValues,
     ]
   );
 

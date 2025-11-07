@@ -4,12 +4,14 @@ interface BadgeProps {
   children: React.ReactNode;
   variant?: "default";
   className?: string;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function Badge({
   children,
   variant = "default",
   className,
+  onClick,
 }: BadgeProps) {
   const variantClasses = {
     default:
@@ -17,14 +19,15 @@ export default function Badge({
   };
 
   return (
-    <div
+    <button
       className={cn(
         "inline-flex items-center px-1 h-[22px] rounded text-[11px] font-[450] transition-colors",
         variantClasses[variant],
         className
       )}
+      onClick={onClick}
     >
       {children}
-    </div>
+    </button>
   );
 }

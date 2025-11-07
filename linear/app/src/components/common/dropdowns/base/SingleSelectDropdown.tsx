@@ -69,6 +69,7 @@ export function SingleSelectDropdown({
           width,
           "bg-card-bg border-border p-0 flex flex-col overflow-hidden"
         )}
+        onCloseAutoFocus={(e) => e.preventDefault()}
       >
         {showSearch && (
           <div className="flex items-center pl-[14px] pr-3 border-b border-border justify-between gap-[14px] flex-shrink-0">

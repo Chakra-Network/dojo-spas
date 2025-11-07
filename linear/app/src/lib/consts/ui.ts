@@ -1,20 +1,13 @@
-import { Queued, InProgress, Blocked, InReview } from "@/components/icons";
+import {
+  Queued,
+  InProgress,
+  Blocked,
+  InReview,
+  Staging,
+  Done,
+} from "@/components/icons";
 import type { JSX } from "react";
 import type { IssueStatus } from "../types";
-
-export const COLUMNS: { status: IssueStatus; title: string }[] = [
-  { status: "queued", title: "Queued" },
-  { status: "in_progress", title: "In Progress" },
-  { status: "blocked", title: "Blocked" },
-  { status: "in_review", title: "In Review" },
-];
-
-export const VALID_STATUSES: IssueStatus[] = [
-  "queued",
-  "in_progress",
-  "blocked",
-  "in_review",
-];
 
 export const STATUS_CONFIG: Record<IssueStatus, { Icon: JSX.ElementType }> = {
   queued: { Icon: Queued },
@@ -25,7 +18,13 @@ export const STATUS_CONFIG: Record<IssueStatus, { Icon: JSX.ElementType }> = {
   in_review: {
     Icon: InReview,
   },
+  staging: { Icon: Staging },
+  done: { Icon: Done },
 };
+
+export const VALID_STATUSES: IssueStatus[] = Object.keys(
+  STATUS_CONFIG
+) as IssueStatus[];
 
 export const MS_IN_MINUTE = 60 * 1000;
 export const MS_IN_HOUR = 60 * MS_IN_MINUTE;

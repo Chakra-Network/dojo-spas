@@ -1,5 +1,4 @@
 export { CopyIssuedId } from "./CopyIssuedId";
-export { Done } from "./Done";
 export { EditBoxLine } from "./EditBoxLine";
 export { IssueUrl } from "./IssueUrl";
 export { LinearArrowDown } from "./LinearArrowDown";
@@ -7,6 +6,7 @@ export { LinearGitBranch } from "./LinearGitBranch";
 export { LongArrowUp } from "./LongArrowUp";
 export { TriangleDown } from "./TriangleDown";
 export { TaskIcon } from "./TaskIcon";
+export { AllHidden } from "./AllHidden";
 export {
   HighPriority,
   MediumPriority,
@@ -21,6 +21,7 @@ export {
   InReview,
   Queued,
   Staging,
+  Done,
 } from "./statuses";
 export {
   Inbox,

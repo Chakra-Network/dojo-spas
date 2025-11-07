@@ -4,3 +4,4 @@ export { InProgress } from "./InProgress";
 export { InReview } from "./InReview";
 export { Queued } from "./Queued";
 export { Staging } from "./Staging";
+export { Done } from "./Done";
