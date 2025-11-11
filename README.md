@@ -1,7 +1,5 @@
 # Dojo Single-Page Applications (SPAs)
 
-[![Deploy SPAs](https://github.com/Chakra-Network/dojo-spas/actions/workflows/deploy-spas.yml/badge.svg)](https://github.com/Chakra-Network/dojo-spas/actions/workflows/deploy-spas.yml)
-
 Curated single-page applications built with React, Vite, and a shared state layer—powering experiences on [trydojo.ai](https://trydojo.ai/).
 
 - Read the platform docs: [docs.trydojo.ai](https://docs.trydojo.ai/)
