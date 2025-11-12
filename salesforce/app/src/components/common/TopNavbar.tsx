@@ -3,11 +3,21 @@ import { BiQuestionMark } from "react-icons/bi";
 import { useAppContext } from "@/context/AppProvider";
 import { cn } from "@/lib/utils";
 import { FaChevronDown, FaXmark } from "react-icons/fa6";
-import { PATH_PREFIX } from "@/lib/consts";
+import {
+  LOGO_COSMOS_IMAGE,
+  PROFILE_AVATAR_IMAGE,
+} from "@/components/resources/images";
 
 export default function TopNavbar() {
-  const { state, setActiveTab, removeTab, getLead, getContact } =
-    useAppContext();
+  const {
+    state,
+    setActiveTab,
+    removeTab,
+    getLead,
+    getContact,
+    getOpportunity,
+    getCase,
+  } = useAppContext();
   return (
     <div className="fixed top-0 left-[76px] right-0 z-40">
       {/* Blue banner */}
@@ -30,7 +40,7 @@ export default function TopNavbar() {
         {/* Salesforce logo */}
         <div className="flex items-center">
           <img
-            src={`${PATH_PREFIX}/logo/logo-cosmos.png`}
+            src={LOGO_COSMOS_IMAGE}
             alt="Salesforce"
             className="h-10 w-[200px]"
           />
@@ -57,7 +67,7 @@ export default function TopNavbar() {
           </button>
           <div className="mx-2 shrink-0 pl-2">
             <img
-              src={`${PATH_PREFIX}/images/profile-avatar.png`}
+              src={PROFILE_AVATAR_IMAGE}
               alt="Profile"
               className="w-8 h-8 rounded-full cursor-pointer hover:opacity-80"
             />
@@ -90,6 +100,14 @@ export default function TopNavbar() {
               } else if (tab.type === "home-listLeads") {
                 tabName = "Recently Viewed";
                 tabSuffix = " | Leads";
+              } else if (tab.type === "home-opportunity" && tab.dataId) {
+                const opportunityData = getOpportunity(tab.dataId);
+                tabName = opportunityData?.opportunityName || "New Opportunity";
+                tabSuffix = " | Opportunity";
+              } else if (tab.type === "home-case" && tab.dataId) {
+                const caseData = getCase(tab.dataId);
+                tabName = caseData?.id?.split("-")[1] || "New Case";
+                tabSuffix = " | Case";
               }
 
               return (

@@ -1,5 +1,15 @@
-import { Pencil, Inbox, Star, Clock, Send, FileText, AlertTriangle, Trash2, Tag } from "lucide-react";
-import type { Label } from "./types";
+import {
+  Pencil,
+  Inbox,
+  Star,
+  Clock,
+  Send,
+  FileText,
+  AlertTriangle,
+  Trash2,
+  Tag,
+} from "lucide-react";
+import type { Label } from "../lib/types";
 
 interface SidebarProps {
   labels: Label[];
@@ -28,7 +38,11 @@ export default function Sidebar({
   collapsed,
 }: SidebarProps) {
   return (
-    <div className={`bg-white border-r border-gray-200 flex flex-col h-screen transition-all duration-300 ${collapsed ? "w-0 overflow-hidden" : "w-64"}`}>
+    <div
+      className={`bg-white border-r border-gray-200 flex flex-col h-screen transition-all duration-300 ${
+        collapsed ? "w-0 overflow-hidden" : "w-64"
+      }`}
+    >
       <div className="p-4">
         <button
           onClick={onCompose}

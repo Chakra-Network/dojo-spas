@@ -1,16 +1,19 @@
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface SectionLayoutProps {
   title: string;
   defaultExpanded?: boolean;
   children: React.ReactNode;
+  contentContainerClassName?: string;
 }
 
 export default function SectionLayout({
   title,
   defaultExpanded = true,
   children,
+  contentContainerClassName,
 }: SectionLayoutProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
@@ -30,7 +33,15 @@ export default function SectionLayout({
       </button>
 
       {/* Content */}
-      {isExpanded && <div className="px-3 pt-2">{children}</div>}
+      {isExpanded && (
+        <div className={cn("px-3 pt-2", contentContainerClassName)}>
+          {children}
+        </div>
+      )}
     </div>
   );
+}
+
+export function FieldWrapper({ children }: { children: React.ReactNode }) {
+  return <div className="px-3">{children}</div>;
 }

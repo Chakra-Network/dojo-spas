@@ -1,101 +1,68 @@
-import { ChevronDown, Upload } from "lucide-react";
-import { PiSuitcaseFill, PiChatsFill, PiFilesFill } from "react-icons/pi";
+import { FaCrown } from "react-icons/fa";
+import { PillButtonIconItem } from "../common/SmallButtons";
+import { VscTriangleDown } from "react-icons/vsc";
+import { TbBriefcase2Filled } from "react-icons/tb";
+import CommonPanelHeader from "../common/header/CommonPanelHeader";
+import FilesPanel from "../common/panels/FilesPanel";
 
 export default function RightPanel() {
   return (
     <div className="flex flex-col gap-3">
       {/* Opportunities Section */}
       <div className="bg-white rounded-[20px] shadow-[0_0_15px_rgba(0,0,0,0.1)] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <PiSuitcaseFill className="w-6 h-6 text-orange-500" />
-            <h3 className="text-xl leading-[30px] font-bold text-gray-800">
-              Opportunities (1)
-            </h3>
-          </div>
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <ChevronDown className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
+        <CommonPanelHeader
+          icon={{ Icon: FaCrown, bg: "bg-orange-500" }}
+          title="Opportunities"
+          count={1}
+        />
 
         {/* Content */}
-        <div className="p-4">
-          <a
-            href="#"
-            className="text-[#0176D3] hover:underline text-base font-medium mb-3 block"
-          >
-            test-
-          </a>
-          <div className="space-y-2">
-            <div className="flex gap-2">
-              <span className="text-sm text-gray-600 min-w-[90px]">Stage:</span>
-              <span className="text-sm text-gray-800">Qualify</span>
+        <div className="py-3 pl-1 border-b border-gray-300">
+          <div className="px-4 py-1 flex flex-row">
+            <div className="flex flex-col flex-1">
+              <div className="h-5">
+                <a
+                  href="#"
+                  className="text-[#0176D3] hover:underline text-[13px] leading-[19.5px] font-medium block"
+                >
+                  test-
+                </a>
+              </div>
+              <div className="grid grid-cols-[1fr_2fr] gap-x-2 gap-y-0 text-[13px] leading-[19.5px]">
+                <span className="text-gray-600">Stage:</span>
+                <span className="text-gray-800">Qualify</span>
+                <span className="text-gray-600">Amount:</span>
+                <span className="text-gray-800"></span>
+                <span className="text-gray-600">Close Date:</span>
+                <span className="text-gray-800">31/12/2025</span>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <span className="text-sm text-gray-600 min-w-[90px]">
-                Amount:
-              </span>
-              <span className="text-sm text-gray-800"></span>
-            </div>
-            <div className="flex gap-2">
-              <span className="text-sm text-gray-600 min-w-[90px]">
-                Close Date:
-              </span>
-              <span className="text-sm text-gray-800">31/12/2025</span>
-            </div>
+
+            <PillButtonIconItem className="w-5 h-5">
+              <VscTriangleDown className="w-[12px] h-[12px]" />
+            </PillButtonIconItem>
           </div>
-          <a
-            href="#"
-            className="text-[#0176D3] hover:underline text-sm mt-4 block text-center"
-          >
-            View All
-          </a>
         </div>
+
+        <a
+          href="#"
+          className="text-[#0176D3] hover:underline text-[13px] leading-[19.5px] px-4 py-3 block text-center"
+        >
+          View All
+        </a>
       </div>
 
       {/* Cases Section */}
       <div className="bg-white rounded-[20px] shadow-[0_0_15px_rgba(0,0,0,0.1)] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <PiChatsFill className="w-6 h-6 text-pink-500" />
-            <h3 className="text-xl leading-[30px] font-bold text-gray-800">
-              Cases (0)
-            </h3>
-          </div>
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <ChevronDown className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
+        <CommonPanelHeader
+          icon={{ Icon: TbBriefcase2Filled, bg: "bg-pink-500" }}
+          title="Cases"
+          count={0}
+        />
       </div>
 
       {/* Files Section */}
-      <div className="bg-white rounded-[20px] shadow-[0_0_15px_rgba(0,0,0,0.1)] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <PiFilesFill className="w-6 h-6 text-gray-600" />
-            <h3 className="text-xl leading-[30px] font-bold text-gray-800">
-              Files (0)
-            </h3>
-          </div>
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <ChevronDown className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="px-4 py-6">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <button className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50">
-              <Upload className="w-4 h-4" />
-              Upload Files
-            </button>
-            <p className="text-sm text-gray-600 mt-2">Or drop files</p>
-          </div>
-        </div>
-      </div>
+      <FilesPanel />
     </div>
   );
 }

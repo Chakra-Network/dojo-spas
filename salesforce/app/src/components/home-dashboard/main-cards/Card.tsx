@@ -1,7 +1,7 @@
 import { SearchIcon, RefreshCw } from "lucide-react";
-import { VscTriangleDown } from "react-icons/vsc";
 import { cn } from "@/lib/utils";
 import type { JSX } from "react";
+import CardDropdownMenu from "@/components/common/CardDropdownMenu";
 
 interface CardProps {
   title?: string;
@@ -10,8 +10,11 @@ interface CardProps {
   searchPlaceholder?: string;
   hasNewButton?: boolean;
   hasDropdown?: boolean;
+  hasViewTable?: boolean;
+  slotIndex?: number;
   children?: React.ReactNode;
   viewReportText?: string;
+  onClickViewAll?: () => void;
   timestamp?: string;
   onNewClick?: () => void;
 }
@@ -23,8 +26,11 @@ export default function Card({
   searchPlaceholder,
   hasNewButton = false,
   hasDropdown = false,
+  hasViewTable = false,
+  slotIndex,
   children,
   viewReportText = "View Report",
+  onClickViewAll,
   timestamp = "As of Today at 11:18 am",
   onNewClick,
 }: CardProps) {
@@ -65,10 +71,11 @@ export default function Card({
             {hasNewButton && (
               <RightButton onClick={onNewClick}>New</RightButton>
             )}
-            {hasDropdown && (
-              <RightButton className="w-8 p-0">
-                <VscTriangleDown className="w-[14px] h-[14px] shrink-0" />
-              </RightButton>
+            {hasDropdown && slotIndex !== undefined && (
+              <CardDropdownMenu
+                slotIndex={slotIndex}
+                hasViewTable={hasViewTable}
+              />
             )}
           </div>
         </div>
@@ -79,8 +86,8 @@ export default function Card({
 
       {/* Footer */}
       {viewReportText && (
-        <div className="px-4 pb-3 pt-4 border-t border-gray-200 flex items-center justify-between bg-white">
-          <button className="text-[#0176D3] hover:underline text-[13px] leading-[19.5px] cursor-pointer">
+        <div className="px-4 pb-3 pt-4 border-t border-[rgba(201,201,201,1)] flex items-center justify-between bg-white">
+          <button className="text-[rgba(2,80,217,1)] hover:underline text-[13px] leading-[19.5px] cursor-pointer">
             {viewReportText}
           </button>
           <div className="flex items-center gap-3 text-xs leading-[18px]">
@@ -89,6 +96,13 @@ export default function Card({
               <RefreshCw className="w-4 h-4" strokeWidth={3} />
             </button>
           </div>
+        </div>
+      )}
+      {onClickViewAll && (
+        <div className="px-4 pt-3 pb-5 border-t border-[rgba(201,201,201,1)] flex items-center justify-center bg-white">
+          <button className="text-[rgba(2,80,217,1)] hover:underline text-[13px] leading-[19.5px] cursor-pointer">
+            View All
+          </button>
         </div>
       )}
     </div>
@@ -117,14 +131,16 @@ function RightButton({
   );
 }
 
-export function EmptyState({ src, text }: { src: string; text: string }) {
+export function EmptyState({
+  Icon,
+  text,
+}: {
+  Icon: React.ComponentType<{ className?: string }>;
+  text: string;
+}) {
   return (
     <div className="flex flex-col items-center justify-center mt-12">
-      <img
-        src={src}
-        alt="Empty state illustration"
-        className="w-auto h-[142px] mb-3"
-      />
+      <Icon className="w-auto h-[142px] mb-3" />
       <p className="text-[13px] leading-[19.5px] text-gray-600 text-center">
         {text}
       </p>

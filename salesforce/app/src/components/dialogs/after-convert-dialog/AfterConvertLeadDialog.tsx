@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Building2, User, TrendingUp } from "lucide-react";
 import ConvertedRecordCard from "./ConvertedRecordCard";
-import { PATH_PREFIX } from "@/lib/consts";
+import { LEAD_CONVERT_CELEBRATION_2X_GIF } from "@/components/resources/gifs";
 
 interface AfterConvertLeadDialogProps {
   isOpen: boolean;
@@ -48,7 +48,7 @@ export default function AfterConvertLeadDialog({
             {/* Success Icon */}
             <div className="flex justify-center">
               <img
-                src={`${PATH_PREFIX}/gifs/lead_convert_celebration_2x.gif`}
+                src={LEAD_CONVERT_CELEBRATION_2X_GIF}
                 alt="Lead Converted Celebration"
                 className="w-auto h-[144px]"
               />
@@ -56,7 +56,7 @@ export default function AfterConvertLeadDialog({
           </div>
 
           {/* Three Column Layout */}
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center flex-wrap">
             {/* Account Section */}
             <ConvertedRecordCard
               sectionTitle="ACCOUNT"

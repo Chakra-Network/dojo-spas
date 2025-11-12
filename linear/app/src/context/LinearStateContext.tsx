@@ -6,6 +6,7 @@ import {
   useCallback,
   useMemo,
   useState,
+  useRef,
   type ReactNode,
 } from "react";
 import type {
@@ -17,6 +18,7 @@ import type {
   Cycle,
   Project,
   Milestone,
+  IssueStatus,
 } from "@/lib/types";
 import { useDojoState } from "@chakra-dev/dojo-hooks";
 import {
@@ -27,6 +29,7 @@ import {
   projects as initialProjects,
   milestones as initialMilestones,
   TEAM_IDENTIFIER,
+  COLUMN_STATUSES,
 } from "../lib/mocks";
 import { generateAssigneeProgress } from "../lib/utils";
 
@@ -38,6 +41,7 @@ interface LinearStateContextType {
   projects: Project[];
   milestones: Milestone[];
   teamIdentifier: string;
+  columns: { status: IssueStatus; title: string }[];
   handleReorderIssues: (reorderedIssues: Issue[]) => void;
   updateIssue: (issueId: string, updates: Partial<Issue>) => void;
   assigneeProgress: AssigneeProgress[];
@@ -45,6 +49,20 @@ interface LinearStateContextType {
   setTaskId: (taskId?: string) => void;
   addComment: (issueId: string, comment: Comment) => void;
   addIssue: (issue: Issue) => void;
+  isNewIssueModalOpen: boolean;
+  setIsNewIssueModalOpen: (isNewIssueModalOpen: boolean) => void;
+  hiddenUserIds: string[];
+  toggleUserRowVisibility: (userId: string) => void;
+  hiddenColumnStatuses: IssueStatus[];
+  toggleColumnVisibility: (status: IssueStatus) => void;
+  overallContainerRef: React.RefObject<HTMLDivElement | null>;
+  showRightSidebar: boolean;
+  toggleRightSidebar: () => void;
+  autoHideRows: boolean;
+  autoHideColumns: boolean;
+  initialIssueValues: { status?: IssueStatus; assigneeId?: string } | null;
+  setInitialIssueValues: (values: { status?: IssueStatus; assigneeId?: string }) => void;
+  clearInitialIssueValues: () => void;
 }
 
 interface LinearState {
@@ -55,6 +73,15 @@ interface LinearState {
   projects: Project[];
   milestones: Milestone[];
   teamIdentifier: string;
+  columns: { status: IssueStatus; title: string }[];
+  taskId?: string;
+  isNewIssueModalOpen: boolean;
+  hiddenUserIds: string[];
+  hiddenColumnStatuses: IssueStatus[];
+  showRightSidebar: boolean;
+  autoHideRows: boolean;
+  autoHideColumns: boolean;
+  initialIssueValues: { status?: IssueStatus; assigneeId?: string } | null;
 }
 
 const LinearStateContext = createContext<LinearStateContextType | undefined>(
@@ -66,6 +93,8 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const overallContainerRef = useRef<HTMLDivElement>(null);
+
   const [state, setState] = useDojoState<LinearState>({
     issues: initialIssues,
     users: initialUsers,
@@ -74,100 +103,217 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
     projects: initialProjects,
     milestones: initialMilestones,
     teamIdentifier: TEAM_IDENTIFIER,
+    columns: COLUMN_STATUSES,
+    taskId: undefined,
+    isNewIssueModalOpen: false,
+    hiddenUserIds: [],
+    hiddenColumnStatuses: [],
+    showRightSidebar: true,
+    autoHideRows: false,
+    autoHideColumns: false,
+    initialIssueValues: null,
   });
-
-  const [taskId, setTaskId] = useState<string | undefined>(undefined);
 
   // Update users context whenever state.users changes
   useEffect(() => {
     setAssigneeProgress(generateAssigneeProgress(state.users));
   }, [state.users]);
 
+  // Auto-hide rows when all columns hidden
+  useEffect(() => {
+    const allColumnsHidden =
+      state.hiddenColumnStatuses.length === state.columns.length;
+    if (allColumnsHidden && !state.autoHideRows) {
+      setState((prev) => ({ ...prev, autoHideRows: true }));
+    } else if (!allColumnsHidden && state.autoHideRows) {
+      setState((prev) => ({ ...prev, autoHideRows: false }));
+    }
+  }, [
+    state.hiddenColumnStatuses.length,
+    state.columns.length,
+    state.autoHideRows,
+    setState,
+  ]);
+
+  // Auto-hide columns when all rows hidden AND at least one column manually hidden
+  useEffect(() => {
+    const totalPossibleUsers = state.users.length + 1; // +1 for unassigned
+    const allRowsHidden = state.hiddenUserIds.length === totalPossibleUsers;
+    const hasManuallyHiddenColumns = state.hiddenColumnStatuses.length > 0;
+
+    if (allRowsHidden && hasManuallyHiddenColumns && !state.autoHideColumns) {
+      setState((prev) => ({ ...prev, autoHideColumns: true }));
+    } else if (
+      (!allRowsHidden || !hasManuallyHiddenColumns) &&
+      state.autoHideColumns
+    ) {
+      setState((prev) => ({ ...prev, autoHideColumns: false }));
+    }
+  }, [
+    state.hiddenUserIds.length,
+    state.users.length,
+    state.hiddenColumnStatuses.length,
+    state.autoHideColumns,
+    setState,
+  ]);
+
   const handleReorderIssues = useCallback(
     (reorderedIssues: Issue[]) => {
-      setState({ ...state, issues: reorderedIssues });
+      setState((prevState) => ({ ...prevState, issues: reorderedIssues }));
     },
-    [setState, state]
+    [setState]
   );
 
   const updateIssue = useCallback(
     (issueId: string, updates: Partial<Issue>) => {
-      const updatedIssues = state.issues.map((issue) => {
-        if (issue.id !== issueId) return issue;
+      setState((prevState) => {
+        const updatedIssues = prevState.issues.map((issue) => {
+          if (issue.id !== issueId) return issue;
 
-        const updatedIssue = { ...issue, ...updates };
+          const updatedIssue = { ...issue, ...updates };
 
-        // Track priority changes in activity
-        if (
-          updates.priority !== undefined &&
-          updates.priority !== issue.priority
-        ) {
-          const currentUser = state.users[0];
-          const priorityLabels: Record<string, string> = {
-            none: "No priority",
-            urgent: "Urgent",
-            high: "High",
-            medium: "Medium",
-            low: "Low",
-          };
+          // Track priority changes in activity
+          if (
+            updates.priority !== undefined &&
+            updates.priority !== issue.priority
+          ) {
+            const currentUser = prevState.users[0];
+            const priorityLabels: Record<string, string> = {
+              none: "No priority",
+              urgent: "Urgent",
+              high: "High",
+              medium: "Medium",
+              low: "Low",
+            };
 
-          const newActivity = {
-            id: `activity-${Date.now()}`,
-            actor: currentUser.name,
-            description: `set priority to ${priorityLabels[updates.priority]}`,
-            createdAt: new Date(),
-            icon: "edit" as const,
-          };
+            const newActivity = {
+              id: `activity-${Date.now()}`,
+              actor: currentUser.name,
+              description: `set priority to ${
+                priorityLabels[updates.priority]
+              }`,
+              createdAt: new Date().toISOString(),
+              icon: "edit" as const,
+            };
 
-          updatedIssue.activities = [...(issue.activities || []), newActivity];
-        }
+            updatedIssue.activities = [
+              ...(issue.activities || []),
+              newActivity,
+            ];
+          }
 
-        return updatedIssue;
+          return updatedIssue;
+        });
+        return { ...prevState, issues: updatedIssues };
       });
-      setState({ ...state, issues: updatedIssues });
     },
-    [setState, state]
+    [setState]
   );
 
   const addComment = useCallback(
     (issueId: string, comment: Comment) => {
-      const updatedIssues = state.issues.map((issue) =>
-        issue.id === issueId
-          ? { ...issue, comments: [...(issue.comments || []), comment] }
-          : issue
-      );
-      setState({ ...state, issues: updatedIssues as Issue[] });
+      setState((prevState) => {
+        const updatedIssues = prevState.issues.map((issue) =>
+          issue.id === issueId
+            ? { ...issue, comments: [...(issue.comments || []), comment] }
+            : issue
+        );
+        return { ...prevState, issues: updatedIssues as Issue[] };
+      });
     },
-    [setState, state]
+    [setState]
   );
 
   const addIssue = useCallback(
     (issue: Issue) => {
-      // Auto-generate issue identifier
-      const numbers = state.issues
-        .map((issue) => parseInt(issue.identifier.split("-")[1]))
-        .filter((num) => !isNaN(num));
-      const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
-      const generatedIdentifier = `${state.teamIdentifier}-${nextNumber}`;
+      setState((prevState) => {
+        // Auto-generate issue identifier
+        const numbers = prevState.issues
+          .map((issue) => parseInt(issue.identifier.split("-")[1]))
+          .filter((num) => !isNaN(num));
+        const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
+        const generatedIdentifier = `${prevState.teamIdentifier}-${nextNumber}`;
 
-      const currentUser = state.users[0];
-      const issueWithActivity: Issue = {
-        ...issue,
-        identifier: generatedIdentifier,
-        activities: [
-          {
-            id: `${issue.id}-created`,
-            actor: currentUser.name,
-            description: "created the issue",
-            createdAt: new Date(),
-            icon: "avatar" as const,
-          },
-        ],
-      };
-      setState({ ...state, issues: [...state.issues, issueWithActivity] });
+        const currentUser = prevState.users[0];
+        const issueWithActivity: Issue = {
+          ...issue,
+          identifier: generatedIdentifier,
+          activities: [
+            {
+              id: `${issue.id}-created`,
+              actor: currentUser.name,
+              description: "created the issue",
+              createdAt: new Date().toISOString(),
+              icon: "avatar" as const,
+            },
+          ],
+        };
+        return {
+          ...prevState,
+          issues: [...prevState.issues, issueWithActivity],
+        };
+      });
     },
-    [setState, state]
+    [setState]
   );
+
+  const setTaskId = useCallback(
+    (taskId?: string) => {
+      setState((prevState) => ({ ...prevState, taskId }));
+    },
+    [setState]
+  );
+
+  const setIsNewIssueModalOpen = useCallback(
+    (isNewIssueModalOpen: boolean) => {
+      setState((prevState) => ({ ...prevState, isNewIssueModalOpen }));
+    },
+    [setState]
+  );
+
+  const toggleUserRowVisibility = useCallback(
+    (userId: string) => {
+      setState((prevState) => {
+        const isHidden = prevState.hiddenUserIds.includes(userId);
+        const hiddenUserIds = isHidden
+          ? prevState.hiddenUserIds.filter((id) => id !== userId)
+          : [...prevState.hiddenUserIds, userId];
+        return { ...prevState, hiddenUserIds };
+      });
+    },
+    [setState]
+  );
+
+  const toggleColumnVisibility = useCallback(
+    (status: IssueStatus) => {
+      setState((prevState) => {
+        const isHidden = prevState.hiddenColumnStatuses.includes(status);
+        const hiddenColumnStatuses = isHidden
+          ? prevState.hiddenColumnStatuses.filter((s) => s !== status)
+          : [...prevState.hiddenColumnStatuses, status];
+        return { ...prevState, hiddenColumnStatuses };
+      });
+    },
+    [setState]
+  );
+
+  const toggleRightSidebar = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      showRightSidebar: !prevState.showRightSidebar,
+    }));
+  }, [setState]);
+
+  const setInitialIssueValues = useCallback(
+    (values: { status?: IssueStatus; assigneeId?: string }) => {
+      setState((prevState) => ({ ...prevState, initialIssueValues: values }));
+    },
+    [setState]
+  );
+
+  const clearInitialIssueValues = useCallback(() => {
+    setState((prevState) => ({ ...prevState, initialIssueValues: null }));
+  }, [setState]);
 
   const value = useMemo(
     () => ({
@@ -178,13 +324,28 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       projects: state.projects,
       milestones: state.milestones,
       teamIdentifier: state.teamIdentifier,
+      columns: state.columns,
       assigneeProgress,
       addIssue,
       handleReorderIssues,
       updateIssue,
-      taskId,
+      taskId: state.taskId,
       setTaskId,
       addComment,
+      isNewIssueModalOpen: state.isNewIssueModalOpen,
+      setIsNewIssueModalOpen,
+      hiddenUserIds: state.hiddenUserIds,
+      toggleUserRowVisibility,
+      hiddenColumnStatuses: state.hiddenColumnStatuses,
+      toggleColumnVisibility,
+      overallContainerRef,
+      showRightSidebar: state.showRightSidebar,
+      toggleRightSidebar,
+      autoHideRows: state.autoHideRows,
+      autoHideColumns: state.autoHideColumns,
+      initialIssueValues: state.initialIssueValues,
+      setInitialIssueValues,
+      clearInitialIssueValues,
     }),
     [
       state.users,
@@ -194,13 +355,28 @@ export function LinearStateProvider({ children }: { children: ReactNode }) {
       state.projects,
       state.milestones,
       state.teamIdentifier,
+      state.columns,
+      state.taskId,
       assigneeProgress,
       addIssue,
       handleReorderIssues,
       updateIssue,
-      taskId,
       setTaskId,
       addComment,
+      state.isNewIssueModalOpen,
+      setIsNewIssueModalOpen,
+      state.hiddenUserIds,
+      toggleUserRowVisibility,
+      state.hiddenColumnStatuses,
+      toggleColumnVisibility,
+      overallContainerRef,
+      state.showRightSidebar,
+      toggleRightSidebar,
+      state.autoHideRows,
+      state.autoHideColumns,
+      state.initialIssueValues,
+      setInitialIssueValues,
+      clearInitialIssueValues,
     ]
   );
 

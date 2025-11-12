@@ -1,5 +1,5 @@
 import { Star, Bookmark, Tag, RotateCcw, MoreVertical } from "lucide-react";
-import type { Email } from "./types";
+import type { Email } from "../lib/types";
 
 interface EmailListProps {
   emails: Email[];
@@ -68,8 +68,12 @@ export default function EmailList({
               }}
               className="hover:scale-110 transition-transform"
             >
-              <Star 
-                className={`w-5 h-5 ${email.starred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`}
+              <Star
+                className={`w-5 h-5 ${
+                  email.starred
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-gray-400"
+                }`}
               />
             </button>
             <button

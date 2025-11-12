@@ -1,4 +1,4 @@
-import type { Label, Cycle, Project, Milestone } from "../types";
+import type { Label, Cycle, Project, Milestone, IssueStatus } from "../types";
 import {
   Database,
   Warehouse,
@@ -163,3 +163,12 @@ export const milestones: Milestone[] = [
 export const currentCycle: Cycle = cycles.find((c) => c.status === "current")!;
 
 export const TEAM_IDENTIFIER = "VSS";
+
+export const COLUMN_STATUSES: { status: IssueStatus; title: string }[] = [
+  { status: "queued", title: "Queued" },
+  { status: "in_progress", title: "In Progress" },
+  { status: "blocked", title: "Blocked" },
+  { status: "in_review", title: "In Review" },
+  { status: "staging", title: "Staging" },
+  { status: "done", title: "Done" },
+];

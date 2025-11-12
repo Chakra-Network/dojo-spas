@@ -1,24 +1,27 @@
 import { ChevronDown } from "lucide-react";
 import BannerCard from "./BannerCard";
-import { CARDS } from "@/lib/consts";
+import { EasyEmptySpotlight } from "@/components/resources/svgs";
+import { cn } from "@/lib/utils";
+import type { BannerCardType } from "@/lib/types";
 
 interface ExpandedBannerProps {
   onToggle: () => void;
   onDismissCard: (cardId: string) => void;
-  dismissedCards: string[];
+  visibleCards: BannerCardType[];
 }
 
 export default function ExpandedBanner({
   onToggle,
   onDismissCard,
-  dismissedCards,
+  visibleCards,
 }: ExpandedBannerProps) {
-  const visibleCards = CARDS.filter(
-    (card) => !dismissedCards.includes(card.id)
-  );
-
   return (
-    <article className="bg-[#EEF4FF] rounded-[20px] shadow-lg border border-gray-200 p-6">
+    <article
+      className={cn(
+        " rounded-[20px] shadow-lg border border-gray-200 p-6 transition-colors duration-300",
+        visibleCards.length === 0 ? "bg-white" : "bg-[#EEF4FF]"
+      )}
+    >
       {/* Header Section */}
       <div className="flex items-start justify-between">
         {/* Mobile Title (hidden on medium+) */}
@@ -26,9 +29,11 @@ export default function ExpandedBanner({
           <h2 className="text-2xl font-semibold text-gray-800 mb-1">
             Welcome, Dzaka
           </h2>
-          <h3 className="text-sm text-gray-600">
-            Check out these suggestions to kick off your day.
-          </h3>
+          {visibleCards.length > 0 && (
+            <h3 className="text-sm text-gray-600">
+              Check out these suggestions to kick off your day.
+            </h3>
+          )}
         </div>
 
         {/* Collapse Button */}
@@ -53,9 +58,11 @@ export default function ExpandedBanner({
             <h2 className="text-[32px] leading-[48px] font-light text-gray-800">
               Welcome, Dzaka
             </h2>
-            <h3 className="text-base text-gray-600">
-              Check out these suggestions to kick off your day.
-            </h3>
+            {visibleCards.length > 0 && (
+              <h3 className="text-base text-gray-600">
+                Check out these suggestions to kick off your day.
+              </h3>
+            )}
           </div>
           <button className="text-[#0176D3] hover:text-[#014486] text-[13px] h-8 items-center justify-center font-semibold text-left focus:outline-none rounded cursor-pointer">
             View All Cards
@@ -65,10 +72,10 @@ export default function ExpandedBanner({
         {/* Right Section - Cards Grid */}
         <div className="flex-1">
           {visibleCards.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p className="text-sm">All suggestions dismissed! 🎉</p>
-              <p className="text-xs mt-1">
-                Check back later for more recommendations.
+            <div className="flex flex-col items-center justify-center text-center pb-8 text-gray-500">
+              <EasyEmptySpotlight className="w-auto h-[147px] mb-4" />
+              <p className="">
+                We'll show suggestions for you here based on actions you take.
               </p>
             </div>
           ) : (

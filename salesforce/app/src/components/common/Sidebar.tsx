@@ -1,42 +1,52 @@
-import { PATH_PREFIX } from "@/lib/consts";
 import { cn } from "@/lib/utils";
+import {
+  HOME_IMAGE,
+  CONTACTS_IMAGE,
+  ACCOUNTS_IMAGE,
+  SALES_IMAGE,
+  SERVICE_IMAGE,
+  MARKETING_IMAGE,
+  COMMERCE_IMAGE,
+  GENERATIVE_CANVAS_IMAGE,
+  YOUR_ACCOUNT_IMAGE,
+} from "@/components/resources/images";
 
 export default function Sidebar() {
   const navItems = [
-    { icon: `${PATH_PREFIX}/images/home.png`, label: "Home", active: true },
+    { icon: HOME_IMAGE, label: "Home", active: true },
     {
-      icon: `${PATH_PREFIX}/images/contacts.png`,
+      icon: CONTACTS_IMAGE,
       label: "Contacts",
       active: false,
     },
     {
-      icon: `${PATH_PREFIX}/images/accounts.png`,
+      icon: ACCOUNTS_IMAGE,
       label: "Accounts",
       active: false,
     },
-    { icon: `${PATH_PREFIX}/images/sales.png`, label: "Sales", active: false },
+    { icon: SALES_IMAGE, label: "Sales", active: false },
     {
-      icon: `${PATH_PREFIX}/images/service.png`,
+      icon: SERVICE_IMAGE,
       label: "Service",
       active: false,
     },
     {
-      icon: `${PATH_PREFIX}/images/marketing.png`,
+      icon: MARKETING_IMAGE,
       label: "Marketing",
       active: false,
     },
     {
-      icon: `${PATH_PREFIX}/images/commerce.png`,
+      icon: COMMERCE_IMAGE,
       label: "Commerce",
       active: false,
     },
     {
-      icon: `${PATH_PREFIX}/images/generative-canvas.png`,
+      icon: GENERATIVE_CANVAS_IMAGE,
       label: "Generative Canvas",
       active: false,
     },
     {
-      icon: `${PATH_PREFIX}/images/your-account.png`,
+      icon: YOUR_ACCOUNT_IMAGE,
       label: "Your Account",
       active: false,
     },

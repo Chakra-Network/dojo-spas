@@ -12,7 +12,7 @@ import { useLinearState } from "@/context/LinearStateContext";
 import { cn } from "@/lib/utils";
 import { SidebarIconButton, SectionLayout } from "./SidebarItems";
 import { SidebarTriggerButton } from "./SidebarTriggerButton";
-import { getPriorityIcon, getCycleIcon } from "@/lib/utils/dropdowns";
+import { getCycleIcon } from "@/lib/utils/dropdowns";
 import {
   AssigneeDropdown,
   CycleDropdown,
@@ -24,13 +24,7 @@ import {
 } from "@/components/common/dropdowns";
 import { useCallback, useMemo } from "react";
 import { PiUserCircleDashed } from "react-icons/pi";
-
-const STATUS_LABELS: Record<IssueStatus, string> = {
-  queued: "Queued",
-  in_progress: "In Progress",
-  blocked: "Blocked",
-  in_review: "In Review",
-};
+import { PriorityIcon, ProjectIcon } from "@/components/common/DynamicIcons";
 
 const PRIORITY_LABELS: Record<Priority, string> = {
   urgent: "Urgent",
@@ -41,7 +35,7 @@ const PRIORITY_LABELS: Record<Priority, string> = {
 };
 
 export default function TaskRightSidebar({ issue }: { issue: Issue }) {
-  const { users, labels, cycles, projects, milestones, updateIssue } =
+  const { users, labels, cycles, projects, milestones, updateIssue, columns } =
     useLinearState();
   const assignee = users.find((user) => user.id === issue.assigneeId);
   const project = projects.find(
@@ -51,7 +45,9 @@ export default function TaskRightSidebar({ issue }: { issue: Issue }) {
   const milestone = milestones.find((m) => m.id === issue.milestoneId);
 
   const StatusIcon = STATUS_CONFIG[issue.status]?.Icon;
-  const statusLabel = STATUS_LABELS[issue.status];
+  const statusLabel = columns?.find(
+    (column) => column.status === issue.status
+  )?.title;
   const priorityLabel = PRIORITY_LABELS[issue.priority];
   const showPriorityPlaceholder = issue.priority === "none";
 
@@ -162,7 +158,7 @@ export default function TaskRightSidebar({ issue }: { issue: Issue }) {
                 showPriorityPlaceholder ? "text-neutral-4" : "text-neutral-1"
               )}
             >
-              {getPriorityIcon(issue.priority)}
+              <PriorityIcon priority={issue.priority} />
               <span
                 className={cn(
                   "font-medium",
@@ -314,7 +310,7 @@ export default function TaskRightSidebar({ issue }: { issue: Issue }) {
                   )}
                 >
                   {project && project.Icon ? (
-                    <project.Icon className="w-4 h-4 shrink-0" />
+                    <ProjectIcon project={project} />
                   ) : (
                     <Box className="w-4 h-4 shrink-0 text-neutral-5" />
                   )}

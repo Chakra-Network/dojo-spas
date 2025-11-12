@@ -14,7 +14,7 @@ import {
   Smile,
   Image,
 } from "lucide-react";
-import type { Email } from "./types";
+import type { Email } from "../lib/types";
 
 interface EmailViewProps {
   email: Email | null;

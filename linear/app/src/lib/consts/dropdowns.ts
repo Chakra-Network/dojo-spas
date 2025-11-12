@@ -25,6 +25,16 @@ export const STATUS_OPTIONS: Array<{
     label: "In Review",
     shortcut: "4",
   },
+  {
+    value: "staging",
+    label: "Staging",
+    shortcut: "5",
+  },
+  {
+    value: "done",
+    label: "Done",
+    shortcut: "6",
+  },
 ];
 
 export const PRIORITY_CONFIG: Array<{

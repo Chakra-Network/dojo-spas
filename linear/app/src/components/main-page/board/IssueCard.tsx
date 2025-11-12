@@ -7,16 +7,18 @@ import { cn } from "@/lib/utils";
 import { STATUS_CONFIG } from "@/lib/consts";
 import { useLinearState } from "@/context/LinearStateContext";
 import { useCallback } from "react";
-import { PriorityDropdown } from "@/components/common/dropdowns/PriorityDropdown";
-import { getPriorityIcon } from "@/lib/utils/dropdowns";
-import { Box } from "lucide-react";
+import {
+  PriorityDropdown,
+  LabelsDropdown,
+} from "@/components/common/dropdowns";
+import { ProjectIcon, PriorityIcon } from "@/components/common/DynamicIcons";
 
 interface IssueCardProps {
   issue: Issue;
 }
 
 export default function IssueCard({ issue }: IssueCardProps) {
-  const { users, setTaskId, updateIssue, projects } = useLinearState();
+  const { users, setTaskId, updateIssue, projects, labels } = useLinearState();
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useSortable({
       id: issue.id,
@@ -41,6 +43,16 @@ export default function IssueCard({ issue }: IssueCardProps) {
     [issue.id, updateIssue]
   );
 
+  const handleLabelsChange = useCallback(
+    (labelIds: string[]) => {
+      const selectedLabels = labels.filter((label) =>
+        labelIds.includes(label.id)
+      );
+      updateIssue(issue.id, { labels: selectedLabels });
+    },
+    [issue.id, labels, updateIssue]
+  );
+
   const project = projects.find(
     (candidate) => candidate.id === issue.projectId
   );
@@ -56,7 +68,7 @@ export default function IssueCard({ issue }: IssueCardProps) {
     >
       <div
         className={cn(
-          "flex flex-col w-full max-h-[133px] overflow-hidden bg-card-bg border border-card-border rounded-lg py-[10px] px-2 cursor-pointer transition-colors relative gap-[9px] hover:bg-card-hover",
+          "flex flex-col w-full max-h-[133px] overflow-hidden bg-card-bg border border-card-border rounded-lg py-[10px] px-2 transition-colors relative gap-[9px] hover:bg-card-hover",
           isDragging && "bg-transparent border-transparent"
         )}
       >
@@ -108,35 +120,46 @@ export default function IssueCard({ issue }: IssueCardProps) {
                 className="flex items-center justify-center h-5 px-1.5 rounded bg-badge-bg border border-badge-border hover:bg-badge-hover transition-colors"
               >
                 <div className="w-[14px] h-[14px] flex items-center justify-center">
-                  {getPriorityIcon(issue.priority, true, "w-[14px] h-[14px]")}
+                  <PriorityIcon
+                    priority={issue.priority}
+                    className="w-[14px] h-[14px]"
+                  />
                 </div>
               </button>
             }
           />
           {project && (
             <Badge key={issue.projectId} className="gap-1 group">
-              {project && project.Icon ? (
-                <project.Icon className="w-[14px] h-[14px] shrink-0" />
-              ) : (
-                <Box className="w-[14px] h-[14px] shrink-0 text-neutral-5" />
-              )}
+              <ProjectIcon project={project} />
               <span className="text-badge-text group-hover:text-neutral-1! transition-colors whitespace-nowrap max-w-[110px] truncate">
-                {project ? project.name : "Assign"}
+                {project.name}
               </span>
             </Badge>
           )}
 
           {issue.labels.slice(0, 3).map((label) => (
-            <Badge key={label.id} className="gap-1 group">
-              <span
-                className="w-[9px] h-[9px] rounded-full"
-                style={{ backgroundColor: label.color }}
-                aria-hidden="true"
-              />
-              <span className="text-badge-text group-hover:text-neutral-1! transition-colors">
-                {label.name}
-              </span>
-            </Badge>
+            <LabelsDropdown
+              key={label.id}
+              labels={labels}
+              selectedLabelIds={issue.labels.map((l) => l.id)}
+              onChange={handleLabelsChange}
+              trigger={
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center px-1 h-[22px] rounded text-[11px] font-[450] transition-colors bg-badge-bg border border-badge-border text-badge-text hover:bg-badge-hover gap-1 group"
+                >
+                  <span
+                    className="w-[9px] h-[9px] rounded-full"
+                    style={{ backgroundColor: label.color }}
+                    aria-hidden="true"
+                  />
+                  <span className="text-badge-text group-hover:text-neutral-1! transition-colors">
+                    {label.name}
+                  </span>
+                </button>
+              }
+            />
           ))}
         </div>
       </div>

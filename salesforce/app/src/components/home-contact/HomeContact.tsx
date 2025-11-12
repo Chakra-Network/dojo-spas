@@ -1,6 +1,6 @@
-import DetailsPanel from "@/components/common/details-panel/DetailsPanel";
+import ContactDetailsPanel from "./details-panel/ContactDetailsPanel";
 import RightPanel from "./RightPanel";
-import ActivityPanel from "../home-lead/ActivityPanel";
+import ActivityPanel from "../common/panels/ActivityPanel";
 import { useAppContext } from "@/context/AppProvider";
 import ContactHeader from "./ContactHeader";
 
@@ -26,7 +26,7 @@ export default function HomeContact() {
       <div className="flex items-start gap-3">
         {/* Left Column - Sections */}
         <div className="w-[32.5%]">
-          <DetailsPanel type="contact" />
+          <ContactDetailsPanel />
         </div>
 
         {/* Right Column - Activity & RightPanel */}

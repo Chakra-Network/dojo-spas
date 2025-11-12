@@ -1,9 +1,13 @@
 import { IoIosStar } from "react-icons/io";
 import Card, { EmptyState } from "./Card";
 import { useAppContext } from "@/context/AppProvider";
-import { PATH_PREFIX } from "@/lib/consts";
+import { LeadEmptyState } from "@/components/resources/svgs";
 
-export default function LeadsCard() {
+interface LeadsCardProps {
+  slotIndex: number;
+}
+
+export default function LeadsCard({ slotIndex }: LeadsCardProps) {
   const { openNewLeadDialog } = useAppContext();
 
   const handleNewClick = () => {
@@ -17,10 +21,12 @@ export default function LeadsCard() {
       searchPlaceholder="My Leads"
       hasNewButton={true}
       hasDropdown={true}
+      hasViewTable={true}
+      slotIndex={slotIndex}
       onNewClick={handleNewClick}
     >
       <EmptyState
-        src={`${PATH_PREFIX}/svgs/LeadEmptyState.svg`}
+        Icon={LeadEmptyState}
         text="Track progress as you qualify leads."
       />
     </Card>

@@ -22,7 +22,7 @@ export default function ConvertedRecordCard({
   fields,
 }: ConvertedRecordCardProps) {
   return (
-    <div className="flex flex-col p-4 w-[320px]">
+    <div className="flex flex-col p-4 w-[320px] shrink-0">
       <div className="text-[20.8px] leading-[26px] font-light text-gray-500 tracking-wider py-4 pr-4 ">
         {sectionTitle}
       </div>

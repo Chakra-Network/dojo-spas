@@ -1,6 +1,7 @@
 import { Pencil } from "lucide-react";
 import { useAppContext } from "@/context/AppProvider";
-import { PATH_PREFIX } from "@/lib/consts";
+import { cn } from "@/lib/utils";
+import { PROFILE_AVATAR_IMAGE } from "@/components/resources/images";
 
 interface DetailFieldProps {
   label: string;
@@ -35,17 +36,17 @@ export default function DetailField({
           {hasAvatar && value && (
             <div className="flex items-center gap-1">
               <img
-                src={`${PATH_PREFIX}/images/profile-avatar.png`}
+                src={PROFILE_AVATAR_IMAGE}
                 alt="Profile"
                 className="w-5 h-5 rounded-full"
               />
-              <div className="flex items-center mt-1">
+              <div className="mt-1">
                 <span className="text-blue-600 hover:underline cursor-pointer">
                   {value}
                 </span>
-                <span className="text-gray-500">
-                  {timestamp && `, ${timestamp}`}
-                </span>
+                {timestamp && (
+                  <span className="text-gray-500">{`, ${timestamp}`}</span>
+                )}
               </div>
             </div>
           )}
@@ -89,7 +90,7 @@ export function DetailFieldSimple({
         <div className="relative py-[2px] flex-1">
           <div className="flex items-center gap-1">
             <img
-              src={`${PATH_PREFIX}/images/profile-avatar.png`}
+              src={PROFILE_AVATAR_IMAGE}
               alt="Profile"
               className="w-5 h-5 rounded-full"
             />
@@ -98,6 +99,52 @@ export function DetailFieldSimple({
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function KeyFieldsItem({
+  label,
+  value,
+  isLink = false,
+  isEditable = false,
+  toggleEditMode,
+  isBorder = true,
+}: {
+  label: string;
+  value: string;
+  isLink?: boolean;
+  isEditable?: boolean;
+  toggleEditMode?: () => void;
+  isBorder?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col px-1 text-[13px] leading-[19.5px]",
+        isBorder && "border-b border-gray-300"
+      )}
+    >
+      <div className="pt-1 pr-2">
+        <span className="font-semibold text-gray-700">{label}</span>
+      </div>
+      <div className="py-[2px] flex items-center">
+        {isLink ? (
+          <span className="text-blue-600 hover:underline cursor-pointer flex-1">
+            {value}
+          </span>
+        ) : (
+          <span className="text-gray-600 flex-1">{value}</span>
+        )}
+        {isEditable && (
+          <button
+            className="w-4 h-4 flex items-center justify-center text-gray-600 hover:text-gray-800 cursor-pointer"
+            onClick={toggleEditMode}
+          >
+            <Pencil className="w-[14px] h-[14px]" />
+          </button>
+        )}
       </div>
     </div>
   );
