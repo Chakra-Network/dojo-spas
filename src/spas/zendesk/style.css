@@ -1,0 +1,16 @@
+/* Basic styling for the Zendesk SPA */
+body {
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #3f51b5;
+}
+
+section {
+  margin-bottom: 20px;
+}
+
+p {
+  margin: 0;
+}
