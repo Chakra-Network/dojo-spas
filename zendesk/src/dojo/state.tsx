@@ -96,7 +96,7 @@ export interface DojoState {
   tickets: Ticket[];
   agents: Agent[];
   macros: Macro[];
-  slaPolices: SLAPolicy[];
+  slaPolicies: SLAPolicy[];
   queueMetrics: QueueMetrics;
   currentAgent: Agent | null;
   auditLog: AuditLogEntry[];
@@ -107,7 +107,7 @@ let globalState: DojoState = {
   tickets: TICKETS_DATA,
   agents: AGENTS_DATA,
   macros: MACROS_DATA,
-  slaPolices: [
+  slaPolicies: [
     {
       id: 'sla-1',
       name: 'Standard SLA',
