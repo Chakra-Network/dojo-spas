@@ -1,6 +1,6 @@
 import { Box, Grid, Heading, SimpleGrid, Stat, StatLabel, StatNumber, StatHelpText, StatArrow, Card, CardHeader, CardBody, Text } from '@chakra-ui/react';
 import { useDojoState } from '../../dojo/state';
-import { TrendingUp, TrendingDown, ShoppingCart, CheckCircle, Clock, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, ShoppingCart, Clock, DollarSign } from 'lucide-react';
 
 export const Dashboard = () => {
   const kpis = useDojoState('kpis');
