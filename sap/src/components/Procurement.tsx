@@ -8,7 +8,7 @@ const statusColors: Record<PurchaseOrder['status'], string> = {
   approved: 'bg-green-100 text-green-800',
   rejected: 'bg-red-100 text-red-800',
   delivered: 'bg-blue-100 text-blue-800',
-  partial: 'bg-purple-100 text-purple-800',
+  partially_delivered: 'bg-purple-100 text-purple-800',
 };
 
 export default function Procurement() {
@@ -16,7 +16,6 @@ export default function Procurement() {
   const searchQuery = useDojoState('searchQuery');
   const [filter, setFilter] = useState<POFilter>('all');
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder | null>(null);
-  const [comment, setComment] = useState('');
 
   const filteredPOs = purchaseOrders.filter((po) => {
     const matchesFilter = filter === 'all' || po.status === filter;
@@ -29,7 +28,7 @@ export default function Procurement() {
 
   const handleApprove = (po: PurchaseOrder) => {
     const updatedPOs = purchaseOrders.map((p) =>
-      p.id === po.id ? { ...p, status: 'approved' as const } : p
+      p.id === po.id ? { ...p, status: 'approved' as const, approvedBy: 'John Doe', approvalDate: new Date().toISOString() } : p
     );
     dojo.setState('purchaseOrders', updatedPOs, `Approved PO ${po.poNumber}`, 'John Doe');
     setSelectedPO(null);
@@ -43,29 +42,13 @@ export default function Procurement() {
     setSelectedPO(null);
   };
 
-  const handleAddComment = (po: PurchaseOrder) => {
-    if (!comment.trim()) return;
-    const newComment = {
-      id: `cmt-${Date.now()}`,
-      user: 'John Doe',
-      text: comment,
-      timestamp: new Date().toISOString(),
-    };
-    const updatedPOs = purchaseOrders.map((p) =>
-      p.id === po.id ? { ...p, comments: [...(p.comments || []), newComment] } : p
-    );
-    dojo.setState('purchaseOrders', updatedPOs, `Added comment on PO ${po.poNumber}`, 'John Doe');
-    setComment('');
-    setSelectedPO(updatedPOs.find((p) => p.id === po.id) || null);
-  };
-
   const filters: { id: POFilter; label: string }[] = [
     { id: 'all', label: 'All' },
     { id: 'pending', label: 'Pending' },
     { id: 'approved', label: 'Approved' },
     { id: 'rejected', label: 'Rejected' },
     { id: 'delivered', label: 'Delivered' },
-    { id: 'partial', label: 'Partial' },
+    { id: 'partially_delivered', label: 'Partial' },
   ];
 
   return (
@@ -117,7 +100,7 @@ export default function Procurement() {
                     <td className="p-4 text-gray-800">${po.totalAmount.toLocaleString()}</td>
                     <td className="p-4">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColors[po.status]}`}>
-                        {po.status}
+                        {po.status === 'partially_delivered' ? 'Partial' : po.status}
                       </span>
                     </td>
                     <td className="p-4 text-gray-500 text-sm">{new Date(po.createdDate).toLocaleDateString()}</td>
@@ -148,52 +131,50 @@ export default function Procurement() {
               <div>
                 <div className="text-sm text-gray-500">Status</div>
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColors[selectedPO.status]}`}>
-                  {selectedPO.status}
+                  {selectedPO.status === 'partially_delivered' ? 'Partial' : selectedPO.status}
                 </span>
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-gray-500">Plant</div>
+                <div className="text-gray-800">{selectedPO.plant}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-500">Purchasing Org</div>
+                <div className="text-gray-800">{selectedPO.purchasingOrg}</div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-gray-500">Created</div>
+                <div className="text-gray-800">{new Date(selectedPO.createdDate).toLocaleDateString()}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-500">Delivery Date</div>
+                <div className="text-gray-800">{new Date(selectedPO.deliveryDate).toLocaleDateString()}</div>
+              </div>
+            </div>
             <div>
-              <div className="text-sm text-gray-500 mb-2">Line Items</div>
-              <div className="space-y-2">
+              <div className="text-sm text-gray-500 mb-2">Line Items ({selectedPO.items.length})</div>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
                 {selectedPO.items.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm bg-gray-50 p-2 rounded">
-                    <span className="text-gray-700">{item.description}</span>
-                    <span className="text-gray-800 font-medium">${(item.quantity * item.unitPrice).toLocaleString()}</span>
+                    <div>
+                      <div className="text-gray-700">{item.description}</div>
+                      <div className="text-xs text-gray-500">{item.quantity} {item.unit} @ ${item.unitPrice.toLocaleString()}</div>
+                    </div>
+                    <span className="text-gray-800 font-medium">${item.totalPrice.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
             </div>
-            {selectedPO.comments && selectedPO.comments.length > 0 && (
+            {selectedPO.notes && (
               <div>
-                <div className="text-sm text-gray-500 mb-2">Comments</div>
-                <div className="space-y-2">
-                  {selectedPO.comments.map((c) => (
-                    <div key={c.id} className="text-sm bg-gray-50 p-2 rounded">
-                      <div className="text-gray-800">{c.text}</div>
-                      <div className="text-xs text-gray-500 mt-1">{c.user} • {new Date(c.timestamp).toLocaleString()}</div>
-                    </div>
-                  ))}
-                </div>
+                <div className="text-sm text-gray-500">Notes</div>
+                <div className="text-gray-800 bg-gray-50 p-2 rounded text-sm">{selectedPO.notes}</div>
               </div>
             )}
-            <div>
-              <div className="text-sm text-gray-500 mb-2">Add Comment</div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Enter comment..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c81]/20"
-                />
-                <button
-                  onClick={() => handleAddComment(selectedPO)}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
             {selectedPO.status === 'pending' && (
               <div className="flex gap-2 pt-2">
                 <button
@@ -208,6 +189,11 @@ export default function Procurement() {
                 >
                   Reject
                 </button>
+              </div>
+            )}
+            {selectedPO.status !== 'pending' && selectedPO.approvedBy && (
+              <div className="text-sm p-2 rounded bg-green-50 text-green-700">
+                Approved by {selectedPO.approvedBy} on {new Date(selectedPO.approvalDate!).toLocaleDateString()}
               </div>
             )}
           </div>

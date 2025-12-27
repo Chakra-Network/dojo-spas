@@ -22,10 +22,10 @@ export default function Dashboard() {
               <span className="text-lg">{trendIcons[kpi.trend]}</span>
             </div>
             <div className="text-2xl font-bold text-gray-800 mt-2">
-              {kpi.prefix}{typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}{kpi.suffix}
+              {kpi.unit === 'USD' && '$'}{typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}{kpi.unit === '%' && '%'}
             </div>
             <div className={`text-sm mt-1 ${kpi.trend === 'up' ? 'text-green-600' : kpi.trend === 'down' ? 'text-red-600' : 'text-gray-500'}`}>
-              {kpi.change}
+              {kpi.trendValue > 0 ? '+' : ''}{kpi.trendValue}% from last period
             </div>
           </div>
         ))}
