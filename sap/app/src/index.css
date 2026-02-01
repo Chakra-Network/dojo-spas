@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* SAP Fiori palette */
+  --color-sap-shell: #354a5f;
+  --color-sap-shell-hover: #2c3e50;
+  --color-sap-brand: #0a6ed1;
+  --color-sap-highlight: #0854a0;
+  --color-sap-positive: #107e3e;
+  --color-sap-negative: #bb0000;
+  --color-sap-critical: #e9730c;
+  --color-sap-gold: #f58b00;
+  --color-sap-informative: #0a6ed1;
+
+  --color-sap-bg: #f7f7f7;
+  --color-sap-bg-card: #ffffff;
+  --color-sap-border: #e4e4e4;
+  --color-sap-text: #32363a;
+  --color-sap-text-secondary: #6a6d70;
+  --color-sap-text-light: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "72", "72full", Arial, Helvetica, sans-serif;
+  background-color: var(--color-sap-bg);
+  color: var(--color-sap-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for SAP feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4c4c4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
