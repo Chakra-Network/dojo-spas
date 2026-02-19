@@ -1,29 +1,53 @@
 # Dojo Single-Page Applications (SPAs)
 
-Curated single-page applications built with React, Vite, and a shared state layer—powering experiences on [trydojo.ai](https://trydojo.ai/).
+> ⚠️ **This repository is no longer actively maintained.** Dojo has moved towards being an enterprise product. This codebase is left available for fair use, reference, and inspiration.
 
-- Read the platform docs: [docs.trydojo.ai](https://docs.trydojo.ai/)
+Curated mock single-page applications built with **React** + **Vite** + a shared state layer — originally powering agent training experiences on [trydojo.ai](https://trydojo.ai/).
 
-## Why Mock SPAs Matter
-- Reinforcement-learning loops need safe, deterministic sandboxes; real production apps mutate too quickly. Our mock SPAs mirror the UX of live tools like [Linear](https://dojo-spas-production.s3.us-east-1.amazonaws.com/linear/index.html) without exposing private data.
-- Authentication is predictable here—agents can safely interact with environments without fretting over CAPTCHAs, SSO glitches, or expiring secrets.
-- State-setting, verification, and retrieval stay under tight control: every view reads and writes through `dojo-hooks`, so RL agents can rely on consistent schemas instead of chasing ever-changing production APIs.
+📖 [Platform Docs](https://docs.trydojo.ai/)
 
-<img width="1346" height="749" alt="image" src="https://github.com/user-attachments/assets/7b54beb8-862e-435c-9a09-caa368dc6aac" />
+<img width="1346" height="749" alt="Dojo SPA screenshot" src="https://github.com/user-attachments/assets/7b54beb8-862e-435c-9a09-caa368dc6aac" />
 
+---
 
-## Dojo Hooks
-- `@chakra-dev/dojo-hooks` exposes `useDojoState` and a global `dojo` helper for persisting and retrieving SPA state without wiring extra context.
-- Each app consumes these hooks to keep widgets in sync and to share state across routes or nested components.
+## 🤔 Why Mock SPAs?
 
-## Build a New SPA
-1. Duplicate an existing `*/app` folder (or scaffold a fresh `npm create vite@latest` React app) inside this repo.
-2. Install deps with `pnpm install` (or `npm install`) and add `@chakra-dev/dojo-hooks`.
-3. Use `useDojoState` to hold the shared data you want to read/write across the experience.
-4. Run `pnpm run dev` while building, and `pnpm run build` to emit the static bundle that ships.
+RL training loops need **safe, deterministic sandboxes** — real production apps mutate too quickly. These mock SPAs solve that by providing:
 
-## Bounty Board
-- Open the GitHub Issues tab and filter by the `bounty` label—each issue describes a SPA the team wants next.
-- Comment with your intent and wait for a maintainer to confirm assignment before you dive in.
-- Ship the SPA in a PR that links the bounty issue; include any deployment notes.
-- Once the PR merges, the maintainers close the issue with payout details so you can get paid for the contribution.
+- 🪞 **Realistic UI** — mirror the UX of live tools (e.g. [Linear](https://dojo-spas-production.s3.us-east-1.amazonaws.com/linear/index.html)) without exposing private data
+- 🔐 **Predictable auth** — no CAPTCHAs, SSO headaches, or expiring secrets
+- 🧩 **Consistent state** — all reads/writes flow through `dojo-hooks`, giving agents stable schemas instead of ever-changing production APIs
+
+---
+
+## 🪝 Dojo Hooks
+
+`@chakra-dev/dojo-hooks` is the shared state layer across all SPAs:
+
+| Export | Purpose |
+|---|---|
+| `useDojoState` | React hook for persisting & retrieving SPA state |
+| `dojo` (global) | Vanilla JS helper for the same — no React required |
+
+Each app consumes these hooks to keep widgets in sync across routes and nested components.
+
+---
+
+## 🛠️ Building a New SPA
+
+```bash
+# 1. Scaffold or duplicate
+cp -r linear/app my-new-spa/app   # or: npm create vite@latest
+
+# 2. Install deps
+pnpm install
+pnpm add @chakra-dev/dojo-hooks
+
+# 3. Develop
+pnpm run dev
+
+# 4. Build for deploy
+pnpm run build
+```
+
+Use `useDojoState` to manage any shared data you want agents to read/write across the experience.
