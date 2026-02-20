@@ -25,10 +25,11 @@ import { Expenses } from "./components/Expenses/Expenses";
 import { Reconciliation } from "./components/Reconciliation/Reconciliation";
 import { CreateInvoice } from "./components/Invoices/CreateInvoice";
 import { CustomerCenter } from "./components/Customers/CustomerCenter";
-import { ReportsPage } from "./components/Reports/ReportsPage"; 
+import { ReportsPage } from "./components/Reports/ReportsPage";
 import OpenWindowsSidebar from "./components/OpenWindowsSidebar";
 import ViewBalancesSidebar from "./components/ViewBalancesSidebar";
 import { VendorCenter } from "./components/vendor/VendorCenter";
+import { AuditSidebar } from "./components/AuditSidebar/AuditSidebar";
 
 
 type View = "dashboard" | "invoices" | "expenses" | "reconciliation" | "create-invoice" | "customers" | "reports" | "vendors" | "profit-loss" | "report-center" | "customer-center" | "home-open-window";
@@ -209,7 +210,8 @@ function App() {
         {renderView()}
       </Box>
 
-      {/* Audit sidebar removed per request */}
+      {/* Audit Sidebar for RL verification */}
+      <AuditSidebar />
       </Flex>
     </Box>
   );
