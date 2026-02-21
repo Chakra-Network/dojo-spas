@@ -1,0 +1,163 @@
+import { Contact } from '../dojo/state';
+
+export const CONTACTS_DATA: Contact[] = [
+  {
+    id: 'contact-001',
+    email: 'john.smith@acmecorp.com',
+    firstName: 'John',
+    lastName: 'Smith',
+    company: 'Acme Corp',
+    lifecycleStage: 'customer',
+    owner: 'sarah@company.com',
+    phone: '+1-555-0101',
+    website: 'https://acmecorp.com',
+    leadSource: 'Webinar',
+    createdAt: '2025-06-15T10:00:00Z',
+    lastActivityDate: '2025-12-05T14:30:00Z',
+    activityTimeline: [
+      {
+        id: 'act-001',
+        type: 'email_open',
+        description: 'Opened "Product Launch Announcement"',
+        timestamp: '2025-11-05T10:30:00Z',
+      },
+      {
+        id: 'act-002',
+        type: 'email_click',
+        description: 'Clicked "Learn More" button',
+        timestamp: '2025-11-05T10:35:00Z',
+      },
+      {
+        id: 'act-003',
+        type: 'meeting',
+        description: 'Sales call - discussing enterprise plan',
+        timestamp: '2025-11-10T15:00:00Z',
+      },
+    ],
+    notes: [
+      {
+        id: 'note-001',
+        text: 'Interested in enterprise features. Follow up next week.',
+        author: 'sarah@company.com',
+        timestamp: '2025-11-10T16:00:00Z',
+      },
+    ],
+    customFields: {
+      industry: 'Technology',
+      employees: '50-100',
+    },
+  },
+  {
+    id: 'contact-002',
+    email: 'emma.wilson@techstart.io',
+    firstName: 'Emma',
+    lastName: 'Wilson',
+    company: 'TechStart',
+    lifecycleStage: 'marketing_qualified_lead',
+    owner: 'mike@company.com',
+    phone: '+1-555-0202',
+    leadSource: 'Google Ads',
+    createdAt: '2025-11-01T14:20:00Z',
+    lastActivityDate: '2025-12-04T09:15:00Z',
+    activityTimeline: [
+      {
+        id: 'act-004',
+        type: 'form_submit',
+        description: 'Downloaded whitepaper: "Marketing Automation 101"',
+        timestamp: '2025-11-01T14:20:00Z',
+      },
+      {
+        id: 'act-005',
+        type: 'email_open',
+        description: 'Opened nurture email #2',
+        timestamp: '2025-11-15T11:00:00Z',
+      },
+    ],
+    notes: [],
+    customFields: {
+      industry: 'Software',
+      employees: '10-50',
+    },
+  },
+  {
+    id: 'contact-003',
+    email: 'robert.chen@globalventures.com',
+    firstName: 'Robert',
+    lastName: 'Chen',
+    company: 'Global Ventures',
+    lifecycleStage: 'lead',
+    leadSource: 'Content Marketing',
+    createdAt: '2025-11-28T10:45:00Z',
+    lastActivityDate: '2025-11-28T10:45:00Z',
+    activityTimeline: [
+      {
+        id: 'act-006',
+        type: 'page_view',
+        description: 'Viewed pricing page',
+        timestamp: '2025-11-28T10:45:00Z',
+      },
+    ],
+    notes: [],
+    customFields: {
+      industry: 'Finance',
+    },
+  },
+  {
+    id: 'contact-004',
+    email: 'lisa.martinez@innovateco.com',
+    firstName: 'Lisa',
+    lastName: 'Martinez',
+    company: 'Innovate Co',
+    lifecycleStage: 'sales_qualified_lead',
+    owner: 'sarah@company.com',
+    phone: '+1-555-0303',
+    leadSource: 'Referral',
+    createdAt: '2025-10-10T09:00:00Z',
+    lastActivityDate: '2025-12-06T16:00:00Z',
+    activityTimeline: [
+      {
+        id: 'act-007',
+        type: 'call',
+        description: 'Initial discovery call completed',
+        timestamp: '2025-11-20T14:00:00Z',
+      },
+      {
+        id: 'act-008',
+        type: 'meeting',
+        description: 'Product demo scheduled',
+        timestamp: '2025-12-06T16:00:00Z',
+      },
+    ],
+    notes: [
+      {
+        id: 'note-002',
+        text: 'Very interested. Budget approved for Q1.',
+        author: 'sarah@company.com',
+        timestamp: '2025-11-20T15:00:00Z',
+      },
+    ],
+    customFields: {
+      industry: 'Manufacturing',
+      employees: '100-500',
+    },
+  },
+  {
+    id: 'contact-005',
+    email: 'michael.brown@startup.xyz',
+    firstName: 'Michael',
+    lastName: 'Brown',
+    lifecycleStage: 'subscriber',
+    leadSource: 'Blog',
+    createdAt: '2025-12-01T11:30:00Z',
+    lastActivityDate: '2025-12-01T11:30:00Z',
+    activityTimeline: [
+      {
+        id: 'act-009',
+        type: 'form_submit',
+        description: 'Subscribed to newsletter',
+        timestamp: '2025-12-01T11:30:00Z',
+      },
+    ],
+    notes: [],
+  },
+];
